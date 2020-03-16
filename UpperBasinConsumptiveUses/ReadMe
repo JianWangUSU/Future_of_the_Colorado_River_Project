@@ -11,21 +11,21 @@ Description:
 
 Files:
 (1)Upper Colorado River Basin Depletions and Evaporations.xlsx
-This file is used to plot the comparison between different Upper Basin projections and actual use.
+This file is used to plot the comparison between different Upper Basin water depletion projections and actual use.
 
 (2)UB CRSS Demands Data.xlsx
 (3)Basin study scenarios calculation - based on State.xlsx
 (4)Basin study scenarios calculation - based on Rivers.xlsx
-These three files show three different ways to calculate 6 depletion scenarios used in CRSS. Results are stored in (1).
+These three files show three different ways to calculate 6 depletion scenarios used in CRSS. Results are stored in file (1).
 
 (5)Demand_Input_Tool_Current_Trends_And_Other_Scenarios_092412wFig_v4-UB CRSS Demands Data.xlsm
-This file is the original data source for 6 depletion scenarios used in CRSS. It is from the $CRSS_DIR/dmi folder in the 2019 June version.
+This file is the original data source for 6 depletion scenarios used in CRSS. It is obtained from the $CRSS_DIR/dmi folder in the 2019 June version of CRSS.
 
 Application:
   The generated plot has been used in Figure 5 in the white paper "Managing the Colorado River for an Uncertain Future" and one blog post "Scenarios Consistently Overestimate Consumptive Water Use in the Upper Colorado River Basin"
 
-URL for white paper	https://qcnr.usu.edu/coloradoriver/files/CCRS_White_Paper_3.pdf
-URL for the blog post	https://qcnr.usu.edu/coloradoriver/blog/overestim_Rosen
+URL for white paper:	https://qcnr.usu.edu/coloradoriver/files/CCRS_White_Paper_3.pdf
+URL for the blog post:	https://qcnr.usu.edu/coloradoriver/blog/overestim_Rosen
 
 About us: 
   The Center for Colorado River Studies at Utah State University is a nexus for innovative research, teaching, and outreach that informs management of the Colorado River and other major rivers of the American Southwest. 
