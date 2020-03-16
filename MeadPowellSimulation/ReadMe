@@ -1,0 +1,12 @@
+Title: Lake Powell Lake Mead simulation with PyNSim.
+
+Code in Python.
+
+Progress: 
+(1) Simulate Lake Mead under drought contingency plan with static water demand and water supply.
+(2) Simulate Combined reservoir of Lake Powell and Lake Mead under drought contingency plan with static water demand and water supply.
+(3) Next: simulate joint operation of Lake Powell and Lake Mead and combine river ecosystem model.
+
+More information about PyNSim: https://github.com/UMWRG/pynsim
+
+Author: Jian Wang(jian.wang@usu.edu)
