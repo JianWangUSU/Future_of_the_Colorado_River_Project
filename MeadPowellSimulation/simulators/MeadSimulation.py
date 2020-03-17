@@ -79,7 +79,7 @@ CS.collections[0].set_label("Years to dead pool")
 plt.legend(loc='upper left')
 
 plt.xlabel('Demand(MAF)')
-plt.ylabel('Inflow(MAF)')
+plt.ylabel('Inflow(MAF) to Lake Mead')
 
 plt.show()
 
