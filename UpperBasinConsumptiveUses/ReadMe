@@ -10,16 +10,16 @@ Description:
   This folder is used to generate the plot that shows scenarios of Upper Colorado River Basin consumptive water use predicated by Bureau of Reclamation (BOR), Upper Colorado River Commission (UCRC) and used in CRSS (BOR/CRSS) in comparison to actual use. 
 
 Files:
-(1)Upper Colorado River Basin Depletions and Evaporations.xlsx
-This file is used to plot the comparison between different Upper Basin water depletion projections and actual use.
+  (1)Upper Colorado River Basin Depletions and Evaporations.xlsx
+  This file is used to plot the comparison between different Upper Basin water depletion projections and actual use.
 
-(2)UB CRSS Demands Data.xlsx
-(3)Basin study scenarios calculation - based on State.xlsx
-(4)Basin study scenarios calculation - based on Rivers.xlsx
-These three files show three different ways to calculate 6 depletion scenarios used in CRSS. Results are stored in file (1). Files (3) and (4) are used to double-check the correctness of the results from file (2). If you don't want to dive to details, you can only see file (2).
+  (2)UB CRSS Demands Data.xlsx
+  (3)Basin study scenarios calculation - based on State.xlsx
+  (4)Basin study scenarios calculation - based on Rivers.xlsx
+  These three files show three different ways to calculate 6 depletion scenarios used in CRSS. Results are stored in file (1). Files (3) and (4) are used to double-check the correctness of the results from file (2). If you don't want to dive to details, you can only see file (2).
 
-(5)Demand_Input_Tool_Current_Trends_And_Other_Scenarios_092412wFig_v4-UB CRSS Demands Data.xlsm
-This file is the original data source for 6 depletion scenarios used in CRSS. It is obtained from the $CRSS_DIR/dmi folder in the 2019 June version of CRSS.
+  (5)Demand_Input_Tool_Current_Trends_And_Other_Scenarios_092412wFig_v4-UB CRSS Demands Data.xlsm
+  This file is the original data source for 6 depletion scenarios used in CRSS. It is obtained from the $CRSS_DIR/dmi folder in the 2019 June version of CRSS.
 
 Application:
   The generated plot has been used in Figure 5 in the white paper "Managing the Colorado River for an Uncertain Future" and one blog post "Scenarios Consistently Overestimate Consumptive Water Use in the Upper Colorado River Basin"
