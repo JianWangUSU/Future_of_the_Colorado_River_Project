@@ -1,12 +1,21 @@
 Title: Lake Powell Lake Mead simulation with PyNSim.
 
 Code in Python.
+Before diving into the code, the author suggests to read PyNSim first. http://umwrg.github.io/pynsim/ or https://github.com/UMWRG/pynsim
+
+Folder explanations
+.idea        Most people can ignore this folder, please read the link if you are interested in this folder. https://stackoverflow.com/questions/17049416/what-is-the-idea-folder
+components   Define your personal Node, Link and Institution class
+data         Store basic reservoir data, such as Lake Powell elevation-area-volume table.
+engines      Define your personal engine. What is an engine? Please read http://umwrg.github.io/pynsim/. In this project, personal engine is not defined and used.
+results      Store decision scaling analysis results.
+simulators   Reservoir simulatior is defined in this folder and the project start running from this folder.
 
 Progress: 
 (1) Simulate Lake Mead under drought contingency plan with static water demand and water supply.
 (2) Simulate Combined reservoir of Lake Powell and Lake Mead under drought contingency plan with static water demand and water supply.
 (3) Next: simulate joint operation of Lake Powell and Lake Mead and combine river ecosystem model.
 
-More information about PyNSim: https://github.com/UMWRG/pynsim
+More information about PyNSim: 
 
 Author: Jian Wang(jian.wang@usu.edu)
