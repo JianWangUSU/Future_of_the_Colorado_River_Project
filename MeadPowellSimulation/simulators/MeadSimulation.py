@@ -79,7 +79,7 @@ CS.collections[0].set_label("Years to dead pool (Unit: years)")
 
 plt.legend(loc='upper left')
 
-plt.xlabel('Lower Basin + Mexico Depletion schedule (MAF/year)')
+plt.xlabel('Lower Basin (including delivery to Mexico) Depletion schedule (MAF/year)')
 plt.ylabel('Inflow to Lake Mead (MAF/year)')
 plt.title('How long will Lake Mead go dry or get full?')
 

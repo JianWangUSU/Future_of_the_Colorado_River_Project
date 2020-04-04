@@ -85,7 +85,7 @@ CS.collections[0].set_label("Years to dead pool (Unit: years)")
 
 plt.legend(loc='upper left')
 
-plt.xlabel('Lower Basin + Mexico Depletion schedule (MAF/year)', fontsize=8)
+plt.xlabel('Lower Basin (including delivery to Mexico) Depletion schedule (MAF/year)', fontsize=8)
 plt.ylabel('Inflow to the aggregate Powell and Mead reservoir (MAF/year)', fontsize=8)
 plt.title('How long will the aggregate Powell and Mead reservoir go dry or get full?', fontsize=10)
 
