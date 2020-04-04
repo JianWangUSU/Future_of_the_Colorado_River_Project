@@ -21,7 +21,9 @@ Demand:          Water for Lake Mead to release ranges from 6 to 12 MAF/per year
 Initial Storage: Jan, 2020 Lake Mead actual storage.
 Evap rate:       6 feet/year. (Table 2, Schmidt, John C. (2016) Fill Mead First Technical Report)
 Policy:          Use Drought Contingency Plan when Mead elevation is below 1025 feet, otherwise reservoir release equals to demand.
-Simulation:      Get different combination of inflow and demand. For each of these combinations, simulate Lake Mead release with the policy mentioned above. Note: for each combiantion, inflow and demand don't change over time. 
+Simulation:      Get different combination of inflow and demand. 
+                 For each of these combinations, simulate Lake Mead release with the policy mentioned above. 
+                 Note that for each combiantion, inflow and demand don't change over time. 
 Main Code:       MeadSimulation.py in "simulators" folder.
 Result:          Shown in LakeMeadResults.pdf under the "results" folder. 
                  Numbers shown on blue lines represent number of years Lake Mead go dry.
