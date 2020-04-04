@@ -1,6 +1,7 @@
 Title: Decision scaling analysis (multi-dimension sensitivity analysis) for Lake Powell and Lake Mead with PyNSim.
 
-Code in Python. Before diving into the code, read PyNSim first. http://umwrg.github.io/pynsim/ or https://github.com/UMWRG/pynsim
+Code in Python. Before diving into the code, read PyNSim first. PyNSim is a light weight simulation tool.
+http://umwrg.github.io/pynsim/ or https://github.com/UMWRG/pynsim
 If you don't intend to read the code then skip the Floder explanations below.
 
 Folder explanations
