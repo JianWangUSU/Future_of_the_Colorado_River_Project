@@ -4,18 +4,30 @@ Code in Python.
 Before diving into the code, the author suggests to read PyNSim first. http://umwrg.github.io/pynsim/ or https://github.com/UMWRG/pynsim
 
 Folder explanations
-.idea        Most people can ignore this folder, please read the link if you are interested in this folder. https://stackoverflow.com/questions/17049416/what-is-the-idea-folder
-components   Define your personal Node, Link and Institution class
-data         Store basic reservoir data, such as Lake Powell elevation-area-volume table.
-engines      Define your personal engine. What is an engine? Please read http://umwrg.github.io/pynsim/. In this project, personal engine is not defined and used.
-results      Store decision scaling analysis results.
-simulators   Reservoir simulatior is defined in this folder and the project start running from this folder.
+".idea"        Most people can ignore this folder, please read the link if you are interested in this folder. https://stackoverflow.com/questions/17049416/what-is-the-idea-folder
+"components"   Define your personal Node, Link and Institution class
+"data"         Store basic reservoir data, such as Lake Powell elevation-area-volume table.
+"engines"      Define your personal engine. What is an engine? Please read http://umwrg.github.io/pynsim/. In this project, personal engine is not defined and used.
+"results"      Store decision scaling analysis results.
+"simulators"   Reservoir simulatior is defined in this folder and the project start running from this folder.
 
-Progress: 
+Now: 
 (1) Simulate Lake Mead under drought contingency plan with static water demand and water supply.
-(2) Simulate Combined reservoir of Lake Powell and Lake Mead under drought contingency plan with static water demand and water supply.
-(3) Next: simulate joint operation of Lake Powell and Lake Mead and combine river ecosystem model.
+Main Code:       MeadSimulation.py in "simulators" folder.
+Questions:       Under what combination of inflow and demand will Lake Mead go dry or get full? How long does it take?
+Research object: Lake Mead. 
+Operation step:  Annually.
+Input:           Inflow to Lake Mead ranges from 6 MAF/per year to 14 MAF/per year. Water for Lake Mead to release is from 6 MAF/per year to 12 MAF/per year.
+Simulation:      Under the combination of different demand and inflow, 
+Policy:          Use Drought Contingency Plan when Mead elevation is below 1025 feet, otherwise release equals to demand.
+Result:          Shown in LakeMeadResults.pdf under the "results" folder.
 
-More information about PyNSim: 
+(2) Simulate Combined reservoir of Lake Powell and Lake Mead under drought contingency plan with static water demand and water supply.
+
+Future:
+(3) Simulate joint operation of Lake Powell and Lake Mead.
+
+Reproduce:
+Download the code and data. Install pynsim, numpy and matplotlib. Change the file path in MeadSimulation.py and PowellMeadSimulation.py to your local path.
 
 Author: Jian Wang(jian.wang@usu.edu)
