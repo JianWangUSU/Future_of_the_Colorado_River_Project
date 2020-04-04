@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 
 filePath1 = "E:/Future_of_the_Colorado_River_Project/MeadPowellSimulation/data/zvPowell.csv"
 filePath2 = "E:/Future_of_the_Colorado_River_Project/MeadPowellSimulation/data/zv.csv"
+resultPathAndName = "E:/Future_of_the_Colorado_River_Project/MeadPowellSimulation/results/LakeMeadAndPowellResults.pdf"
 
 #Create a simulator object which will be run.
 s = Simulator()
@@ -40,7 +41,7 @@ s.add_engine(anEngine)
 # s.start()
 # print(n.nodes[0].storage)
 
-demandRange = np.arange(6, 14.1, 0.1)
+demandRange = np.arange(6, 12.1, 0.1)
 inflowRange = np.arange(6, 16.1, 0.1)
 
 xLength = len(demandRange)
@@ -70,21 +71,22 @@ fig, ax = plt.subplots()
 CS = ax.contour(X, Y, Z2, levels = [15,30,45,65] , colors = "green")
 # CS = ax.contour(X, Y, Z2, levels = 5 , colors = "green")
 ax.clabel(CS, inline=1, fmt='%1.0f', fontsize=8)
-CS.collections[0].set_label("Years to fill")
+CS.collections[0].set_label("Years to fill (Unit: years)")
 
 CS = ax.contour(X, Y, Z3, levels = [10,20,30,40] , colors = "red")
 # CS = ax.contour(X, Y, Z3, levels = 5 , colors = "red")
 ax.clabel(CS, inline=1, fmt='%1.0f', fontsize=8)
-CS.collections[0].set_label("Static reservoir storage(MAF)")
+CS.collections[0].set_label("Static reservoir storage (Unit: MAF)")
 
 CS = ax.contour(X, Y, Z1, levels = [10,25,45], colors = "blue")
 # CS = ax.contour(X, Y, Z1, levels = 5, colors = "blue")
 ax.clabel(CS, inline=1, fmt='%1.0f', fontsize=8)
-CS.collections[0].set_label("Years to dead pool")
+CS.collections[0].set_label("Years to dead pool (Unit: years)")
 
 plt.legend(loc='upper left')
 
-plt.xlabel('Demand(MAF)')
-plt.ylabel('Inflow(MAF) to Lake Powell and Mead')
+plt.xlabel('Lower Basin + Mexico Depletion schedule (MAF/year)', fontsize=8)
+plt.ylabel('Inflow to the aggregate Powell and Mead reservoir (MAF/year)', fontsize=8)
+plt.title('How long will the aggregate Powell and Mead reservoir go dry or get full?', fontsize=10)
 
-plt.show()
+plt.savefig(resultPathAndName,dpi=600,format='pdf')

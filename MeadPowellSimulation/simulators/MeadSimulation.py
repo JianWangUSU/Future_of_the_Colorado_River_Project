@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 filePath = "E:/Future_of_the_Colorado_River_Project/MeadPowellSimulation/data/zv.csv"
+resultPathAndName = "E:/Future_of_the_Colorado_River_Project/MeadPowellSimulation/results/LakeMeadResults.pdf"
 
 #Create a simulator object which will be run.
 s = Simulator()
@@ -66,24 +67,23 @@ fig, ax = plt.subplots()
 
 CS = ax.contour(X, Y, Z2, levels = [15,30,45] , colors = "green")
 ax.clabel(CS, inline=1, fmt='%1.0f', fontsize=8)
-CS.collections[0].set_label("Years to fill")
+CS.collections[0].set_label("Years to full pool (Unit: years)")
 
 CS = ax.contour(X, Y, Z3, levels = [4,8,12,16,20] , colors = "red")
 ax.clabel(CS, inline=1, fmt='%1.0f', fontsize=8)
-CS.collections[0].set_label("Static reservoir storage(MAF)")
+CS.collections[0].set_label("Static reservoir storage (Unit: MAF)")
 
 CS = ax.contour(X, Y, Z1, levels = [10,20,40], colors = "blue")
 ax.clabel(CS, inline=1, fmt='%1.0f', fontsize=8)
-CS.collections[0].set_label("Years to dead pool")
+CS.collections[0].set_label("Years to dead pool (Unit: years)")
 
 plt.legend(loc='upper left')
 
-plt.xlabel('Demand(MAF)')
-plt.ylabel('Inflow(MAF) to Lake Mead')
+plt.xlabel('Lower Basin + Mexico Depletion schedule (MAF/year)')
+plt.ylabel('Inflow to Lake Mead (MAF/year)')
+plt.title('How long will Lake Mead go dry or get full?')
 
-plt.show()
-
-
+plt.savefig(resultPathAndName,dpi=600,format='pdf')
 
 
 
