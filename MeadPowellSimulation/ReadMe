@@ -1,12 +1,56 @@
 Title: Lake Powell Lake Mead simulation with PyNSim.
 
 Code in Python.
+Before diving into the code, the author suggests to read PyNSim first. http://umwrg.github.io/pynsim/ or https://github.com/UMWRG/pynsim
 
-Progress: 
-(1) Simulate Lake Mead under drought contingency plan with static water demand and water supply.
-(2) Simulate Combined reservoir of Lake Powell and Lake Mead under drought contingency plan with static water demand and water supply.
-(3) Next: simulate joint operation of Lake Powell and Lake Mead and combine river ecosystem model.
+Folder explanations
+".idea":         Most people can ignore this folder, please read the link if you are interested in this folder. https://stackoverflow.com/questions/17049416/what-is-the-idea-folder
+"components":    Define your personal Node, Link and Institution class
+"data":          Store basic reservoir data, such as Lake Powell elevation-area-volume table.
+"engines":       Define your personal engine. What is an engine? Please read http://umwrg.github.io/pynsim/. In this project, personal engine is not defined and used.
+"results":       Store decision scaling analysis results.
+"simulators":    Reservoir simulatior is defined in this folder and the program starts running from this folder.
 
-More information about PyNSim: https://github.com/UMWRG/pynsim
+Problem 1:       Simulate Lake Mead with Drought Contingency Plan (DCP) under static inflow and demand.
+Questions:       Under what combination of inflow and demand will Lake Mead go dry or get full? How long does it take?
+Research object: Lake Mead. 
+Operation step:  Annually.
+Inflow:          Inflow to Lake Mead ranges from 6 to 14 MAF/per year. (The range is subject to change)
+Demand:          Lower basin and Mexico depletion schedule is assumed to range from 6 to 12 MAF/per year. (The range is subject to change)
+Initial Storage: Lake Mead actual storage at the beginning of 2020.
+Evap rate:       6 feet/year. (Table 2, Schmidt, John C. (2016) Fill Mead First Technical Report)
+Policy:          Use DCP when Mead elevation is below 1025 feet, otherwise reservoir release equals to demand.
+Simulation:      Get different combination of inflow and demand. 
+                 For each of these combinations, simulate Lake Mead release with the policy mentioned above. 
+                 Note that for each combiantion, inflow and demand don't change over time. 
+Main Code:       "MeadSimulation.py" in "simulators" folder.
+Result:          Shown in "LakeMeadResults.pdf" under the "results" folder. 
+                 Numbers shown on blue lines represent number of years Lake Mead go dry.
+                 Numbers shown on green lines represent number of years Lake Mead get to full pool.
+                 Numbers shown on red lines represent the final static reservoir storage for Lake Mead.
+
+
+Problem 2:       Simulate Combined reservoir of Lake Powell and Mead with DCP under static inflow and demand.
+Questions:       Under what combination of inflow and demand will Lake Powell and Mead go dry or get full? How long does it take?
+Research object: The combined Lake Powell and Mead. 
+Operation step:  Annually.
+Inflow:          Total inflow to Lake Powell and Lake Mead ranges from 6 to 16 MAF/per year. (The range is subject to change)
+Demand:          Lower basin and Mexico depletion schedule is assumed to range from 6 to 12 MAF/per year. (The range is subject to change)
+Initial Storage: Lake Powell and Lake Mead actual storage at the beginning of 2020.
+Evap rate:       5.7 feet/year for Lake Powell, 6 feet/year for Lake Mead. (Table 2, Schmidt, John C. (2016) Fill Mead First Technical Report)
+Policy:          Lake Powell and Lake Mead is assumed to be equalized every year. 
+                 Use DCP when Mead elevation is below 1025 feet, otherwise reservoir release equals to demand.
+Simulation:      Get different combination of inflow and demand. 
+                 For each of these combinations, simulate Lake Powell and Mead release with the policy mentioned above. 
+                 Note that for each combiantion, inflow and demand don't change over time.
+Main Code:       "PowellMeadSimulation.py" in "simulators" folder.
+Result:          Shown in "LakeMeadResults.pdf" under the "results" folder. 
+                 Numbers shown on blue lines represent number of years Lake Powell and Lake Mead go dry.
+                 Numbers shown on green lines represent number of years Lake Powell and Lake Mead get to full pool.
+                 Numbers shown on red lines represent the final static total reservoir storage for Lake Powell and Mead.
+                 
+                 
+How to Reproduce:Download the code and data. Install pynsim, numpy and matplotlib. 
+                 Change file paths in MeadSimulation.py and PowellMeadSimulation.py to your own data and results path.
 
 Author: Jian Wang(jian.wang@usu.edu)
