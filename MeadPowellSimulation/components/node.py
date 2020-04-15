@@ -146,6 +146,8 @@ class AggregateReservoir(Node):
         self.maxMeadStorage = 26 #MAF
         self.maxStorage = self.maxMeadStorage + self.maxPowellStorage #MAF
         self.minStorage = 0 #MAF
+        self.min_PowellPowerPoolStorage = 3.997 #MAF
+        self.max_MeadPearceFerryStorage = 15.107 #MAF
         # spliting total storage to powell and mead
         self.weightPowell = self.maxPowellStorage/ self.maxStorage
         self.weightMead = self.maxMeadStorage/ self.maxStorage
@@ -238,3 +240,26 @@ class AggregateReservoir(Node):
         ave = sum / 10
 
         return round(ave)
+
+    # for ecosystem
+    def findYearsToMinPowerPool(self):
+        self.totalPowerStorage = self.min_PowellPowerPoolStorage/self.weightPowell
+
+        print("min power pool:"+float.__str__(self.totalPowerStorage))
+
+        for i in range(0, self.totalN):
+          if self.storage[i] <= self.totalPowerStorage: # how many years to dry
+              return i + 1
+
+    def findYearsToPearceFerry(self):
+        self.totalPearceStorage = self.max_MeadPearceFerryStorage/self.weightMead
+
+        print("min power pool:"+float.__str__(self.totalPearceStorage))
+
+
+        for i in range(0, self.totalN):
+          if self.storage[i] >= self.totalPearceStorage: # how many years to fill
+              return i + 1
+
+
+
