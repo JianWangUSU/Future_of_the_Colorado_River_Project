@@ -133,15 +133,15 @@ class AggregateReservoir(Node):
                    'maxStorage': None,
                    'minStorage': None}
 
-    def setData(self, demand, inflow):
+    def setData(self, demand, inflow, initStorage):
         self.demand = demand
         self.inflow = inflow
+        self.initStorage = initStorage
 
     def setup(self, timestamp):
         # print(timestamp)
         self.evapRate1 = 5.7 #feet/year, Powell
         self.evapRate2 = 6 #feet/year, Mead
-        self.initStorage = 12.6 + 10.9 #MAF, Powell + Mead 2020 Jan storage
         self.maxPowellStorage = 24.3 #MAF
         self.maxMeadStorage = 26 #MAF
         self.maxStorage = self.maxMeadStorage + self.maxPowellStorage #MAF
@@ -245,17 +245,12 @@ class AggregateReservoir(Node):
     def findYearsToMinPowerPool(self):
         self.totalPowerStorage = self.min_PowellPowerPoolStorage/self.weightPowell
 
-        print("min power pool:"+float.__str__(self.totalPowerStorage))
-
         for i in range(0, self.totalN):
           if self.storage[i] <= self.totalPowerStorage: # how many years to dry
               return i + 1
 
     def findYearsToPearceFerry(self):
         self.totalPearceStorage = self.max_MeadPearceFerryStorage/self.weightMead
-
-        print("min power pool:"+float.__str__(self.totalPearceStorage))
-
 
         for i in range(0, self.totalN):
           if self.storage[i] >= self.totalPearceStorage: # how many years to fill
