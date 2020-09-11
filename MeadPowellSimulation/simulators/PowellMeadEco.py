@@ -6,10 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib import pyplot as plt2
 import mayavi.mlab as mlab
 
-from mpl_toolkits import mplot3d
-from skimage import measure
-
-import plotly.graph_objects as go
+# vtk should be 8.1.2, not 9.0
 
 filePath1 = "E:/Future_of_the_Colorado_River_Project/MeadPowellSimulation/data/zvPowell.csv"
 filePath2 = "E:/Future_of_the_Colorado_River_Project/MeadPowellSimulation/data/zv.csv"
