@@ -6075,7 +6075,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../MeadPowellSimulation" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunManager" selected="Python.start">
@@ -6230,7 +6230,7 @@
       <workItem from="1599070504835" duration="4083000" />
       <workItem from="1599669170776" duration="7725000" />
       <workItem from="1599833167642" duration="4304000" />
-      <workItem from="1599846058499" duration="21884000" />
+      <workItem from="1599846058499" duration="22484000" />
     </task>
     <servers />
   </component>
@@ -6246,10 +6246,10 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="362" y="75" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1536.824@0.0.1536.824" timestamp="1594239606347" />
-    <state x="550" y="171" key="FileChooserDialogImpl" timestamp="1599847001339">
+    <state x="550" y="171" key="FileChooserDialogImpl" timestamp="1599936781722">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="550" y="171" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1599847001339" />
+    <state x="550" y="171" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1599936781722" />
     <state width="1493" height="233" key="GridCell.Tab.0.bottom" timestamp="1599934013665">
       <screen x="0" y="0" width="1536" height="824" />
     </state>

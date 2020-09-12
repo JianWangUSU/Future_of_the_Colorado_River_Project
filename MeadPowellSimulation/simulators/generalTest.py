@@ -1,1 +1,0 @@
-print(round(0.6))
