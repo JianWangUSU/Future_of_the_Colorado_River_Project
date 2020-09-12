@@ -67,10 +67,10 @@ fileName = "Meadrelease.csv"
 dataExchange.readCRSSrelease(Mead, filePath + fileName)
 
 ### 3.set policies
-plc.EQUAL_DCP = True
-plc.ADP = True
+plc.EQUAL_DCP = False
+plc.ADP = False
 plc.FPF = False
-plc.FMF = False
+plc.FMF = True
 
 ### 4. run the model
 n.simulation()
