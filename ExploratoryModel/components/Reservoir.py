@@ -529,7 +529,6 @@ class Reservoir(Node):
             else:
                 self.column = 3
 
-
     # IntentionallyCreatedSurplus, ICS strategy
     # i: inflowtrace
     def DCPICScutback(self, elevation, i):

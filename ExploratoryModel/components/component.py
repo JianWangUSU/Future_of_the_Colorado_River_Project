@@ -73,7 +73,7 @@ class Network(Component):
                 print("trace:"+str(i) + " time:" + str(endtime-starttime))
 
         endtime1 = datetime.datetime.now()
-        print("total time:" + str(endtime - starttime))
+        print("total time:" + str(endtime1 - starttime1))
 
 class Node(Component):
 
