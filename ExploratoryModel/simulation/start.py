@@ -83,7 +83,7 @@ Mead.setupDepletion(UBLB)
 # policy control(plc),  EQUAL_DCP: equalization rule and drought contingency plan
 # ADP: adaptive policy, only consider Pearce Ferry Rapid signpost, will add more.
 # FPF: Fill Powell First
-# FMF: Fill Mead First
+# FMF: Fill Mead First (Re-drill Lake Powell)
 plc.EQUAL_DCP = False
 plc.ADP = False
 plc.FPF = False

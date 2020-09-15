@@ -47,6 +47,8 @@ class LakePowell(Reservoir):
         if self.plc.ADP == True:
             self.adaptivePolicy(k, i, j)
         # strategy FPF
+        if self.plc.FPF == True:
+            self.FPF(startStorage)
         # strategy re-drill Lake Powell (FMF)
         if self.plc.FMF == True:
             self.redrillPowell(startStorage)

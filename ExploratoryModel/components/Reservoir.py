@@ -521,13 +521,13 @@ class Reservoir(Node):
                 self.column = 3
 
     # fill Powell first
-    # def FPF(self, powerS):
-    #     # Mead to 895 feet, if Powell reasches to full pool, Mead store water
-    #     if self.name == "Powell":
-    #         if powerS < self.maxStorage:
-    #             self.column = 0
-    #         else:
-    #             self.column = 3
+    def FPF(self, powerS):
+        # Mead to 895 feet, if Powell reasches to full pool, Mead store water
+        if self.name == "Powell":
+            if powerS < self.maxStorage:
+                self.column = 1
+            else:
+                self.column = 2
 
     # IntentionallyCreatedSurplus, ICS strategy
     # i: inflowtrace
