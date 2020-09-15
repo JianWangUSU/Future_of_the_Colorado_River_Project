@@ -39,7 +39,7 @@ class LakePowell(Reservoir):
 
         self.totalinflow[i][j] = inflowthismonth
 
-        ### 3. determine policy, equalization rule only triggered in Apr and Aug
+        ### 3. determine policy. equalization rule is only triggered in Apr and Aug
         # strategy equalization + DCP
         if self.plc.EQUAL_DCP == True:
             self.equalizationAndDCP(k, i, j)
@@ -47,8 +47,6 @@ class LakePowell(Reservoir):
         if self.plc.ADP == True:
             self.adaptivePolicy(k, i, j)
         # strategy FPF
-
-
         # strategy re-drill Lake Powell (FMF)
         if self.plc.FMF == True:
             self.redrillPowell(startStorage)
@@ -69,7 +67,7 @@ class LakePowell(Reservoir):
         # self.FMF(MeadJan1elevation)
         # self.downReservoir.MeadmonthlyDeduction = self.downReservoir.cutbackFromDCP(MeadJan1elevation) / 12
 
-        ### 4. determine release this month
+        ### 4. determine release in this month
         # determine which month are we in
         month = self.determineMonth(j)
         self.outflow[i][j] = 0
@@ -77,23 +75,25 @@ class LakePowell(Reservoir):
         # print(str(i)+" "+str(j) +" "+str(self.column) +" "+str(month))
         self.outflow[i][j] = self.PowellmonthlyRelease[self.column][month]
 
-        # If Pearce Ferry Rapid flag is true, then reduce Powell outflow
+        # If Pearce Ferry Rapid flag is true, decreasing Powell outflow
         if self.downReservoir.FerryFlag == True:
             if self.column >= 2:
                 self.outflow[i][j] = self.PowellmonthlyRelease[self.column-2][month]
 
-        # if redrill Lake Powell, structure is not good, if this policy is triggerd, then it will overlap previous release
+        # After re-drilling Lake Powell
         if self.redrillflag == True:
 
-            # there are 4maf between 3370 to bottom pool elevation for Lake Powell
+            # There are 1.89 maf between dead pool and bottom pool elevation for Lake Powell
             if self.lastPowellStorage > 0:
-                # outflow = inflow + 1.89/12 maf/mth for 10 months
+                # outflow = inflow + 1.89/12 maf/mth
                 self.outflow[i][j] = self.inflow[i][j] + 1.89/12*1000000
                 self.lastPowellStorage = self.lastPowellStorage - 1.89/12
             else:
+                # outflow = inflow
                 self.outflow[i][j] = self.totalinflow[i][j]
                 self.elevation[i][j] = self.minElevation
 
+            # calculate UB shortage
             self.upShortage[i][j] = self.upDepletion[k][j] - (self.inflow[i][j] - inflowthismonth)
             if self.upShortage[i][j] < 0:
                 self.upShortage[i][j] = 0
@@ -137,7 +137,7 @@ class LakePowell(Reservoir):
 
         self.elevation[i][j] = self.volume_to_elevation(self.storage[i][j])
 
-        # 7. calculate UB shortage for current period
+        ### 7. calculate UB shortage for the current time period
         self.upShortage[i][j] = self.upDepletion[k][j] - (self.inflow[i][j] - inflowthismonth)
         if self.upShortage[i][j] < 0:
             self.upShortage[i][j] = 0
@@ -182,13 +182,6 @@ class LakePowell(Reservoir):
         if storage == self.minStorage:
             self.redrillflag = True
         # 3. outflow equals to inflow,
-
-    def FPF(self, storage):
-        # Mead to 895 feet, if Powell reasches to full pool, Mead store water
-        if storage < self.maxStorage:
-            self.column = 0
-        else:
-            self.column = 3
 
         # Powell release is a fun of Powell inflow and Mead elevation
     def PowellReleaseFun(self, elevation, i, j):
