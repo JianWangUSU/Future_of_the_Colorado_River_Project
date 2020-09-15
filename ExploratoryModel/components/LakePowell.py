@@ -185,7 +185,7 @@ class LakePowell(Reservoir):
             self.redrillflag = True
         # 3. outflow equals to inflow,
 
-        # Powell release is a fun of Powell inflow and Mead elevation
+    # Powell release is a fun of Powell inflow and Mead elevation
     def PowellReleaseFun(self, elevation, i, j):
         inflowNextYear = sum(self.inflow[i][j:j+12])
         if elevation > 1090:
