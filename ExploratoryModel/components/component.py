@@ -53,7 +53,6 @@ class Network(Component):
         self.inflowTraces = inflowTraces
         self.depletionTraces = depletionTraces
 
-
     def simulation(self):
         nodeLen = len(self.nodes)
         # for k in range (0, self.depletionTraces):

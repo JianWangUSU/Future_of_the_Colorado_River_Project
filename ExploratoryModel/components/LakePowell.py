@@ -18,14 +18,14 @@ class LakePowell(Reservoir):
 
     # simulate one time period, k: depletionTrace, i: inflowTrace, j: period
     def simulationSinglePeriod(self, k, i, j):
-        ### 1. determine initial values for reservoir storage
+        ### 1. determine the start of reservoir storage in the current time period.
         startStorage = 0
         if j == 0:
             startStorage = self.initStorage
         else:
             startStorage = self.storage[i][j-1]
 
-        ### 2. determine inflow for current month
+        ### 2. determine inflow for the current month
         inflowthismonth = self.inflow[i][j] - self.upDepletion[k][j]
         if inflowthismonth < 0:
             inflowthismonth = 0
@@ -39,17 +39,17 @@ class LakePowell(Reservoir):
 
         self.totalinflow[i][j] = inflowthismonth
 
-        ### 3. determine release pattern, triggered in Apr and Aug
-        # strategy 1: equalization + DCP
+        ### 3. determine policy, equalization rule only triggered in Apr and Aug
+        # strategy equalization + DCP
         if self.plc.EQUAL_DCP == True:
             self.equalizationAndDCP(k, i, j)
-        # strategy 2: adaptive policy (only consider Pearce Ferry Rapid now)
+        # strategy adaptive policy (only consider Pearce Ferry Rapid now)
         if self.plc.ADP == True:
             self.adaptivePolicy(k, i, j)
-        # strategy 6: FPF
-        if self.plc.FPF == True:
-            self.FPF(startStorage)
-        # strategy 7: redrill Lake Powell (FMF)
+        # strategy FPF
+
+
+        # strategy re-drill Lake Powell (FMF)
         if self.plc.FMF == True:
             self.redrillPowell(startStorage)
 
@@ -106,14 +106,14 @@ class LakePowell(Reservoir):
         # strategy: CRSS release for validation, use CRSS release data
         # self.outflow[i][j] = self.crssRelease[j]
 
-        # 5. set initial data
-        # set initial values for area, evaporation and precipitation
+        ### 5. set initial data for water balance calculation
+        # set initial area, evaporation and precipitation values
         self.area[i][j] = self.volume_to_area(startStorage)
         self.evaporation[i][j] = self.area[i][j] * self.evapRates[month]
         self.precipitation[i][j] = self.area[i][j] * self.precipRates[month]
         self.storage[i][j] = startStorage + inflowthismonth + self.precipitation[i][j] - self.evaporation[i][j] - self.outflow[i][j]
 
-        # 6. iteration to make water budget balanced, the deviation is less than 10 to power of the negative 10
+        ### 6. iteration to make water budget balanced, the deviation is less than 10 to power of the negative 10
         index = 0
         while index < self.iteration:
             self.area[i][j] = (self.volume_to_area(startStorage) + self.volume_to_area(self.storage[i][j])) / 2.0
@@ -141,7 +141,6 @@ class LakePowell(Reservoir):
         self.upShortage[i][j] = self.upDepletion[k][j] - (self.inflow[i][j] - inflowthismonth)
         if self.upShortage[i][j] < 0:
             self.upShortage[i][j] = 0
-
 
     def adaptivePolicy(self, demandtrace, inflowtrace, period):
         month = self.determineMonth(period)
@@ -174,6 +173,22 @@ class LakePowell(Reservoir):
 
         # 1. Glen canyon dam minimum power pool = 3490 feet
         # 1. if Powell elevation is < 3525 feet, then decreasing UB monthly depletion.
+
+    # re-drill Lake Powell
+    def redrillPowell(self, storage):
+        # 1. empty Lake Powell
+        self.column = 9
+        # 2. empty storage between 3370 to bottom of the reservoir
+        if storage == self.minStorage:
+            self.redrillflag = True
+        # 3. outflow equals to inflow,
+
+    def FPF(self, storage):
+        # Mead to 895 feet, if Powell reasches to full pool, Mead store water
+        if storage < self.maxStorage:
+            self.column = 0
+        else:
+            self.column = 3
 
         # Powell release is a fun of Powell inflow and Mead elevation
     def PowellReleaseFun(self, elevation, i, j):
