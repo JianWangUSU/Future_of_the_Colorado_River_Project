@@ -2,11 +2,17 @@ from components.component import Node
 import numpy as np
 import sys
 import components.policyControl as policyControl
+import components.Parameters as Parameters
+import math
+
+from dateutil.relativedelta import relativedelta
+import calendar
 
 # class reservoir, there should be a Powell class and a Mead class, in specific reservoir class, unique virables will be defined.
 class Reservoir(Node):
     name = None
-
+    # parameters
+    para = Parameters
     # policy control
     plc = policyControl
 
@@ -25,6 +31,14 @@ class Reservoir(Node):
     z = None # elevation (feet)
     v = None # volume (acre-feet)
     a = None # area (acre)
+
+    # MaxTurbineQ table
+    MaxTurbineQ_Head = None # in feet
+    MaxTurbineQ_TurbineCapacity = None # in acre-feet/month
+
+    # Tailwater Table
+    Tailwater_Outflow = None # in cfs, needs to convert acre-feet/month before use
+    Tailwater_Elevation = None # in feet
 
     # PearceFerryRapid signpost look up table
     Mead_Storage = None # storage for Mead
@@ -45,12 +59,13 @@ class Reservoir(Node):
     minStorage = None
     maxElevation = None
     minElevation = None
-    maxOutflow = None
-    minOutflow = None
+    maxRelease = None # in cfs in CRSS
+    minRelease = None # in cfs in CRSS
 
     # variables
     inflow = None # inflow storage in KAF, for Powell: total natural inflow; for Mead: intervening inflow
-    outflow = None # outflow in KAF
+    outflow = None # outflow = release + spill
+    release = None # release in KAF
     spill = None # spill in KAF
     evaporation = None # evaporation in KAF
     precipitation = None # precipitation in KAF
@@ -61,7 +76,49 @@ class Reservoir(Node):
     convergence = None
 
     # temperory data, for validation
-    crssRelease = None
+    crssUBshortage = None # UB basin shortages
+    crssOutflow = None
+    crssInflow = None
+    crssElevation = None
+    crssStorage = None
+    crssInterveInflow = None
+    crssDemandBelowMead = None
+
+    InactiveCapacity = None
+    LiveCapacity = None
+
+    # UBRuleCurveData.ReservoirData in CRSS
+    inactiveCapacityStorage = None
+    liveCapacityStorage = None
+
+    Qsum = None
+    # Powell upper Equazliation Tier
+    upperTier = None
+
+    # Equalization data
+    ForecastEOWYSPowell = None
+    ForecastEOWYSMead = None
+
+    ForecastPowellRelease = None
+    ForecastMeadRelease = None
+    ForecastPowellInflow = None
+
+    SNWPDiversionTotalDepletionRequested = None
+
+    # Coordinated Operation in CRSS
+    Hybrid_MeadMinBalancingElevation = 1075
+    Hybrid_PowellUpperTierElevation = 3575
+    Hybrid_PowellLowerTierElevation = 3525
+    MeadProtectionElevation = 1105
+    Hybrid_Mead823Trigger = 1025
+
+    # todo
+    ShiftedEQLine = None
+
+    ### EqualizationData
+    # GlenToHoover from Jan to Dec
+    GlenToHoover = [685799.999999927, 608999.999999643, 527400.000000355, 441499.999999813, 370899.999999696
+        ,336400.000000011,264599.99999994,160000.000000322,73400.0000000097,0,0,0]
 
     # iteration for water budget calculation
     iteration = 20
@@ -82,6 +139,9 @@ class Reservoir(Node):
     redrillflag = False # only for Lake Powell, true means redrill
     lastPowellStorage = 1.89 # storage between 3370 to bottom of Lake Powell
 
+    # PowellMinObjRelData
+    PowellMinimumContent = 0
+
     def __init__(self, name, upR):
         self.name = name
         if upR!= None:
@@ -97,6 +157,7 @@ class Reservoir(Node):
         self.inflow = np.zeros([self.inflowTraces, self.periods])
         self.totalinflow = np.zeros([self.inflowTraces, self.periods])
         self.outflow = np.zeros([self.inflowTraces, self.periods])
+        self.release = np.zeros([self.inflowTraces, self.periods])
         self.spill = np.zeros([self.inflowTraces, self.periods])
         self.evaporation = np.zeros([self.inflowTraces, self.periods])
         self.precipitation = np.zeros([self.inflowTraces, self.periods])
@@ -108,6 +169,10 @@ class Reservoir(Node):
         self.icsAccount = np.zeros([self.inflowTraces])
         self.upShortage = np.zeros([self.inflowTraces, self.periods])
         self.downShortage = np.zeros([self.inflowTraces, self.periods])
+        self.crssStorage = np.zeros([self.inflowTraces, self.periods])
+        self.testSeries1 = np.zeros([self.inflowTraces, self.periods])
+        self.testSeries2 = np.zeros([self.inflowTraces, self.periods])
+        self.testSeries3 = np.zeros([self.inflowTraces, self.periods])
 
     # setup depletion data
     def setupDepletion(self, user):
@@ -116,140 +181,7 @@ class Reservoir(Node):
 
     # simulate one time period, k: depletionTrace, i: inflowTrace, j: period
     def simulationSinglePeriod(self, k, i, j):
-       # 1. determine initial values for reservoir storage
-        startStorage = 0
-        if j == 0:
-            startStorage = self.initStorage
-        else:
-            startStorage = self.storage[i][j-1]
-
-        # 2. determine inflow for current month
-        inflowthismonth = 0
-        if self.name == "Powell":
-            inflowthismonth = self.inflow[i][j] - self.upDepletion[k][j]
-            if inflowthismonth < 0:
-                inflowthismonth = 0
-            # validation use, use CRSS release data
-            # inflowthismonth = self.inflow[i][j]
-
-            # monthly release table
-            self.upShortage[i][j] = self.upDepletion[k][j] - (self.inflow[i][j] - inflowthismonth)
-            if self.upShortage[i][j] < 0:
-                self.upShortage[i][j] = 0
-
-        if self.name == "Mead":
-            inflowthismonth = self.inflow[i][j] + self.upReservoir.outflow[i][j] + self.upReservoir.spill[i][j]
-            # validation use, use CRSS release data
-            # inflowthismonth = self.inflow[i][j]
-        self.totalinflow[i][j] = inflowthismonth
-
-        # 3. determine release pattern, triggered in Apr and Aug
-        if self.name == "Powell":
-            # strategy 1: equalization + ISG
-            # MeadJan1elevation = self.equalizationAndISG(k, i, j)
-            # self.MeadmonthlyDeduction = self.downReservoir.cutbackfromGuidelines(MeadJan1elevation) / 12
-            # strategy 2: equalization + DCP
-            self.equalizationAndDCP(k, i, j)
-            self.adaptivePolicy(k, i, j)
-            # strategy 3: equalization + DCP + ICS
-            # MeadJan1elevation = self.equalization(k, i, j)
-            # self.downReservoir.MeadMDeductionNext = self.downReservoir.DCPICScutback(MeadJan1elevation, i) / 12
-            # strategy 4: Powell Release is fun of (storage, inflow)
-            # if Mead storage is less than... and inflow to Powell is less than
-            # MeadJan1elevation = self.forecastJanuray1elevation(k, i, j)[1]
-            # self.PowellReleaseFun(MeadJan1elevation, i, j)
-            # self.downReservoir.MeadmonthlyDeduction = self.downReservoir.cutbackFromDCP(MeadJan1elevation) / 12
-            # strategy 5: FMF
-            # MeadJan1elevation = self.forecastFutureElevations(k, i, j)[1]
-            # self.FMF(MeadJan1elevation)
-            # self.downReservoir.MeadmonthlyDeduction = self.downReservoir.cutbackFromDCP(MeadJan1elevation) / 12
-            # strategy 6: FPF
-            self.FPF(startStorage)
-            # strategy 7: redrill Lake Powell
-            self.redrillPowell(startStorage)
-
-        # 4. determine release this month
-        # determine which month are we in
-        month = self.determineMonth(j)
-        self.outflow[i][j] = 0
-        if self.name == "Powell":
-            # monthly release table
-            # print(str(i)+" "+str(j) +" "+str(self.column) +" "+str(month))
-            self.outflow[i][j] = self.PowellmonthlyRelease[self.column][month]
-
-            if self.FerryFlag == True:
-                if self.column >= 2:
-                    self.outflow[i][j] = self.PowellmonthlyRelease[self.column-2][month]
-
-            # if redrill Lake Powell, structure is not good, if this policy is triggerd, then it will overlap previous release
-            if self.redrillflag == True:
-
-                # there are 4maf between 3370 to bottom pool elevation for Lake Powell
-                if self.lastPowellStorage > 0:
-                    # outflow = inflow + 1.89/12 maf/mth for 10 months
-                    self.outflow[i][j] = self.inflow[i][j] + 1.89/12*1000000
-                    self.lastPowellStorage = self.lastPowellStorage - 1.89/12
-                else:
-                    self.outflow[i][j] = self.totalinflow[i][j]
-                    self.elevation[i][j] = self.minElevation
-
-                self.upShortage[i][j] = self.upDepletion[k][j] - (self.inflow[i][j] - inflowthismonth)
-                if self.upShortage[i][j] < 0:
-                    self.upShortage[i][j] = 0
-
-                return
-
-        if self.name == "Mead":
-            # depletion - cutbacks
-            self.outflow[i][j] = self.downDepletion[k][j] - self.MeadMDeductionCurrent
-        # outflow > minimum outflow requirement
-        self.outflow[i][j] = max(self.outflow[i][j], self.minOutflow)
-
-        # strategy: CRSS release for validation, use CRSS release data
-        # self.outflow[i][j] = self.crssRelease[j]
-
-        # 5. set initial data
-        # set initial values for area, evaporation and precipitation
-        self.area[i][j] = self.volume_to_area(startStorage)
-        self.evaporation[i][j] = self.area[i][j] * self.evapRates[month]
-        self.precipitation[i][j] = self.area[i][j] * self.precipRates[month]
-        self.storage[i][j] = startStorage + inflowthismonth + self.precipitation[i][j] - self.evaporation[i][j] - self.outflow[i][j]
-
-        # 6. iteration to make water budget balanced, the deviation is less than 10 to power of the negative 10
-        index = 0
-        while index < self.iteration:
-            self.area[i][j] = (self.volume_to_area(startStorage) + self.volume_to_area(self.storage[i][j])) / 2.0
-            self.evaporation[i][j] = self.area[i][j] * self.evapRates[month]
-            self.precipitation[i][j] = self.area[i][j] * self.precipRates[month]
-            # if storage increases, water flow from reservoir to bank
-            self.changeBankStorage[i][j] = self.bankRates * (self.storage[i][j] - startStorage)
-            self.storage[i][j] = startStorage + inflowthismonth + self.precipitation[i][j] - self.changeBankStorage[i][j] - self.evaporation[i][j] - self.outflow[i][j]
-            index = index + 1
-
-        if self.storage[i][j] > self.maxStorage:
-            self.spill[i][j] = self.storage[i][j] - self.maxStorage
-            self.storage[i][j] = self.maxStorage
-        elif self.storage[i][j] < self.minStorage:
-            self.storage[i][j] = self.minStorage
-            self.area[i][j] = (self.volume_to_area(startStorage) + self.volume_to_area(self.storage[i][j])) / 2.0
-            self.evaporation[i][j] = self.area[i][j] * self.evapRates[month]
-            self.precipitation[i][j] = self.area[i][j] * self.precipRates[month]
-            self.changeBankStorage[i][j] = self.bankRates * (self.storage[i][j] - startStorage)
-            self.outflow[i][j] = startStorage - self.storage[i][j] + inflowthismonth + self.precipitation[i][j] - self.changeBankStorage[i][j] - self.evaporation[i][j]
-
-        self.elevation[i][j] = self.volume_to_elevation(self.storage[i][j])
-
-        # 7. calculate shortage for current period
-        if self.name == "Powell":
-            # monthly release table
-            self.upShortage[i][j] = self.upDepletion[k][j] - (self.inflow[i][j] - inflowthismonth)
-            if self.upShortage[i][j] < 0:
-                self.upShortage[i][j] = 0
-        if self.name == "Mead":
-            # determine cutbacks
-            self.downShortage[i][j] = self.downDepletion[k][j] - self.outflow[i][j]
-            if self.downShortage[i][j] < 0:
-                self.downShortage[i][j] = 0
+       pass
 
     # 2007 interim Guideline, equalization + ISG
     def equalizationAndISG(self, demandtrace, inflowtrace, period):
@@ -314,6 +246,7 @@ class Reservoir(Node):
                 minCol = 3
                 maxCol = 10
                 self.column = self.determineEqualizedRelease(demandtrace, inflowtrace, period, predictedMonth, minCol, maxCol, True)
+                self.UBreleaseFlag = False
             elif predictedPowellElevation > 3575:
                 if predictedMeadElevation >= 1075:
                     self.column = 2 # annual release for Powell 8.23 MAF
@@ -322,17 +255,20 @@ class Reservoir(Node):
                     minCol = 0
                     maxCol = 4
                     self.column = self.determineEqualizedRelease(demandtrace, inflowtrace, period, predictedMonth, minCol, maxCol, True)
+                self.UBreleaseFlag = False
             elif predictedPowellElevation > 3525:
                 if predictedMeadElevation >= 1025:
                     self.column = 1 # annual release for Powell 7.48 MAF
                 else:
                     self.column = 2 # annual release for Powell 8.23 MAF
+                self.UBreleaseFlag = False
             elif predictedPowellElevation > 3370:
                 # 7.0 and 9.5 maf
                 minCol = 0
                 maxCol = 5
                 self.column = self.determineEqualizedRelease(demandtrace, inflowtrace, period, predictedMonth,
                                                                  minCol, maxCol, True)
+                self.UBreleaseFlag = True
 
             # print("period: " + str(period) +" column:" + str(self.column))
 
@@ -363,6 +299,7 @@ class Reservoir(Node):
                 self.columnNext = self.determineEqualizedRelease(demandtrace, inflowtrace, period, predictedMonth, minCol, maxCol, True)
                 # print("inflowtrace:" + str(inflowtrace) + " period:" + str(period) + " month:"+ str(month))
                 # print(self.columnNext)
+                self.UBreleaseFlag = False
 
             elif predictedPowellElevation > 3575:
                 if predictedMeadElevation >= 1075:
@@ -381,17 +318,20 @@ class Reservoir(Node):
                     # RM = SM/self.downReservoir.maxStorage
                     # print("1 powell rate: " + str(RP) + " mead rate:" + str(RM))
                     # print("=====================================================")
+                    self.UBreleaseFlag = False
             elif predictedPowellElevation > 3525:
                 if predictedMeadElevation >= 1025:
                     self.columnNext = 1 # annual release for Powell 7.48 MAF
                 else:
                     self.columnNext = 2 # annual release for Powell 8.23 MAF
+                self.UBreleaseFlag = False
             elif predictedPowellElevation > 3370:
                 # 7.0 and 9.5 maf
                 minCol = 0
                 maxCol = 5
                 self.columnNext = self.determineEqualizedRelease(demandtrace, inflowtrace, period, predictedMonth,
                                                                  minCol, maxCol, True)
+                self.UBreleaseFlag = True
 
             # print("2 period: " + str(period) +" columnNext:" + str(self.columnNext))
 
@@ -422,7 +362,8 @@ class Reservoir(Node):
         else:
             return 500000
 
-    # Drought contingency plan (combined volume) for Lake Mead, acre-feet
+    # Drought contingency plan (combined volume) for Lake Mead, acre-feet,
+    # This is based on previous Mead elevatin, not for the predicted elevation.
     def cutbackFromDCP(self, elevation):
         if elevation > 1090:
             return 0
@@ -598,20 +539,10 @@ class Reservoir(Node):
 
     # Lake Powell equalization elevation table
     def determineUpperTier(self, period):
-        upperTier = [3659, 3660, 3662, 3663, 3664, 3666]
+        # upperTier = [3659, 3660, 3662, 3663, 3664, 3666]
         temp = period / 12.0
-        if temp <= 1:
-            return upperTier[0]
-        elif temp > 1 and temp <= 2:
-            return upperTier[1]
-        elif temp > 2 and temp <= 3:
-            return upperTier[2]
-        elif temp > 3 and temp <= 4:
-            return upperTier[3]
-        elif temp > 4 and temp <= 5:
-            return upperTier[4]
-        elif temp > 5:
-            return upperTier[5]
+        index = math.floor(temp)
+        return self.volume_to_elevation(self.upperTier[index])
 
     # determine month based on period
     def determineMonth(self, period):
@@ -654,8 +585,9 @@ class Reservoir(Node):
 
         # naturalInflow assumed to be the predicted future inflow
         # determine Powell inflow
+        # totalInflow1 = sum(self.inflow[inflowtrace][period:period+num]) \
+        #                - sum(self.upDepletion[demandtrace][period:period+num]) - sum(self.crssUBshortage[inflowtrace][period:period+num])
         totalInflow1 = sum(self.inflow[inflowtrace][period:period+num]) - sum(self.upDepletion[demandtrace][period:period+num])
-
         # print("num:"+str(num) + " period:" + str(period) + " inflow: " + str(self.inflow[inflowtrace][period:period+num]))
 
         # inflow should be positive value
@@ -714,6 +646,15 @@ class Reservoir(Node):
         #     print(evaporation1)
         #     print(bankStorage1)
         #     print(release1)
+        # if inflowtrace == 40 and period > 366 and period < 386:
+        #     print("endS:"+str(endStorage1))
+        #     print("startS:"+str(startStorage1))
+        #     print("INFLOW:"+str(totalInflow1))
+        #     print("evap:"+str(evaporation1))
+        #     print("bank:"+str(bankStorage1))
+        #     print("releaseAUG:"+str(releaseAugSep))
+        #     print("releaseNext:"+str(releaseNextWY))
+        #     print("release:"+str(release1))
 
         if endStorage1 > self.maxStorage:
             endStorage1 = self.maxStorage
@@ -723,6 +664,13 @@ class Reservoir(Node):
             release1 = startStorage1 + totalInflow1 - evaporation1 - bankStorage1 - endStorage1
             if release1 < 0:
                 release1 = 0
+
+        # if inflowtrace == 40 and period > 366 and period < 386:
+        #     print("----------------")
+        #     print(col)
+        #     print(totalInflow1)
+        #     print(release1)
+        #     print("================")
 
         # Mead total inflow
         totalInflow2 = sum(self.downReservoir.inflow[inflowtrace][period:period+num]) + release1
@@ -746,7 +694,8 @@ class Reservoir(Node):
         bankStorage2 = (endStorage2-startStorage2)*self.downReservoir.bankRates
 
         # downstream requirements
-        release2 = sum(self.downReservoir.downDepletion[demandtrace][period:period+num])
+        # release2 = sum(self.downReservoir.downDepletion[demandtrace][period:period+num])
+        release2 = sum(self.downReservoir.downDepletion[demandtrace][period:period+num]) - self.downReservoir.MeadMDeductionCurrent*num
         endStorage2 = startStorage2 + totalInflow2 - evaporation2 - bankStorage2 - release2
 
         if endStorage2 > self.downReservoir.maxStorage:
@@ -788,6 +737,15 @@ class Reservoir(Node):
     def elevation_to_area(self,z):
         # input feet, return acre
         return np.interp(z, self.z, self.a)
+
+    def MaxTurbineQ_head_to_TurbineCapacity(self, head):
+        return np.interp(head, self.MaxTurbineQ_Head, self.MaxTurbineQ_TurbineCapacity)
+
+    def TWTable_outflow_to_Elevation(self, outflow):
+
+
+
+        return np.interp(outflow, self.Tailwater_Outflow, self.Tailwater_Elevation)
 
     # simulation for decision scaling
     def DSsimulation(self, DSdemand, DSinflow, DSinitStorage):
@@ -855,3 +813,200 @@ class Reservoir(Node):
         #     pass
 
         pass
+
+    # retrun acre-feet
+    def MinReleaseFun(self, period):
+        currentTime = self.begtime + relativedelta(months=+period)
+        days = calendar.monthrange(currentTime.year, currentTime.month)[1]
+        return self.para.secondsInaDay * days * self.minRelease * self.para.CFtoAcreFeet
+
+    # retrun acre-feet
+    def MaxReleaseFun(self, period):
+        currentTime = self.begtime + relativedelta(months=+period)
+        days = calendar.monthrange(currentTime.year, currentTime.month)[1]
+        return self.para.secondsInaDay * days * self.maxRelease * self.para.CFtoAcreFeet
+
+    # convert acre-feet to cfs
+    def convertAFtoCFS(self, period, value):
+        currentTime = self.begtime + relativedelta(months=+period)
+        days = calendar.monthrange(currentTime.year, currentTime.month)[1]
+        return value / self.para.CFtoAcreFeet / self.para.secondsInaDay * days
+
+    # i: inflow trace; j: period
+    def AvailableSpace(self, i, j):
+        if j == 0:
+            return self.LiveCapacity - self.initStorage
+        else:
+            return self.LiveCapacity - self.storage[i][j - 1]
+
+    def CurrentAvailableSpace(self, i, j):
+        return self.LiveCapacity - self.storage[i][j]
+
+    # startDate, endDate: period index
+    def EstimateEvaporation(self, startStorage, endStorage, startPeriod, endPeriod):
+        startArea = self.volume_to_area(startStorage)
+        endArea = self.volume_to_area(endStorage)
+        eporateRate = 0
+        for t in range(startPeriod, endPeriod):
+            month = self.determineMonth(t)
+            eporateRate = eporateRate + self.evapRates[month] * self.calcualtefractionOfEvaporation(t)
+
+        Evap = (startArea+endArea)/2.0*eporateRate
+
+        return Evap
+
+    def EstimateBankStoragewithoutEvap(self, startStorage, endStorage):
+        return (endStorage - startStorage) * self.bankRates
+
+    # CRSS use this way to change its evapration rates, for Lake Mead
+    def calcualtefractionOfEvaporation(self, period):
+        currentTime = self.begtime + relativedelta(months=+period)
+        rate = calendar.monthrange(currentTime.year, currentTime.month)[1]/31.0
+
+        return rate
+
+    def EOWYStorage(self, reservoir, i, t, powellRelease, meadRelease):
+        if reservoir.name == "Powell":
+            startS = reservoir.PreviousStorage(i, t)
+            endS = min(reservoir.InitialEOWYStoragePowell(i, t, powellRelease), reservoir.liveCapacityStorage)
+            startPeriod = t
+            endPeriod = self.getCurrentSepIndex(t)
+            result = reservoir.InitialEOWYStoragePowell(i, t, powellRelease) \
+                     - reservoir.EstimateEvaporation(startS, endS, startPeriod, endPeriod) \
+                     - reservoir.EstimateBankStoragewithoutEvap(startS, endS)
+            if result < self.PowellMinimumContent:
+                return self.PowellMinimumContent
+            if result > self.liveCapacityStorage:
+                return self.liveCapacityStorage
+            else:
+                return result
+            # return reservoir.InitialEOWYStoragePowell(i, t, powellRelease) - reservoir.EstimateEvaporation(startS, endS, startPeriod, endPeriod) \
+            #        - reservoir.EstimateBankStoragewithoutEvap(startS, endS)
+        if reservoir.name == "Mead":
+            startS = reservoir.PreviousStorage(i, t)
+            endS = min(reservoir.InitialEOWYStorageMead(i, t, powellRelease, meadRelease), reservoir.liveCapacityStorage)
+            startPeriod = t
+            endPeriod = self.getCurrentSepIndex(t)
+            result = reservoir.InitialEOWYStorageMead(i, t, powellRelease, meadRelease) \
+                     - reservoir.EstimateEvaporation(startS, endS, startPeriod, endPeriod) \
+                     - reservoir.EstimateBankStoragewithoutEvap(startS, endS)
+            if result < self.inactiveCapacityStorage:
+                return self.inactiveCapacityStorage
+            if result > self.liveCapacityStorage:
+                return self.liveCapacityStorage
+            else:
+                return result
+
+            # return reservoir.InitialEOWYStorageMead(i, t, powellRelease, meadRelease) - reservoir.EstimateEvaporation(startS, endS, startPeriod, endPeriod) \
+            #        - reservoir.EstimateBankStoragewithoutEvap(startS, endS)
+
+    def InitialEOWYStoragePowell(self, i, t, powellRelease):
+        result = self.PreviousStorage(i, t) + self.ForecastPowellInflow[i][t] - powellRelease
+
+        # if i == 0 and t == 399:
+        #     print("-----------------------")
+        #     print(self.getDate(t))
+        #     print(self.PreviousStorage(i, t))
+        #     print(self.ForecastPowellInflow[i][t])
+        #     print(powellRelease)
+
+
+        if result < 0:
+            return 0
+        else:
+            return result
+        # return self.PreviousStorage(i, t) + self.ForecastPowellInflow[i][t] - powellRelease
+
+    def InitialEOWYStorageMead(self, i, t, powellRelease, meadRelease):
+        currentMonth = self.determineMonth(t)
+        if currentMonth == self.SEP:
+            startPeriod = t
+            endPeriod = self.getCurrentSepIndex(t)
+
+            result = self.PreviousStorage(i, t) + powellRelease - meadRelease \
+                     - sum(self.SNWPDiversionTotalDepletionRequested[i][startPeriod: self.getEndIndexforSum(endPeriod)]) \
+                     + self.GlenToHoover[currentMonth]
+
+            if result < 0:
+                return 0
+            else:
+                return result
+        else:
+            startPeriod = t
+            endPeriod = self.getCurrentSepIndex(t)
+
+            # it doesn't make sense to me, but that's how CRSS treats here.
+            result = self.PreviousStorage(i, t) + powellRelease - meadRelease\
+                     - sum(self.SNWPDiversionTotalDepletionRequested[i][startPeriod: self.getEndIndexforSum(endPeriod)]) \
+                     + self.GlenToHoover[currentMonth] + sum(self.GlenToHoover[max(currentMonth+1,self.AUG): self.getEndIndexforSum(self.SEP)])
+
+            # if i == 0 and t == 399:
+            #     print("-----------------------")
+            #     print(self.getDate(t))
+            #     print(self.PreviousStorage(i, t))
+            #     print(meadRelease)
+            #     print(sum(self.SNWPDiversionTotalDepletionRequested[i][startPeriod: self.getEndIndexforSum(endPeriod)]))
+            #     print(self.GlenToHoover[currentMonth])
+            #     print(sum(self.GlenToHoover[max(currentMonth+1,self.AUG): self.getEndIndexforSum(self.SEP)]))
+
+            if result < 0:
+                return 0
+            else:
+                return result
+
+    def PreviousStorage(self, i, t):
+        if t == 0:
+            return self.initStorage
+        else:
+            return self.storage[i][t - 1]
+
+    def getCurrentYear(self, t):
+        index = t / 12.0
+        currentYear = math.floor(index)
+        return currentYear
+
+        # determine current Jan index
+
+    def getCurrentJanIndex(self, t):
+        currentYear = self.getCurrentYear(t)
+        return currentYear * 12 + self.JAN
+
+        # determine current APR index
+
+    def getCurrentAprIndex(self, t):
+        currentYear = self.getCurrentYear(t)
+        return currentYear * 12 + self.APR
+
+    # determine current SEP index
+    def getCurrentSepIndex(self, t):
+        currentYear = self.getCurrentYear(t)
+        return currentYear * 12 + self.SEP
+
+    # determine current OCT index
+    def getCurrentOctIndex(self, t):
+        currentYear = self.getCurrentYear(t)
+        return currentYear * 12 + self.OCT
+
+    def getPreviousOctIndex(self, t):
+        currentYear = self.getCurrentYear(t)
+        previousYear = currentYear - 1
+        if previousYear < 0:
+            return self.BEFORE_START_TIME
+        else:
+            return previousYear * 12 + self.OCT
+
+    def getPreviousDecIndex(self, t):
+        currentYear = self.getCurrentYear(t)
+        previousYear = currentYear - 1
+        if previousYear < 0:
+            return self.BEFORE_START_TIME
+        else:
+            return previousYear * 12 + self.DEC
+
+    def getEndIndexforSum(self, index):
+        return index + 1
+
+    # return new time given period t.
+    def getDate(self, t):
+        newTime = self.begtime + relativedelta(months=+t)
+        return newTime

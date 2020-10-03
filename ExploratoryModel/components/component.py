@@ -7,6 +7,7 @@ class Component(object):
     periods = None # total planning period
     inflowTraces = None # total inflow traces
     depletionTraces = None # total demand traces
+    begtime = datetime.datetime(2021, 1, 31)
 
     JAN = 0
     FEB = 1
@@ -20,6 +21,8 @@ class Component(object):
     OCT = 9
     NOV = 10
     DEC = 11
+
+    BEFORE_START_TIME = -100
 
     def setupPeriods(self):
         pass
@@ -60,6 +63,7 @@ class Network(Component):
 
         for k in range(0, 1):
             for i in range (0, self.inflowTraces):
+            # for i in range (0, 41):
                 starttime = datetime.datetime.now()
                 if self.nodes[0].base_type == 'reservoir':
                     self.nodes[0].redrillflag = False
