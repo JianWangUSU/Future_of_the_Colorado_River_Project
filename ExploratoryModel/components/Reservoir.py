@@ -83,6 +83,7 @@ class Reservoir(Node):
     crssStorage = None
     crssInterveInflow = None
     crssDemandBelowMead = None
+    crssMohaveHavasu = None
 
     InactiveCapacity = None
     LiveCapacity = None
@@ -135,6 +136,8 @@ class Reservoir(Node):
     # Only for Mead, different policies will change this value, monthly deduction
     MeadDeductionCurrent = 0 # current water year
     MeadMDeductionNext = 0 # next water year
+    MeadDeduction = 0 #
+
 
     redrillflag = False # only for Lake Powell, true means redrill
     lastPowellStorage = 1.89 # storage between 3370 to bottom of Lake Powell

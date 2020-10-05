@@ -63,7 +63,7 @@ class Network(Component):
 
         for k in range(0, 1):
             for i in range (0, self.inflowTraces):
-            # for i in range (0, 41):
+            # for i in range (0, 1):
                 starttime = datetime.datetime.now()
                 if self.nodes[0].base_type == 'reservoir':
                     self.nodes[0].redrillflag = False

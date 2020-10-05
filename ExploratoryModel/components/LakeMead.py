@@ -61,8 +61,8 @@ class LakeMead(Reservoir):
         self.totalinflow[i][j] = inflowthismonth
 
         # validation use, use CRSS release data
-        inflowthismonth = self.crssInflow[i][j]
-        self.totalinflow[i][j] = inflowthismonth
+        # inflowthismonth = self.crssInflow[i][j]
+        # self.totalinflow[i][j] = inflowthismonth
 
         # 4. determine release this month
         # determine which month are we in
@@ -71,22 +71,24 @@ class LakeMead(Reservoir):
         # depletion - cutbacks
 
         if month == self.JAN:
-            self.MeadMDeductionNext = self.cutbackFromDCP(self.volume_to_elevation(startStorage)) / 12
+            self.MeadDeduction = self.cutbackFromDCP(self.volume_to_elevation(startStorage)) / 12
 
         # self.release[i][j] = self.downDepletion[k][j] - self.MeadMDeductionCurrent
         # Use CRSS demand below Mead
         self.release[i][j] = self.crssDemandBelowMead[i][j]
         # self.release[i][j] = self.crssDemandBelowMead[i][j] - self.MeadDeductionCurrent
-        # outflow > minimum outflow requirement
+        # self.release[i][j] = self.downDepletion[k][j] - self.MeadDeduction + self.crssMohaveHavasu[i][j]
+
+       # outflow > minimum outflow requirement
         self.release[i][j] = max(self.release[i][j], self.MinReleaseFun(j))
 
         self.sovleStorageGivenOutflow(startStorage, inflowthismonth, month, i, j)
 
         # surpluse release, todo
-        if self.storage[i][j] >= self.maxStorage:
+        # if self.storage[i][j] >= self.maxStorage:
             # self.release[i][j] = self.downDepletion[k][j] - self.MeadMDeductionCurrent + self.SurplusRelease[j]
             # self.release[i][j] = self.crssDemandBelowMead[i][j] - self.MeadDeductionCurrent + self.SurplusRelease[j]
-            self.release[i][j] = self.crssDemandBelowMead[i][j] + self.SurplusRelease[j]
+            # self.release[i][j] = self.crssDemandBelowMead[i][j] + self.SurplusRelease[j]
 
        # CRSS release for validation, use CRSS release data
         # self.release[i][j] = self.crssOutflow[i][j]

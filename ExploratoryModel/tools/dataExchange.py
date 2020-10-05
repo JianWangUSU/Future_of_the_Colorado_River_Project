@@ -619,6 +619,14 @@ def readCRSSDemandBelowMead(reservoir, filePath):
     os.chdir(pwd)
     reservoir.crssDemandBelowMead = np.transpose(reservoir.basicData.values)
 
+def readCRSSMohaveHavasu(reservoir, filePath):
+    reservoir.basicDataFile = filePath
+    pwd = os.getcwd()
+    os.chdir(os.path.dirname(reservoir.basicDataFile))
+    reservoir.basicData = pd.read_csv(os.path.basename(reservoir.basicDataFile))
+    os.chdir(pwd)
+    reservoir.crssMohaveHavasu = np.transpose(reservoir.basicData.values)
+
 def exportDSresults(dstools, path):
     f = xlwt.Workbook(encoding='utf-8')
 
