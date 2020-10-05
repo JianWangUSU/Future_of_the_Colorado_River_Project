@@ -2,51 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="98d60ba6-0189-4aaf-8408-f025eeac5580" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/components/Parameters.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tools/plots.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tools/waterTemperature.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/LakeMead.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/LakeMead.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/LakePowell.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/LakePowell.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/Reservoir.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/Reservoir.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/component.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/component.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/testSimulation.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/testSimulation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/Meadrelease.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/Powellrelease.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/PrecipEvapMead - CRSS listed.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/PrecipEvapMead.csv" beforeDir="false" afterPath="$PROJECT_DIR$/data/PrecipEvapMead.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/PrecipEvapPowell-gross.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/PrecipEvapPowell-precipRateGrossEvap.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/depletion.csv" beforeDir="false" afterPath="$PROJECT_DIR$/data/depletion.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/depletion_static.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/inflowMead - LCR-PARIA-VIRGIN +0.6maf yr.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/inflowMead - LCR-PARIA-VIRGIN.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/inflowMead - negtive + 0.6 maf yr.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/inflowMead - with negtive value.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/inflowMead- validation.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/inflowMead.csv" beforeDir="false" afterPath="$PROJECT_DIR$/data/inflowMead.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/inflowPowell-validation.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/inflowPowell.csv" beforeDir="false" afterPath="$PROJECT_DIR$/data/inflowPowell.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/otherdataMead - true 2020 init elevation.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/otherdataMead.csv" beforeDir="false" afterPath="$PROJECT_DIR$/data/otherdataMead.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/otherdataPowell-true 2020 init elevation.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/otherdataPowell.csv" beforeDir="false" afterPath="$PROJECT_DIR$/data/otherdataPowell.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/xlsx file/Meadrelease.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/xlsx file/PowellReleaseTable.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/xlsx file/Powellrelease.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/xlsx file/PrecipEvapMead.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/xlsx file/PrecipEvapPowell.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/xlsx file/dataforsimulation.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/xlsx file/depletion.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/xlsx file/dsMeadTable.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/xlsx file/inflowMead.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/xlsx file/inflowPowell.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/xlsx file/otherdataMead.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/xlsx file/otherdataPowell.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/xlsx file/test.xls" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/Mead.xls" beforeDir="false" afterPath="$PROJECT_DIR$/results/Mead.xls" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/Powell.xls" beforeDir="false" afterPath="$PROJECT_DIR$/results/Powell.xls" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/simulation/start.py" beforeDir="false" afterPath="$PROJECT_DIR$/simulation/start.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/simulation/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/simulation/test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tools/dataExchange.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/dataExchange.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -92,28 +50,6 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunManager" selected="Python.start">
-    <configuration name="DStools" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="ExploratoryModel" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/decisionScaling" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/decisionScaling/DStools.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="plots" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="ExploratoryModel" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -202,13 +138,35 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="waterTemperature" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="ExploratoryModel" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tools" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tools/waterTemperature.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Python.start" />
+        <item itemvalue="Python.waterTemperature" />
         <item itemvalue="Python.testSimulation (1)" />
         <item itemvalue="Python.test" />
         <item itemvalue="Python.plots" />
-        <item itemvalue="Python.DStools" />
       </list>
     </recent_temporary>
   </component>
@@ -249,7 +207,7 @@
       <workItem from="1601308566147" duration="76126000" />
       <workItem from="1601514907686" duration="4988000" />
       <workItem from="1601523135369" duration="14708000" />
-      <workItem from="1601570967659" duration="13721000" />
+      <workItem from="1601570967659" duration="21816000" />
     </task>
     <servers />
   </component>
@@ -269,38 +227,38 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="550" y="171" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1599936781722" />
-    <state width="1493" height="203" key="GridCell.Tab.0.bottom" timestamp="1601768687102">
+    <state width="1493" height="203" key="GridCell.Tab.0.bottom" timestamp="1601907402748">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="203" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1601768687102" />
-    <state width="1493" height="203" key="GridCell.Tab.0.center" timestamp="1601768687102">
+    <state width="1493" height="203" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1601907402748" />
+    <state width="1493" height="203" key="GridCell.Tab.0.center" timestamp="1601907402748">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="203" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1601768687102" />
-    <state width="1493" height="203" key="GridCell.Tab.0.left" timestamp="1601768687102">
+    <state width="1493" height="203" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1601907402748" />
+    <state width="1493" height="203" key="GridCell.Tab.0.left" timestamp="1601907402748">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="203" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1601768687102" />
-    <state width="1493" height="203" key="GridCell.Tab.0.right" timestamp="1601768687102">
+    <state width="1493" height="203" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1601907402748" />
+    <state width="1493" height="203" key="GridCell.Tab.0.right" timestamp="1601907402748">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="203" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1601768687102" />
-    <state width="1493" height="252" key="GridCell.Tab.1.bottom" timestamp="1601308233074">
+    <state width="1493" height="203" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1601907402748" />
+    <state width="1493" height="252" key="GridCell.Tab.1.bottom" timestamp="1601900202711">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="252" key="GridCell.Tab.1.bottom/0.0.1536.824@0.0.1536.824" timestamp="1601308233074" />
-    <state width="1493" height="252" key="GridCell.Tab.1.center" timestamp="1601308233074">
+    <state width="1493" height="252" key="GridCell.Tab.1.bottom/0.0.1536.824@0.0.1536.824" timestamp="1601900202711" />
+    <state width="1493" height="252" key="GridCell.Tab.1.center" timestamp="1601900202711">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="252" key="GridCell.Tab.1.center/0.0.1536.824@0.0.1536.824" timestamp="1601308233074" />
-    <state width="1493" height="252" key="GridCell.Tab.1.left" timestamp="1601308233074">
+    <state width="1493" height="252" key="GridCell.Tab.1.center/0.0.1536.824@0.0.1536.824" timestamp="1601900202711" />
+    <state width="1493" height="252" key="GridCell.Tab.1.left" timestamp="1601900202710">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="252" key="GridCell.Tab.1.left/0.0.1536.824@0.0.1536.824" timestamp="1601308233074" />
-    <state width="1493" height="252" key="GridCell.Tab.1.right" timestamp="1601308233074">
+    <state width="1493" height="252" key="GridCell.Tab.1.left/0.0.1536.824@0.0.1536.824" timestamp="1601900202710" />
+    <state width="1493" height="252" key="GridCell.Tab.1.right" timestamp="1601900202711">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="252" key="GridCell.Tab.1.right/0.0.1536.824@0.0.1536.824" timestamp="1601308233074" />
+    <state width="1493" height="252" key="GridCell.Tab.1.right/0.0.1536.824@0.0.1536.824" timestamp="1601900202711" />
     <state x="50" y="0" width="975" height="774" key="SettingsEditor" timestamp="1600615079541">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
@@ -323,7 +281,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/tools/dataExchange.py</url>
-          <line>435</line>
+          <line>437</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -403,7 +361,8 @@
     <SUITE FILE_PATH="coverage/ScopingModel$DStools.coverage" NAME="DStools Coverage Results" MODIFIED="1597854927162" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/decisionScaling" />
     <SUITE FILE_PATH="coverage/SimplifiedColoradoRiverSimulationModel$start.coverage" NAME="start Coverage Results" MODIFIED="1595515609557" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/simulation" />
     <SUITE FILE_PATH="coverage/SimplifiedColoradoRiverSimulationModel$testSimulation__1_.coverage" NAME="testSimulation (1) Coverage Results" MODIFIED="1594335042066" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/components" />
-    <SUITE FILE_PATH="coverage/ExploratoryModel$start.coverage" NAME="start Coverage Results" MODIFIED="1601768599677" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/simulation" />
+    <SUITE FILE_PATH="coverage/ExploratoryModel$waterTemperature.coverage" NAME="waterTemperature Coverage Results" MODIFIED="1601900360173" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools" />
+    <SUITE FILE_PATH="coverage/ExploratoryModel$start.coverage" NAME="start Coverage Results" MODIFIED="1601905916563" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/simulation" />
     <SUITE FILE_PATH="coverage/SimplifiedColoradoRiverSimulationModel$Reservoir.coverage" NAME="Reservoir Coverage Results" MODIFIED="1594245310651" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/components" />
     <SUITE FILE_PATH="coverage/ScopingModel$start.coverage" NAME="start Coverage Results" MODIFIED="1599691607324" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/simulation" />
     <SUITE FILE_PATH="coverage/ExploratoryModel$plots.coverage" NAME="plots Coverage Results" MODIFIED="1600615803630" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools" />

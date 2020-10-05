@@ -153,6 +153,11 @@ name = 'Mead.xls'
 # exports results to ExploratoryModel --> results folder.
 dataExchange.exportData(Mead, filePath + name)
 
+name = 'PowellReleaseTemp.xls'
+dataExchange.exportReleaseTemperature(Powell, filePath + name)
+
+
+
 ### 6. plot results
 date_series = pd.date_range(start= n.begtime, periods=n.periods, freq="M")
 # plotsIndex = [0,40,80,100]

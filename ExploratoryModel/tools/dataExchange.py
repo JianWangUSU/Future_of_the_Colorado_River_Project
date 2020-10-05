@@ -4,6 +4,8 @@ from dateutil.relativedelta import relativedelta
 import os
 import pandas as pd
 import numpy as np
+from tools import waterTemperature
+
 
 """
 This file is used to import and export data
@@ -635,3 +637,36 @@ def exportDSresults(dstools, path):
 
     f.save(path)
 
+def exportReleaseTemperature(reservoir, path):
+    # begining time
+    begtime = datetime.datetime(2021, 1, 1)
+
+    f = xlwt.Workbook(encoding='utf-8')
+    sheet1 = f.add_sheet(u'elevation', cell_overwrite_ok=True)  # create sheet
+    [h, l] = reservoir.elevation.shape  # h is row，l is column
+    time = begtime
+    for i in range(l):
+        sheet1.write(i+1, 0, str(time.strftime("%m"+"/"+"%Y")))
+        time = time + relativedelta(months=+1)
+        for j in range(h):
+            sheet1.write(0, j+1, "Run " +str(j))
+            sheet1.write(i+1, j+1, reservoir.crssElevation[j][i])
+
+    sheet2 = f.add_sheet(u'ReleaseTemp', cell_overwrite_ok=True)  # create sheet
+    [h, l] = reservoir.elevation.shape  # h is row，l is column
+    time = begtime
+
+    releaseTemp = np.zeros([reservoir.inflowTraces, reservoir.periods])
+    for i in range(reservoir.inflowTraces):
+        for j in range(reservoir.periods):
+            month = reservoir.determineMonth(j)
+            releaseTemp[i][j] = waterTemperature.getReleaseTemp(month, reservoir.crssElevation[i][j])
+
+    for i in range(l):
+        sheet2.write(i+1, 0, str(time.strftime("%m"+"/"+"%Y")))
+        time = time + relativedelta(months=+1)
+        for j in range(h):
+            sheet2.write(0, j+1, "Run " +str(j))
+            sheet2.write(i+1, j+1, releaseTemp[j][i])
+
+    f.save(path)
