@@ -289,10 +289,6 @@ class LakePowell(Reservoir):
 
     # CRSS rule 20, Upper Elevation Balancing Tier Jan thru March
     def UpperElevationBalancingTierJanthruMarch(self, i, t):
-        currentMonth = self.determineMonth(t)
-        if currentMonth > self.SEP or currentMonth < self.APR:
-            return
-
         currentYear = self.getCurrentYear(t)
         # DEC in previous year
         previousDECindex = self.getPreviousDecIndex(t)

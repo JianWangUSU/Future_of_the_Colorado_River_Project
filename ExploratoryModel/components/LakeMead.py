@@ -11,7 +11,7 @@ class LakeMead(Reservoir):
     FerryFlag = False # if Pearce Ferry Rapid will be reached
 
     # Only for Mead, different policies will change this value, monthly deduction
-    MeadMDeductionCurrent = 0 # current water year
+    MeadDeductionCurrent = 0 # current water year
     MeadMDeductionNext = 0 # next water year
 
     ### Mead Flood Control, acre-feet
@@ -75,7 +75,8 @@ class LakeMead(Reservoir):
 
         # self.release[i][j] = self.downDepletion[k][j] - self.MeadMDeductionCurrent
         # Use CRSS demand below Mead
-        self.release[i][j] = self.crssDemandBelowMead[i][j] - self.MeadMDeductionCurrent
+        self.release[i][j] = self.crssDemandBelowMead[i][j]
+        # self.release[i][j] = self.crssDemandBelowMead[i][j] - self.MeadDeductionCurrent
         # outflow > minimum outflow requirement
         self.release[i][j] = max(self.release[i][j], self.MinReleaseFun(j))
 
@@ -84,13 +85,13 @@ class LakeMead(Reservoir):
         # surpluse release, todo
         if self.storage[i][j] >= self.maxStorage:
             # self.release[i][j] = self.downDepletion[k][j] - self.MeadMDeductionCurrent + self.SurplusRelease[j]
-            self.release[i][j] = self.crssDemandBelowMead[i][j] - self.MeadMDeductionCurrent + self.SurplusRelease[j]
+            # self.release[i][j] = self.crssDemandBelowMead[i][j] - self.MeadDeductionCurrent + self.SurplusRelease[j]
+            self.release[i][j] = self.crssDemandBelowMead[i][j] + self.SurplusRelease[j]
 
        # CRSS release for validation, use CRSS release data
         # self.release[i][j] = self.crssOutflow[i][j]
 
         self.sovleStorageGivenOutflow(startStorage, inflowthismonth, month, i, j)
-
 
        # 7. calculate shortage for current period
         # determine cutbacks

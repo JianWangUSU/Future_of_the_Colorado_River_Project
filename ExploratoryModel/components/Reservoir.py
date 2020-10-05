@@ -133,7 +133,7 @@ class Reservoir(Node):
     targetSpace = 0
 
     # Only for Mead, different policies will change this value, monthly deduction
-    MeadMDeductionCurrent = 0 # current water year
+    MeadDeductionCurrent = 0 # current water year
     MeadMDeductionNext = 0 # next water year
 
     redrillflag = False # only for Lake Powell, true means redrill

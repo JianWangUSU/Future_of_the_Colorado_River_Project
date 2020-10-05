@@ -90,8 +90,6 @@ dataExchange.readMeadSurplusRelease(Mead,filePath + fileName)
 fileName = "SumCurrentDemandMead.csv"
 dataExchange.readCRSSDemandBelowMead(Mead,filePath + fileName)
 
-
-
 # read User data
 # depletion.csv includes UB, LB depletion (demand) schedules.
 fileName = "depletion.csv"
