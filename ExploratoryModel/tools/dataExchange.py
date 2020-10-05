@@ -660,7 +660,8 @@ def exportReleaseTemperature(reservoir, path):
     for i in range(reservoir.inflowTraces):
         for j in range(reservoir.periods):
             month = reservoir.determineMonth(j)
-            releaseTemp[i][j] = waterTemperature.getReleaseTemp(month, reservoir.crssElevation[i][j])
+            # releaseTemp[i][j] = waterTemperature.getReleaseTemp(month, reservoir.crssElevation[i][j])
+            releaseTemp[i][j] = waterTemperature.getReleaseTempGivenElevationRange(month, reservoir.crssElevation[i][j])
 
     for i in range(l):
         sheet2.write(i+1, 0, str(time.strftime("%m"+"/"+"%Y")))

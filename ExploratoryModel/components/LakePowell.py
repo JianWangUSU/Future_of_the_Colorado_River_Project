@@ -189,7 +189,6 @@ class LakePowell(Reservoir):
         # CRSS policy 28
         self.release[i][t] = self.PowellOperationsRule(i, t)
 
-
         # CRSS policy 24
         self.release[i][t] = self.MeetPowellMinObjectiveRelease(i, t)
 
@@ -211,6 +210,18 @@ class LakePowell(Reservoir):
             temp = self.UpperElevationBalancingTierAprilthruSept(i, t)
             if temp != None and temp > 0:
                 self.release[i][t] = temp
+
+        # CRSS policy 20
+        if month <= self.MAR:
+            temp = self.UpperElevationBalancingTierJanthruMarch(i, t)
+            if temp != None and temp > 0:
+                self.release[i][t] = temp
+
+        # CRSS policy 19
+        temp = self.EqualizationTier(i, t)
+        if temp != None and temp > 0:
+            self.release[i][t] = temp
+
 
         self.sovleStorageGivenOutflow(startStorage, inflowthismonth, month, i, t)
 
@@ -251,6 +262,53 @@ class LakePowell(Reservoir):
 
         self.outflow[i][j] = self.release[i][j] + self.spill[i][j]
         self.elevation[i][j] = self.volume_to_elevation(self.storage[i][j])
+
+    # CRSS policy 19
+    def EqualizationTier(self, i, t):
+        currentMonth = self.determineMonth(t)
+        currentYear = self.getCurrentYear(t)
+        # DEC in previous year
+        previousDECindex = self.getPreviousDecIndex(t)
+        if previousDECindex == self.BEFORE_START_TIME:
+            PowellpreviousDECstroage = self.initStorage
+        else:
+            PowellpreviousDECstroage = self.storage[i][previousDECindex]
+
+        if PowellpreviousDECstroage >= self.upperTier[currentYear] and self.ForecastEOWYSPowell[i][t] > self.downReservoir.ForecastEOWYSMead[i][t]:
+            # ComputePowellRelease() in CRSS
+            tempRelease = self.ConvertPowellRelease(self.ComputeEqualizationReleaseList(i, t), i, t)
+
+            remainingWYReleaseForecast = self.CheckEqualizationRelease_Mead1105(i, t, tempRelease) + self.ForecastPowellRelease[i][t]
+
+            result = remainingWYReleaseForecast * self.GetPowellMonthlyProportion(i, t, remainingWYReleaseForecast)
+
+            maxTurbineRelease = self.GetMaxReleaseGivenInflow(i, t)
+            if result > maxTurbineRelease:
+                result = maxTurbineRelease
+
+            return result
+
+    # CRSS rule 20, Upper Elevation Balancing Tier Jan thru March
+    def UpperElevationBalancingTierJanthruMarch(self, i, t):
+        currentMonth = self.determineMonth(t)
+        if currentMonth > self.SEP or currentMonth < self.APR:
+            return
+
+        currentYear = self.getCurrentYear(t)
+        # DEC in previous year
+        previousDECindex = self.getPreviousDecIndex(t)
+        if previousDECindex == self.BEFORE_START_TIME:
+            PowellpreviousDECstroage = self.initStorage
+            MeadpreviousDECstroage = self.downReservoir.initStorage
+        else:
+            PowellpreviousDECstroage = self.storage[i][previousDECindex]
+            MeadpreviousDECstroage = self.downReservoir.storage[i][previousDECindex]
+
+        if PowellpreviousDECstroage < self.upperTier[currentYear] and PowellpreviousDECstroage >= self.elevation_to_volume(self.Hybrid_PowellUpperTierElevation):
+            if MeadpreviousDECstroage < self.downReservoir.elevation_to_volume(self.Hybrid_MeadMinBalancingElevation):
+                tempRelease = self.ConvertPowellReleaseBalancing(self.ComputeEqualizationReleaseList(i, t), i, t)
+                # return 7 maf to 9 maf
+                return self.ComputePowellReleaseBalancing(i, t, tempRelease, self.COL700, self.COL900)
 
     # CRSS rule 21, Upper Elevation Balancing Tier April thru Sept
     def UpperElevationBalancingTierAprilthruSept(self, i, t):

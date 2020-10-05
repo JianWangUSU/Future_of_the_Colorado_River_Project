@@ -94,7 +94,7 @@ def getDecReleaseTemp(elevation):
         return 7.587096774+(1.978022304*math.exp(-(0.011288015)*(((elevation+96)/3.28084)-1127.76)))
 
 def getReleaseTempGivenElevationRange(month, elevation):
-    if elevation > 3525:
+    if elevation > 3555:
         return getReleaseTemp(month, elevation)
     elif elevation < 3490:
         return getReleaseTemp(month, elevation)
