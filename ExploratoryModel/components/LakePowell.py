@@ -222,7 +222,6 @@ class LakePowell(Reservoir):
         if temp != None and temp > 0:
             self.release[i][t] = temp
 
-
         self.sovleStorageGivenOutflow(startStorage, inflowthismonth, month, i, t)
 
         ### 7. calculate UB shortage for the current time period
@@ -989,15 +988,13 @@ class LakePowell(Reservoir):
                     and MeadpreviousDECstroage >= self.downReservoir.elevation_to_volume(self.downReservoir.Hybrid_Mead823Trigger):
                 return self.PowellReducedRelforCurrentMonth(self.COL748, i, t)
         else:
-            if PowellpreviousDECelevation < self.Hybrid_PowellUpperTierElevation \
-                    and PowellpreviousDECelevation >= self.Hybrid_PowellLowerTierElevation \
-                    and MeadpreviousDECelevation >= self.downReservoir.Hybrid_Mead823Trigger:
+            sepIndex = self.getCurrentSepIndex(t)
+
+            if self.elevation[i][sepIndex] < self.Hybrid_PowellUpperTierElevation \
+                    and self.elevation[i][sepIndex] >= self.Hybrid_PowellLowerTierElevation \
+                    and self.downReservoir.elevation[i][sepIndex] >= self.downReservoir.Hybrid_Mead823Trigger:
+
                 return self.PowellReducedRelforCurrentMonth(self.COL748, i, t)
-
-
-
-
-
 
     def PowellMinObjRelforCurrentMonth(self, i, t):
         currentMonth = self.determineMonth(t)
