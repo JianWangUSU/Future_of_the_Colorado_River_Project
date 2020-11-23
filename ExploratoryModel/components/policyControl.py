@@ -10,3 +10,16 @@ ADP = False
 FMF = False
 # Fill Powell First
 FPF = False
+
+# CRSS Powell policy
+CRSS_Powell = True
+
+# Release policy for each reservoir
+
+# which inflow scenario to use
+
+# which demand scenario to use
+
+# which signpost?
+
+#

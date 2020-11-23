@@ -3,6 +3,7 @@ from tools import dataExchange, plots
 from decisionScaling import DStools
 import components.policyControl as plc
 import pandas as pd
+from tools import waterTemperature, DecisionScaling
 
 ### 1. create a network
 n = Network(name="Exploratory Colorado River Network")
@@ -23,12 +24,26 @@ n.add_node(Mead)
 # initialize Mead variables
 Mead.setupPeriodsandTraces()
 
-# create a combined upper basin (UB) and lower basin (LB) user.
-UBLB = User.User("UBLB")
+# create lower basin (LB) and Mexico user.
+LBM = User.LBMexico("LBMEXICO", Mead)
 # add User to network
-n.add_node(UBLB)
+n.add_node(LBM)
 # initialize User variables
-UBLB.setupPeriodsandTraces()
+LBM.setupPeriodsandTraces()
+
+# create lower basin (LB) and Mexico user.
+UB = User.UB("UB", Powell)
+# add User to network
+n.add_node(UB)
+# initialize User variables
+UB.setupPeriodsandTraces()
+
+# create a combined upper basin (UB) and lower basin (LB) user.
+# UBLB = User.User("UBLB")
+# add User to network
+# n.add_node(UBLB)
+# initialize User variables
+# UBLB.setupPeriodsandTraces()
 
 ### 2. load data
 # relative folder path
@@ -96,11 +111,11 @@ dataExchange.readCRSSMohaveHavasu(Mead,filePath + fileName)
 # depletion.csv includes UB, LB depletion (demand) schedules.
 fileName = "depletion.csv"
 # read data from depletion.csv to User object
-dataExchange.readDepletion(UBLB, filePath + fileName)
+dataExchange.readDepletion(UB, LBM, filePath + fileName)
 
 # set up depletion data, copy depletion data to Lake Powell and Lake Mead
-Powell.setupDepletion(UBLB)
-Mead.setupDepletion(UBLB)
+# Powell.setupDepletion(UBLB)
+# Mead.setupDepletion(UBLB)
 
 # read CRSS release information, only used for validation purpose
 fileName = "CRSSPowellOutflow.csv"
@@ -123,7 +138,8 @@ fileName = "ForecastEOWYSMead.csv"
 dataExchange.readCRSSForecastEOWYSMead(Mead, filePath + fileName)
 fileName = "SNWPDiversionTotalDepletionRequested.csv"
 dataExchange.readCRSSSNWPDiversionTotalDepletionRequested(Mead, filePath + fileName)
-
+fileName = "CRSSLBMXbankBalance.csv"
+dataExchange.readCRSSBankAccount(LBM, filePath + fileName)
 
 # fileName = "CRSSUBMonthShort.csv"
 # dataExchange.readCRSSubShortage(Powell, filePath + fileName)
@@ -138,51 +154,127 @@ plc.ADP = False
 plc.FPF = False
 plc.FMF = False
 
-### 4. run the model
-n.simulation()
 
-### 5. export results
-filePath = "../results/"
+### 4. run decision scaling
+if True:
+    DecisionScaling.DS_EmptyAndFull(Mead)
 
-# Powell.xls will store all Lake Powell results.
-name = 'Powell.xls'
-# exports results to  ExploratoryModel --> results folder.
-dataExchange.exportData(Powell, filePath + name)
-# Mead.xls will store all Lake Powell results.
-name = 'Mead.xls'
-# exports results to ExploratoryModel --> results folder.
-dataExchange.exportData(Mead, filePath + name)
+    # ds1 = DStools.DStools()
+    # ds1.setupMead(Mead)
+    # ds1.simulateCombinations()
+    # ds1.plot()
+    # dataExchange.exportDSresults(ds1, filePath + 'MeadDS.xls')
+    #
+    # ds2 = DStools.DStools()
+    # ds2.setupPowell(Powell)
+    # ds2.simulateCombinations()
+    # # ds2.plot()
+    # dataExchange.exportDSresults(ds2, filePath + 'PowellDS.xls')
 
-name = 'PowellReleaseTemp.xls'
-dataExchange.exportReleaseTemperature(Powell, filePath + name)
+### 5. run the model
+if False:
+    n.simulation()
 
+### 6. export results
+if False:
+    filePath = "../results/"
 
+    # Powell.xls will store all Lake Powell results.
+    name = 'Powell.xls'
+    # exports results to  ExploratoryModel --> results folder.
+    dataExchange.exportData(Powell, filePath + name)
+    # Mead.xls will store all Lake Powell results.
+    name = 'Mead.xls'
+    # exports results to ExploratoryModel --> results folder.
+    dataExchange.exportData(Mead, filePath + name)
 
-### 6. plot results
-date_series = pd.date_range(start= n.begtime, periods=n.periods, freq="M")
-# plotsIndex = [0,40,80,100]
-plotsIndex = [0, 40, 80]
-for j in range(len(plotsIndex)):
-    i = plotsIndex[j]
-    title = "Lake Powell (Run" + str(i) +")"
-    plots.plot_Elevations_Flows_CRSS_Exploratory_Powell(date_series, Powell.crssElevation[i], Powell.crssInflow[i], Powell.crssOutflow[i],
-                                                        Powell.elevation[i], Powell.totalinflow[i], Powell.release[i], title)
-    title = "Lake Mead (Run" + str(i) +")"
-    plots.plot_Elevations_Flows_CRSS_Exploratory_Mead(date_series, Mead.crssElevation[i], Mead.crssInflow[i], Mead.crssOutflow[i],
-                                                      Mead.elevation[i], Mead.totalinflow[i], Mead.release[i], title)
-    # title = "Equalization (Run" + str(i) +")"
-    # plots.Equalization(date_series,Powell.crssStorage[i]/Powell.maxStorage-Mead.crssStorage[i]/Mead.maxStorage,Powell.storage[i]/Powell.maxStorage- Mead.storage[i]/Mead.maxStorage,title)
+    # name1 = 'PowellReleaseTempDNF.xls'
+    # name2 = 'PowellReleaseTemp2000.xls'
+    # name3 = 'PowellReleaseTemp1576.xls'
+    # path1 = "../data/Comp0_KGW_DNF_Baseline_UB_NoCap_KeySlots.csv"
+    # path2 = "../data/Comp0_2000_Resample_Baseline_UB_NoCap_KeySlots.csv"
+    # path3 = "../data/Comp0_1576_Resample_Baseline_UB_NoCap_KeySlots.csv"
+    # labels_HYDRO = ["DNF","2000","1576"]
+    # title = "Average Summer Temperature (Baseline Operation)"
 
-### 6. run decision scaling
-# ds1 = DStools.DStools()
-# ds1.setupMead(Mead)
-# ds1.simulateCombinations()
-# ds1.plot()
-# dataExchange.exportDSresults(ds1, filePath + 'MeadDS.xls')
-#
-#
-# ds2 = DStools.DStools()
-# ds2.setupPowell(Powell)
-# ds2.simulateCombinations()
-# # ds2.plot()
-# dataExchange.exportDSresults(ds2, filePath + 'PowellDS.xls')
+    name1 = 'PowellReleaseTemp_DNF_BASE.xls'
+    name2 = 'PowellReleaseTemp_DNF_FMF.xls'
+    name3 = 'PowellReleaseTemp_DNF_FPF.xls'
+    path1 = "../data/Comp0_KGW_DNF_Baseline_UB_NoCap_KeySlots.csv"
+    path2 = "../data/FMF-A1_DNF_KeySlots.csv"
+    path3 = "../data/FPF_DNF_KeySlots.csv"
+    labels_OP = ["Baseline","FMF","FPF"]
+    labels_HR = " DNF"
+    title = "Average Summer Temperature"
+
+    name4 = 'PowellReleaseTemp_2000_BASE.xls'
+    name5 = 'PowellReleaseTemp_2000_FMF.xls'
+    name6 = 'PowellReleaseTemp_2000_FPF.xls'
+    path4 = "../data/Comp0_2000_Resample_Baseline_UB_NoCap_KeySlots.csv"
+    path5 = "../data/FMF-A1_2000_KeySlots.csv"
+    path6 = "../data/FPF_2000_KeySlots.csv"
+    labels_OP = ["Baseline","FMF","FPF"]
+    labels_HR = " 2000"
+    title46 = "Average Summer Temperature (2000)"
+
+    name7 = 'PowellReleaseTemp_1576_BASE.xls'
+    name8 = 'PowellReleaseTemp_1576_FMF.xls'
+    name9 = 'PowellReleaseTemp_1576_FPF.xls'
+    path7 = "../data/Comp0_1576_Resample_Baseline_UB_NoCap_KeySlots.csv"
+    path8 = "../data/FMF-A1_1576_KeySlots.csv"
+    path9 = "../data/FPF_1576_KeySlots.csv"
+    labels_OP = ["Baseline","FMF","FPF"]
+    labels_HR = " 1576"
+    title79 = "Average Summer Temperature"
+
+    titles = ["A: DNF Baseline","D: FMF DNF","G: FPF DNF","B: 2000 Resample Baseline","E: FMF 2000","H: FPF 2000","C: 1576 Resample Baseline","F: FMF 1576","I: FPF 1576"]
+    titleForEachInflow = ["DNF Hydrology","2000 Hydrology","1576 Hydrology"]
+
+    # read temperature profile data before calculation
+    profile_path = "../data/depth_temperature.csv"
+    dataExchange.readDepthProfileForTemp(profile_path)
+
+    data1 = dataExchange.exportReleaseTemperature(Powell, path1, filePath+name1)
+    data2 = dataExchange.exportReleaseTemperature(Powell, path2, filePath+name2)
+    data3 = dataExchange.exportReleaseTemperature(Powell, path3, filePath+name3)
+    data4 = dataExchange.exportReleaseTemperature(Powell, path4, filePath+name1)
+    data5 = dataExchange.exportReleaseTemperature(Powell, path5, filePath+name2)
+    data6 = dataExchange.exportReleaseTemperature(Powell, path6, filePath+name3)
+    data7 = dataExchange.exportReleaseTemperature(Powell, path7, filePath+name1)
+    data8 = dataExchange.exportReleaseTemperature(Powell, path8, filePath+name2)
+    data9 = dataExchange.exportReleaseTemperature(Powell, path9, filePath+name3)
+
+    results1 = dataExchange.exportDetailedDottyPlot(Powell, path1, path2, path3)
+    results2 = dataExchange.exportDetailedDottyPlot(Powell, path4, path5, path6)
+    results3 = dataExchange.exportDetailedDottyPlot(Powell, path7, path8, path9)
+
+    # plots.dottyPlotforAveReleaseTempforEachInflow(data7, data8, data9, labels_OP, title)
+    plots.dottyPlotforAveReleaseTemp31(data1, data2, data3, data4, data5, data6, data7, data8, data9, labels_OP, titleForEachInflow)
+    plots.dottyPlotforAveReleaseTempRange31(results1, results2, results3, labels_OP, titleForEachInflow)
+
+    # plots.dottyPlotforReleaseTempRangeForEachInflow(results2[0], results2[1], results2[2], labels_OP, titleForEachInflow)
+
+    plots.dottyPlotforAveReleaseTemp33(data1, data2, data3, data4, data5, data6, data7, data8, data9,titles)
+    plots.dottyPlotforReleaseTempRange33(results1, results2, results3, titles)
+    plots.ReleaseTempRangePercentage33(results1, results2, results3, titles)
+
+### 7. plot results
+if False:
+    date_series = pd.date_range(start= n.begtime, periods=n.periods, freq="M")
+    # plotsIndex = [0,40,80,100]
+    plotsIndex = [0, 40, 80]
+    for j in range(len(plotsIndex)):
+        i = plotsIndex[j]
+        title = "Lake Powell (Run" + str(i) +")"
+        plots.plot_Elevations_Flows_CRSS_Exploratory_Powell(date_series, Powell.crssStorage[i], Powell.crssInflow[i],
+                                                            Powell.crssOutflow[i], Powell.crssElevation[i],
+                                                            Powell.storage[i], Powell.totalinflow[i],
+                                                            Powell.outflow[i], Powell.elevation[i], title)
+        title = "Lake Mead (Run" + str(i) +")"
+        plots.plot_Elevations_Flows_CRSS_Exploratory_Mead(date_series, Mead.crssStorage[i], Mead.crssInflow[i],
+                                                          Mead.crssOutflow[i], Mead.crssElevation[i],
+                                                          Mead.storage[i], Mead.totalinflow[i],
+                                                          Mead.outflow[i], Mead.elevation[i], title)
+        # title = "Equalization (Run" + str(i) +")"
+        # plots.Equalization(date_series,Powell.crssStorage[i]/Powell.maxStorage-Mead.crssStorage[i]/Mead.maxStorage,Powell.storage[i]/Powell.maxStorage- Mead.storage[i]/Mead.maxStorage,title)
+

@@ -5,6 +5,8 @@ import os
 import pandas as pd
 import numpy as np
 from tools import waterTemperature
+import math
+from tools import plots
 
 
 """
@@ -200,28 +202,28 @@ def readPowellReleaseTable(reservoir, filePath):
     reservoir.PowellmonthlyRelease[9] = reservoir.basicData.s10.values  # in acre-feet
 
 # read depletion data
-def readDepletion(user, filePath):
-    user.basicDataFile = filePath
+def readDepletion(user1, user2, filePath):
+    user1.basicDataFile = filePath
     pwd = os.getcwd()
-    os.chdir(os.path.dirname(user.basicDataFile))
-    user.basicData = pd.read_csv(os.path.basename(user.basicDataFile))
+    os.chdir(os.path.dirname(user1.basicDataFile))
+    user1.basicData = pd.read_csv(os.path.basename(user1.basicDataFile))
     os.chdir(pwd)
 
-    user.upDepletion = np.zeros([6, user.periods])
-    user.downDepletion = np.zeros([6, user.periods])
+    user1.Depletion = np.zeros([6, user1.periods])
+    user2.Depletion = np.zeros([6, user1.periods])
     # 0:baseline; 1:Scenario B; 2: Scenario C1; 3: Scenario C2; 4: Scenario D1; 5: Scenario D2
-    user.upDepletion[0] = user.basicData.TotalUpper0.values #in feet
-    user.downDepletion[0] = user.basicData.TotalLowerMexico0.values #in acre-feet
-    user.upDepletion[1] = user.basicData.TotalUpper1.values #in feet
-    user.downDepletion[1] = user.basicData.TotalLowerMexico1.values #in acre-feet
-    user.upDepletion[2] = user.basicData.TotalUpper2.values #in feet
-    user.downDepletion[2] = user.basicData.TotalLowerMexico2.values #in acre-feet
-    user.upDepletion[3] = user.basicData.TotalUpper3.values #in feet
-    user.downDepletion[3] = user.basicData.TotalLowerMexico3.values #in acre-feet
-    user.upDepletion[4] = user.basicData.TotalUpper4.values #in feet
-    user.downDepletion[4] = user.basicData.TotalLowerMexico4.values #in acre-feet
-    user.upDepletion[5] = user.basicData.TotalUpper5.values #in feet
-    user.downDepletion[5] = user.basicData.TotalLowerMexico5.values #in acre-feet
+    user1.Depletion[0] = user1.basicData.TotalUpper0.values #in feet
+    user2.Depletion[0] = user1.basicData.TotalLowerMexico0.values #in acre-feet
+    user1.Depletion[1] = user1.basicData.TotalUpper1.values #in feet
+    user2.Depletion[1] = user1.basicData.TotalLowerMexico1.values #in acre-feet
+    user1.Depletion[2] = user1.basicData.TotalUpper2.values #in feet
+    user2.Depletion[2] = user1.basicData.TotalLowerMexico2.values #in acre-feet
+    user1.Depletion[3] = user1.basicData.TotalUpper3.values #in feet
+    user2.Depletion[3] = user1.basicData.TotalLowerMexico3.values #in acre-feet
+    user1.Depletion[4] = user1.basicData.TotalUpper4.values #in feet
+    user2.Depletion[4] = user1.basicData.TotalLowerMexico4.values #in acre-feet
+    user1.Depletion[5] = user1.basicData.TotalUpper5.values #in feet
+    user2.Depletion[5] = user1.basicData.TotalLowerMexico5.values #in acre-feet
 
 # export data to xls
 def exportData(reservoir, path):
@@ -384,24 +386,24 @@ def exportData(reservoir, path):
             sheetArea.write(i+1, j+1, reservoir.area[j][i])
 
     sheet10 = f.add_sheet(u'upDepletion', cell_overwrite_ok=True)  # create sheet
-    [h, l] = reservoir.upDepletion.shape  # h is row，l is column
+    [h, l] = reservoir.relatedUser.Depletion.shape  # h is row，l is column
     time = begtime
     for i in range(l):
         sheet10.write(i+1, 0, str(time.strftime("%b %Y")))
         time = time + relativedelta(months=+1)
         for j in range(h):
             sheet10.write(0, j+1, "Run " +str(j))
-            sheet10.write(i+1, j+1, reservoir.upDepletion[j][i])
+            sheet10.write(i+1, j+1, reservoir.relatedUser.Depletion[j][i])
 
     sheet11 = f.add_sheet(u'downDepletion', cell_overwrite_ok=True)  # create sheet
-    [h, l] = reservoir.downDepletion.shape  # h is row，l is column
+    [h, l] = reservoir.relatedUser.Depletion.shape  # h is row，l is column
     time = begtime
     for i in range(l):
         sheet11.write(i+1, 0, str(time.strftime("%b %Y")))
         time = time + relativedelta(months=+1)
         for j in range(h):
             sheet11.write(0, j+1, "Run " +str(j))
-            sheet11.write(i+1, j+1, reservoir.downDepletion[j][i])
+            sheet11.write(i+1, j+1, reservoir.relatedUser.Depletion[j][i])
 
     if reservoir.name == "Powell":
         sheet12 = f.add_sheet(u'upShortage', cell_overwrite_ok=True)  # create sheet
@@ -603,6 +605,30 @@ def readCRSSIntereveinflow(reservoir, filePath):
     os.chdir(pwd)
     reservoir.crssInterveInflow = np.transpose(reservoir.basicData.values)
 
+def readCRSSBankAccount(user, filePath):
+    user.basicDataFile = filePath
+    pwd = os.getcwd()
+    os.chdir(os.path.dirname(user.basicDataFile))
+    user.basicData = pd.read_csv(os.path.basename(user.basicDataFile))
+    os.chdir(pwd)
+    temp = np.transpose(user.basicData.values)
+    [inflowTraces, periods] = user.CRSSbankBalance.shape  # h is row，l is column
+    for i in range(inflowTraces):
+        for t in range(periods):
+            currentYear = math.floor(t / 12.0)
+            if currentYear == 0:
+                increment = (temp[i][currentYear] - user.initialBlance)/12.0
+            else:
+                increment = (temp[i][currentYear] - temp[i][currentYear-1])/12.0
+
+            user.CRSSbankPutTake[i][t] = increment
+
+            if t == 0:
+                user.CRSSbankBalance[i][t] = user.initialBlance + increment
+            else:
+                user.CRSSbankBalance[i][t] = user.CRSSbankBalance[i][t - 1] + increment
+
+
 def readCRSSubShortage(reservoir, filePath):
     reservoir.basicDataFile = filePath
     pwd = os.getcwd()
@@ -645,37 +671,254 @@ def exportDSresults(dstools, path):
 
     f.save(path)
 
-def exportReleaseTemperature(reservoir, path):
+
+def readOutsideElevationForTemp(reservoir, filePath):
+    reservoir.basicDataFile = filePath
+    pwd = os.getcwd()
+    os.chdir(os.path.dirname(reservoir.basicDataFile))
+    reservoir.basicData = pd.read_csv(os.path.basename(reservoir.basicDataFile))
+    os.chdir(pwd)
+    return np.transpose(reservoir.basicData.values)
+
+# read elevation volume area data
+def readDepthProfileForTemp(filePath):
+    basicDataFile = filePath
+    pwd = os.getcwd()
+    os.chdir(os.path.dirname(basicDataFile))
+    basicData = pd.read_csv(os.path.basename(basicDataFile))
+    os.chdir(pwd)
+    waterTemperature.D = basicData.DEPTH.values  # in feet
+    waterTemperature.P_JAN = basicData.JAN.values  # in degree C
+    waterTemperature.P_FEB = basicData.FEB.values  # in degree C
+    waterTemperature.P_MAR = basicData.MAR.values  # in degree C
+    waterTemperature.P_APR = basicData.APR.values  # in degree C
+    waterTemperature.P_MAY = basicData.MAY.values  # in degree C
+    waterTemperature.P_JUN = basicData.JUN.values  # in degree C
+    waterTemperature.P_JUL = basicData.JUL.values  # in degree C
+    waterTemperature.P_AUG = basicData.AUG.values  # in degree C
+    waterTemperature.P_SEP = basicData.SEP.values  # in degree C
+    waterTemperature.P_OCT = basicData.OCT.values  # in degree C
+    waterTemperature.P_NOV = basicData.NOV.values  # in degree C
+    waterTemperature.P_DEC = basicData.DEC.values  # in degree C
+
+def exportReleaseTemperature(reservoir, datapath, resultpath):
     # begining time
     begtime = datetime.datetime(2021, 1, 1)
 
+    # end of month elevation
+    # elevations = reservoir.crssElevation
+
+    elevations = readOutsideElevationForTemp(reservoir, datapath)
+
+    [inflowTraces, periods] = elevations.shape
+    # print(elevations.shape)
+    # average month elevation
+    aveElevations = np.zeros([inflowTraces, periods])
+
+    # calculate average elevation for each month
+    for i in range(inflowTraces):
+        for t in range(periods):
+            if t == 0:
+                aveElevations[i][t] = elevations[i][t]
+            else:
+                aveElevations[i][t] = (elevations[i][t]+elevations[i][t-1])/2.0
+
+    # release through penstock when elevation > 3490
+    releaseTemp = np.zeros([inflowTraces, periods])
+    # release through river outlet when release temperature > 20
+    releaseTemp2 = np.zeros([inflowTraces, periods])
+    for i in range(inflowTraces):
+        for t in range(periods):
+            month = reservoir.para.determineMonth(t)
+            # releaseTemp[i][j] = waterTemperature.getReleaseTemp(month, reservoir.crssElevation[i][j])
+            releaseTemp[i][t] = waterTemperature.getReleaseTempGivenElevationRangeNEW(month, aveElevations[i][t])
+            # releaseTemp[i][t] = waterTemperature.getReleaseTempGivenElevationRange(month, aveElevations[i][t])
+
+            # if releaseTemp[i][t] >= 20:
+            #     releaseTemp2[i][t] = waterTemperature.getReleaseTempWhenReleaesfromOutlet(month, aveElevations[i][t])
+            # else:
+            #     releaseTemp2[i][t] = releaseTemp[i][t]
+
     f = xlwt.Workbook(encoding='utf-8')
     sheet1 = f.add_sheet(u'elevation', cell_overwrite_ok=True)  # create sheet
-    [h, l] = reservoir.elevation.shape  # h is row，l is column
     time = begtime
-    for i in range(l):
-        sheet1.write(i+1, 0, str(time.strftime("%m"+"/"+"%Y")))
+    for t in range(periods):
+        sheet1.write(t+1, 0, str(time.strftime("%m"+"/"+"%Y")))
         time = time + relativedelta(months=+1)
-        for j in range(h):
-            sheet1.write(0, j+1, "Run " +str(j))
-            sheet1.write(i+1, j+1, reservoir.crssElevation[j][i])
+        for i in range(inflowTraces):
+            sheet1.write(0, i+1, "Run " +str(i))
+            sheet1.write(t+1, i+1, aveElevations[i][t])
 
     sheet2 = f.add_sheet(u'ReleaseTemp', cell_overwrite_ok=True)  # create sheet
-    [h, l] = reservoir.elevation.shape  # h is row，l is column
+    # sheet21 = f.add_sheet(u'ReleaseTempTrigger', cell_overwrite_ok=True)  # create sheet
+    sheet22 = f.add_sheet(u'summerTemp', cell_overwrite_ok=True)  # create sheet
+
     time = begtime
-
-    releaseTemp = np.zeros([reservoir.inflowTraces, reservoir.periods])
-    for i in range(reservoir.inflowTraces):
-        for j in range(reservoir.periods):
-            month = reservoir.determineMonth(j)
-            # releaseTemp[i][j] = waterTemperature.getReleaseTemp(month, reservoir.crssElevation[i][j])
-            releaseTemp[i][j] = waterTemperature.getReleaseTempGivenElevationRange(month, reservoir.crssElevation[i][j])
-
-    for i in range(l):
-        sheet2.write(i+1, 0, str(time.strftime("%m"+"/"+"%Y")))
+    for t in range(periods):
+        sheet2.write(t+1, 0, str(time.strftime("%m"+"/"+"%Y")))
         time = time + relativedelta(months=+1)
-        for j in range(h):
-            sheet2.write(0, j+1, "Run " +str(j))
-            sheet2.write(i+1, j+1, releaseTemp[j][i])
+        for i in range(inflowTraces):
+            sheet2.write(0, i+1, "Run " +str(i))
+            sheet2.write(t+1, i+1, releaseTemp[i][t])
 
-    f.save(path)
+    # for t in range(periods):
+    #     sheet21.write(t+1, 0, str(time.strftime("%m"+"/"+"%Y")))
+    #     time = time + relativedelta(months=+1)
+    #     for i in range(inflowTraces):
+    #         sheet21.write(0, i+1, "Run " +str(i))
+    #         sheet21.write(t+1, i+1, releaseTemp2[i][t])
+
+    # dotty plot
+    # calculate summer temperature for each year (JUL, AUG. SEP)
+    years = int(periods / 12)
+    summerTemp = np.zeros([inflowTraces, years])
+    for i in range(inflowTraces):
+        for t in range(years):
+            # JUL AUG SEP
+            summerTemp[i][t] = sum(releaseTemp[i][t * 12 + 6:t * 12 + 9]) / len(releaseTemp[i][t * 12 + 6:t * 12 + 9])
+
+    time = begtime
+    for t in range(years):
+        sheet22.write(t+1, 0, str(time.strftime("%Y")))
+        time = time + relativedelta(months=+12)
+        for i in range(inflowTraces):
+            sheet22.write(0, i+1, "Run " +str(i))
+            sheet22.write(t+1, i+1, summerTemp[i][t])
+
+    # determine duration of time (percentile) at certain level over different years
+    DurationOverYears_17 = np.zeros([inflowTraces, years])
+    DurationOverYears_17to20 = np.zeros([inflowTraces, years])
+    DurationOverYears_20 = np.zeros([inflowTraces, years])
+
+    # count years
+    for i in range(inflowTraces):
+        for t in range(periods):
+            year = int(math.floor(t / 12))
+            if releaseTemp[i][t] < 17:
+                DurationOverYears_17[i][year] = DurationOverYears_17[i][year] + 1
+            elif releaseTemp[i][t] > 20:
+                DurationOverYears_20[i][year] = DurationOverYears_20[i][year] + 1
+            else:
+                DurationOverYears_17to20[i][year] = DurationOverYears_17to20[i][year] + 1
+
+    # count consecutive years
+    for i in range(inflowTraces):
+        for t in range(years):
+            if t > 0:
+                DurationOverYears_17[i][t] = DurationOverYears_17[i][t] + DurationOverYears_17[i][t - 1]
+                DurationOverYears_20[i][t] = DurationOverYears_20[i][t] + DurationOverYears_20[i][t - 1]
+                DurationOverYears_17to20[i][t] = DurationOverYears_17to20[i][t] + DurationOverYears_17to20[i][t - 1]
+
+    # calculate percentage
+    for i in range(inflowTraces):
+        for t in range(years):
+            DurationOverYears_17[i][t] = DurationOverYears_17[i][t] / (t * 12 + 12)
+            DurationOverYears_20[i][t] = DurationOverYears_20[i][t] / (t * 12 + 12)
+            DurationOverYears_17to20[i][t] = DurationOverYears_17to20[i][t] / (t * 12 + 12)
+    # sheet3 = f.add_sheet(u'Duration17', cell_overwrite_ok=True)  # create sheet
+    # [inflowTraces, periods] = DurationOverYears_17.shape  # inflowTraces is row，periods is column
+    # time = begtime
+    # for i in range(periods):
+    #     sheet3.write(i+1, 0, str(time.strftime("%m"+"/"+"%Y")))
+    #     time = time + relativedelta(months=+12)
+    #     for t in range(inflowTraces):
+    #         sheet3.write(0, t+1, "Run " +str(t))
+    #         sheet3.write(i+1, t+1, DurationOverYears_17[t][i])
+    #
+    # sheet4 = f.add_sheet(u'Duration17to20', cell_overwrite_ok=True)  # create sheet
+    # [inflowTraces, periods] = DurationOverYears_17to20.shape  # inflowTraces is row，periods is column
+    # time = begtime
+    # for i in range(periods):
+    #     sheet4.write(i+1, 0, str(time.strftime("%m"+"/"+"%Y")))
+    #     time = time + relativedelta(months=+12)
+    #     for t in range(inflowTraces):
+    #         sheet4.write(0, t+1, "Run " +str(t))
+    #         sheet4.write(i+1, t+1, DurationOverYears_17to20[t][i])
+    #
+    # sheet5 = f.add_sheet(u'Duration20', cell_overwrite_ok=True)  # create sheet
+    # [inflowTraces, periods] = DurationOverYears_20.shape  # inflowTraces is row，periods is column
+    # time = begtime
+    # for i in range(periods):
+    #     sheet5.write(i+1, 0, str(time.strftime("%m"+"/"+"%Y")))
+    #     time = time + relativedelta(months=+12)
+    #     for t in range(inflowTraces):
+    #         sheet5.write(0, t+1, "Run " +str(t))
+    #         sheet5.write(i+1, t+1, DurationOverYears_20[t][i])
+
+    # average summer temperature across all inflow traces
+    AvesummerTemp = np.zeros([years])
+    for t in range(years):
+        totalTemp = 0
+        for i in range(inflowTraces):
+            totalTemp = totalTemp + summerTemp[i][t]
+        AvesummerTemp[t] = totalTemp/inflowTraces
+
+        # AvesummerTemp[t] = sum(summerTemp[t][0:inflowTraces]) / len(summerTemp[t][0:inflowTraces])
+        # print(str(AvesummerTemp[t]) + " " + str(summerTemp[0][t]))
+
+    AveTempForPeriod = np.zeros([years, years])
+    # length of years (x axis)
+    for m in range(years):
+        # years (y axis)
+        for t in range(years):
+            if m == 0:
+                # year 1 has 40 points, Run 25 has the lowest reservoir elevation
+                AveTempForPeriod[m][t] = AvesummerTemp[t]
+            else:
+                # year 2 has 39 points, year 3 has 38 points....
+                if t + m >= years:
+                    break
+
+                AveTempForPeriod[m][t] = sum(AvesummerTemp[t:t + m + 1]) / len(AvesummerTemp[t:t + m + 1])
+
+    # for m in range(years):
+    #     # points in a single year
+    #     for t in range(years):
+    #         if m == 0:
+    #             # year 1 has 40 points, Run 25 has the lowest reservoir elevation
+    #             AveTempForPeriod[m][t] = AvesummerTemp[t]
+    #         else:
+    #             # year 2 has 39 points, year 3 has 38 points....
+    #             if t + m >= periods / 12:
+    #                 break
+    #
+    #             AveTempForPeriod[m][t] = sum(AvesummerTemp[t:t + m + 1]) / len(AvesummerTemp[t:t + m + 1])
+
+    sheet6 = f.add_sheet(u'aveSummerTemp', cell_overwrite_ok=True)  # create sheet
+    time = begtime
+    [h] = AvesummerTemp.shape
+    for t in range(h):
+        sheet6.write(t+1, 0, str(time.strftime("%Y")))
+        time = time + relativedelta(months=+12)
+        sheet6.write(0, 1, "averageSummerTemp")
+        sheet6.write(t+1, 1, AvesummerTemp[t])
+
+    sheet7 = f.add_sheet(u'Dotty', cell_overwrite_ok=True)  # create sheet
+    time = begtime
+    [h,l] = AveTempForPeriod.shape
+    for t in range(h):
+        sheet7.write(t+1, 0, str(time.strftime("%Y")))
+        time = time + relativedelta(months=+12)
+        for i in range(l):
+            sheet7.write(0, i+1, "Run " + str(i))
+            sheet7.write(t+1, i+1, AveTempForPeriod[i][t])
+
+    f.save(resultpath)
+
+    return AveTempForPeriod
+
+def exportDetailedDottyPlot(reservoir, datapath1, datapath2, datapath3):
+    # begining time
+    begtime = datetime.datetime(2021, 1, 1)
+
+    # end of month elevation
+    # elevations = reservoir.crssElevation
+
+    elevations1 = readOutsideElevationForTemp(reservoir, datapath1)
+    result1 = waterTemperature.CalculateTempForEachInflowTrace(reservoir,elevations1)
+    elevations2 = readOutsideElevationForTemp(reservoir, datapath2)
+    result2 = waterTemperature.CalculateTempForEachInflowTrace(reservoir,elevations2)
+    elevations3 = readOutsideElevationForTemp(reservoir, datapath3)
+    result3 = waterTemperature.CalculateTempForEachInflowTrace(reservoir,elevations3)
+
+    return [result1,result2,result3]
