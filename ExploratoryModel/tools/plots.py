@@ -478,6 +478,9 @@ def dottyPlotforReleaseTempRangePercentage(data1,title,plot,showLegend):
             xp[p][y] = y + 1
             yp[p][y] = np.percentile(np.array(templist), percent[p])
 
+            if y == 0 and percent[p] == 100:
+                print(yp[p][y])
+
         x17[y] = y + 1
         y17[y] = 17
         x20[y] = y + 1

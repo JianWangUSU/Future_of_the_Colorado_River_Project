@@ -31,24 +31,24 @@ from dateutil.relativedelta import relativedelta
 
 
 
-import matplotlib.pyplot as plt
-import numpy as np
-
-#plot 1:
-x = np.array([0, 1, 2, 3])
-y = np.array([3, 8, 1, 10])
-
-plt.subplot(1, 2, 1)
-plt.plot(x,y)
-
-#plot 2:
-x = np.array([0, 1, 2, 3])
-y = np.array([10, 20, 30, 40])
-
-plt.subplot(1, 2, 2)
-plt.plot(x,y)
-
-plt.show()
+# import matplotlib.pyplot as plt
+# import numpy as np
+#
+# #plot 1:
+# x = np.array([0, 1, 2, 3])
+# y = np.array([3, 8, 1, 10])
+#
+# plt.subplot(1, 2, 1)
+# plt.plot(x,y)
+#
+# #plot 2:
+# x = np.array([0, 1, 2, 3])
+# y = np.array([10, 20, 30, 40])
+#
+# plt.subplot(1, 2, 2)
+# plt.plot(x,y)
+#
+# plt.show()
 
 # arr = [20, 2, 5, 7, 34]
 # print("arr : ", arr)
@@ -97,3 +97,69 @@ plt.show()
 #
 #
 # print(x.strftime("%b %Y"))
+
+import plotly.express as px
+import pandas as pd
+import plotly.graph_objects as go
+
+df = px.data.iris()
+print(df)
+
+# df = pd.read_csv('../tools/parallel.csv')
+# df = pd.read_csv('../tools/parallel2.csv')
+df = pd.read_csv('../tools/parallel3.csv')
+
+# df2 = df.sort_values(by=["sepal_length"], ascending=True)
+# df.to_csv('../tools/parallel2.csv')
+# df.to_csv('../tools/parallel.csv')
+# print(df2)
+
+# fig = px.parallel_coordinates(df2, color="species_id", labels={"species_id": "Species",
+#                 "sepal_width": "Sepal Width", "sepal_length": "Sepal Length",
+#                 "petal_width": "Petal Width", "petal_length": "Petal Length", },
+#                              color_continuous_scale=px.colors.diverging.Tealrose,
+#                              color_continuous_midpoint=2)
+# fig = px.parallel_coordinates(df, color="Release_Mead",
+#                                   dimensions=['InitStorage_Powell','Inflow_Powell','Release_Powell','InitStorage_Mead','Release_Mead','YearsToEmpty'],
+#                                   color_continuous_scale=px.colors.diverging.Tealrose, color_continuous_midpoint=20)
+
+fig = go.Figure(data=
+    go.Parcoords(
+        line = dict(color = df['YearsToEmpty'],
+                   colorscale = px.colors.diverging.Tealrose,
+                   showscale = True),
+        dimensions = list([
+            dict(range = [6,19],
+                constraintrange = [7,8],
+                label = 'InitStorage_Powell', values = df['InitStorage_Powell']),
+            dict(range = [3,15],
+                label = 'Inflow_Powell', values = df['Inflow_Powell']),
+            dict(range = [3,11],
+                label = 'Release_Powell', values = df['Release_Powell']),
+            dict(range = [6,19],
+                label = 'InitStorage_Mead', values = df['InitStorage_Mead']),
+            dict(range = [3, 11],
+                 label='Release_Mead', values=df['Release_Mead']),
+            dict(range = [0, 40],
+                 label='YearsToEmpty', values=df['YearsToEmpty'])
+        ])
+    )
+)
+
+fig.show()
+
+# compression_opts = dict(method='zip',archive_name='out.csv')
+# df.to_csv('out.zip', index=False,compression=compression_opts)
+
+# import pandas as pd
+# import matplotlib.pyplot as plt
+#
+# df = pd.read_csv(
+#     'https://raw.github.com/pandas-dev/'
+#     'pandas/master/pandas/tests/io/data/csv/iris.csv')
+#
+# pd.plotting.parallel_coordinates(
+#     df, 'Name', color=('#556270', '#4ECDC4', '#C7F464')
+# )
+#
+# plt.show()

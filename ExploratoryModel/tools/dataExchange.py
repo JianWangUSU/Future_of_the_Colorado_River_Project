@@ -8,10 +8,20 @@ from tools import waterTemperature
 import math
 from tools import plots
 
+"""
+This file is used to import data and export results
+"""
 
-"""
-This file is used to import and export data
-"""
+# a template for inputting data to the reservoir
+def readResDataTemplate(reservoir, filePath):
+    reservoir.basicDataFile = filePath
+    pwd = os.getcwd()
+    os.chdir(os.path.dirname(reservoir.basicDataFile))
+    reservoir.basicData = pd.read_csv(os.path.basename(reservoir.basicDataFile))
+    os.chdir(pwd)
+
+    # x is user defined property, y is the value name defined in csv file
+    reservoir.x = reservoir.basicData.y.values
 
 # read elevation volume area data
 def readEleStoArea(reservoir, filePath):
@@ -169,7 +179,6 @@ def readShiftedEQLine(reservoir, filePath):
     for i in range (0, length):
         reservoir.ShiftedEQLine[i] = reservoir.ShiftedEQLine[i]*1000
 
-
 # read Mead Surplus Release
 def readMeadSurplusRelease(Mead, filePath):
     Mead.basicDataFile = filePath
@@ -241,35 +250,35 @@ def exportData(reservoir, path):
             sheet1.write(0, j+1, "Run " +str(j))
             sheet1.write(i+1, j+1, reservoir.elevation[j][i])
 
-    sheet11 = f.add_sheet(u'test1', cell_overwrite_ok=True)  # create sheet
-    [h, l] = reservoir.totalinflow.shape  # h is row，l is column
-    time = begtime
-    for i in range(l):
-        sheet11.write(i+1, 0, str(time.strftime("%b %Y")))
-        time = time + relativedelta(months=+1)
-        for j in range(h):
-            sheet11.write(0, j+1, "Run " +str(j))
-            sheet11.write(i+1, j+1, reservoir.testSeries1[j][i])
-
-    sheet12 = f.add_sheet(u'test2', cell_overwrite_ok=True)  # create sheet
-    [h, l] = reservoir.totalinflow.shape  # h is row，l is column
-    time = begtime
-    for i in range(l):
-        sheet12.write(i+1, 0, str(time.strftime("%b %Y")))
-        time = time + relativedelta(months=+1)
-        for j in range(h):
-            sheet12.write(0, j+1, "Run " +str(j))
-            sheet12.write(i+1, j+1, reservoir.testSeries2[j][i])
-
-    sheet13 = f.add_sheet(u'test3', cell_overwrite_ok=True)  # create sheet
-    [h, l] = reservoir.totalinflow.shape  # h is row，l is column
-    time = begtime
-    for i in range(l):
-        sheet13.write(i+1, 0, str(time.strftime("%b %Y")))
-        time = time + relativedelta(months=+1)
-        for j in range(h):
-            sheet13.write(0, j+1, "Run " +str(j))
-            sheet13.write(i+1, j+1, reservoir.testSeries3[j][i])
+    # sheet11 = f.add_sheet(u'test1', cell_overwrite_ok=True)  # create sheet
+    # [h, l] = reservoir.totalinflow.shape  # h is row，l is column
+    # time = begtime
+    # for i in range(l):
+    #     sheet11.write(i+1, 0, str(time.strftime("%b %Y")))
+    #     time = time + relativedelta(months=+1)
+    #     for j in range(h):
+    #         sheet11.write(0, j+1, "Run " +str(j))
+    #         sheet11.write(i+1, j+1, reservoir.testSeries1[j][i])
+    #
+    # sheet12 = f.add_sheet(u'test2', cell_overwrite_ok=True)  # create sheet
+    # [h, l] = reservoir.totalinflow.shape  # h is row，l is column
+    # time = begtime
+    # for i in range(l):
+    #     sheet12.write(i+1, 0, str(time.strftime("%b %Y")))
+    #     time = time + relativedelta(months=+1)
+    #     for j in range(h):
+    #         sheet12.write(0, j+1, "Run " +str(j))
+    #         sheet12.write(i+1, j+1, reservoir.testSeries2[j][i])
+    #
+    # sheet13 = f.add_sheet(u'test3', cell_overwrite_ok=True)  # create sheet
+    # [h, l] = reservoir.totalinflow.shape  # h is row，l is column
+    # time = begtime
+    # for i in range(l):
+    #     sheet13.write(i+1, 0, str(time.strftime("%b %Y")))
+    #     time = time + relativedelta(months=+1)
+    #     for j in range(h):
+    #         sheet13.write(0, j+1, "Run " +str(j))
+    #         sheet13.write(i+1, j+1, reservoir.testSeries3[j][i])
 
     sheet2 = f.add_sheet(u'inflow', cell_overwrite_ok=True)  # create sheet
     [h, l] = reservoir.totalinflow.shape  # h is row，l is column
@@ -300,8 +309,6 @@ def exportData(reservoir, path):
         for j in range(h):
             sheet3.write(0, j+1, "Run " +str(j))
             sheet3.write(i+1, j+1, reservoir.release[j][i])
-
-
 
     sheet4 = f.add_sheet(u'evaporation', cell_overwrite_ok=True)  # create sheet
     [h, l] = reservoir.evaporation.shape  # h is row，l is column
@@ -425,6 +432,16 @@ def exportData(reservoir, path):
             for j in range(h):
                 sheet12.write(0, j+1, "Run " +str(j))
                 sheet12.write(i+1, j+1, reservoir.downShortage[j][i])
+
+    sheet13 = f.add_sheet(u'ReleaseTemp', cell_overwrite_ok=True)  # create sheet
+    [h, l] = reservoir.elevation.shape  # h is row，l is column
+    time = begtime
+    for i in range(l):
+        sheet13.write(i+1, 0, str(time.strftime("%m"+"/"+"%Y")))
+        time = time + relativedelta(months=+1)
+        for j in range(h):
+            sheet13.write(0, j+1, "Run " +str(j))
+            sheet13.write(i+1, j+1, reservoir.releaseTemperature[j][i])
 
     # other metrics
     # [h, l] = reservoir.inflow.shape  # h is row，l is column
@@ -711,7 +728,8 @@ def exportReleaseTemperature(reservoir, datapath, resultpath):
     elevations = readOutsideElevationForTemp(reservoir, datapath)
 
     [inflowTraces, periods] = elevations.shape
-    # print(elevations.shape)
+    print(resultpath)
+    print(elevations.shape)
     # average month elevation
     aveElevations = np.zeros([inflowTraces, periods])
 
@@ -740,18 +758,17 @@ def exportReleaseTemperature(reservoir, datapath, resultpath):
             #     releaseTemp2[i][t] = releaseTemp[i][t]
 
     f = xlwt.Workbook(encoding='utf-8')
-    sheet1 = f.add_sheet(u'elevation', cell_overwrite_ok=True)  # create sheet
-    time = begtime
-    for t in range(periods):
-        sheet1.write(t+1, 0, str(time.strftime("%m"+"/"+"%Y")))
-        time = time + relativedelta(months=+1)
-        for i in range(inflowTraces):
-            sheet1.write(0, i+1, "Run " +str(i))
-            sheet1.write(t+1, i+1, aveElevations[i][t])
+    # sheet1 = f.add_sheet(u'elevation', cell_overwrite_ok=True)  # create sheet
+    # time = begtime
+    # for t in range(periods):
+    #     sheet1.write(t+1, 0, str(time.strftime("%m"+"/"+"%Y")))
+    #     time = time + relativedelta(months=+1)
+    #     for i in range(inflowTraces):
+    #         sheet1.write(0, i+1, "Run " +str(i))
+    #         sheet1.write(t+1, i+1, aveElevations[i][t])
 
     sheet2 = f.add_sheet(u'ReleaseTemp', cell_overwrite_ok=True)  # create sheet
     # sheet21 = f.add_sheet(u'ReleaseTempTrigger', cell_overwrite_ok=True)  # create sheet
-    sheet22 = f.add_sheet(u'summerTemp', cell_overwrite_ok=True)  # create sheet
 
     time = begtime
     for t in range(periods):
@@ -775,15 +792,18 @@ def exportReleaseTemperature(reservoir, datapath, resultpath):
     for i in range(inflowTraces):
         for t in range(years):
             # JUL AUG SEP
-            summerTemp[i][t] = sum(releaseTemp[i][t * 12 + 6:t * 12 + 9]) / len(releaseTemp[i][t * 12 + 6:t * 12 + 9])
+            # summerTemp[i][t] = sum(releaseTemp[i][t * 12 + 6:t * 12 + 9]) / len(releaseTemp[i][t * 12 + 6:t * 12 + 9])
+            # Jun, Jul, Aug, Sep
+            summerTemp[i][t] = sum(releaseTemp[i][t*12+5:t*12+9]) / len(releaseTemp[i][t*12+5:t*12+9])
 
     time = begtime
-    for t in range(years):
-        sheet22.write(t+1, 0, str(time.strftime("%Y")))
-        time = time + relativedelta(months=+12)
-        for i in range(inflowTraces):
-            sheet22.write(0, i+1, "Run " +str(i))
-            sheet22.write(t+1, i+1, summerTemp[i][t])
+    # sheet22 = f.add_sheet(u'summerTemp', cell_overwrite_ok=True)  # create sheet
+    # for t in range(years):
+    #     sheet22.write(t+1, 0, str(time.strftime("%Y")))
+    #     time = time + relativedelta(months=+12)
+    #     for i in range(inflowTraces):
+    #         sheet22.write(0, i+1, "Run " +str(i))
+    #         sheet22.write(t+1, i+1, summerTemp[i][t])
 
     # determine duration of time (percentile) at certain level over different years
     DurationOverYears_17 = np.zeros([inflowTraces, years])
@@ -884,24 +904,24 @@ def exportReleaseTemperature(reservoir, datapath, resultpath):
     #
     #             AveTempForPeriod[m][t] = sum(AvesummerTemp[t:t + m + 1]) / len(AvesummerTemp[t:t + m + 1])
 
-    sheet6 = f.add_sheet(u'aveSummerTemp', cell_overwrite_ok=True)  # create sheet
-    time = begtime
-    [h] = AvesummerTemp.shape
-    for t in range(h):
-        sheet6.write(t+1, 0, str(time.strftime("%Y")))
-        time = time + relativedelta(months=+12)
-        sheet6.write(0, 1, "averageSummerTemp")
-        sheet6.write(t+1, 1, AvesummerTemp[t])
+    # sheet6 = f.add_sheet(u'aveSummerTemp', cell_overwrite_ok=True)  # create sheet
+    # time = begtime
+    # [h] = AvesummerTemp.shape
+    # for t in range(h):
+    #     sheet6.write(t+1, 0, str(time.strftime("%Y")))
+    #     time = time + relativedelta(months=+12)
+    #     sheet6.write(0, 1, "averageSummerTemp")
+    #     sheet6.write(t+1, 1, AvesummerTemp[t])
 
-    sheet7 = f.add_sheet(u'Dotty', cell_overwrite_ok=True)  # create sheet
-    time = begtime
-    [h,l] = AveTempForPeriod.shape
-    for t in range(h):
-        sheet7.write(t+1, 0, str(time.strftime("%Y")))
-        time = time + relativedelta(months=+12)
-        for i in range(l):
-            sheet7.write(0, i+1, "Run " + str(i))
-            sheet7.write(t+1, i+1, AveTempForPeriod[i][t])
+    # sheet7 = f.add_sheet(u'Dotty', cell_overwrite_ok=True)  # create sheet
+    # time = begtime
+    # [h,l] = AveTempForPeriod.shape
+    # for t in range(h):
+    #     sheet7.write(t+1, 0, str(time.strftime("%Y")))
+    #     time = time + relativedelta(months=+12)
+    #     for i in range(l):
+    #         sheet7.write(0, i+1, "Run " + str(i))
+    #         sheet7.write(t+1, i+1, AveTempForPeriod[i][t])
 
     f.save(resultpath)
 

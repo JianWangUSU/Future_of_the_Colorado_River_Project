@@ -783,16 +783,27 @@ def FMF(self, meadS):
         else:
             self.column = 3
 
-
 # fill Powell first
-def FPF(self, powerS):
-    # Mead to 895 feet, if Powell reasches to full pool, Mead store water
-    if self.name == "Powell":
-        if powerS < self.maxStorage:
-            self.column = 1
-        else:
-            self.column = 2
+# parameter, column for Powell monthly release table
+PowellReleasTableCol = 2
+def FPF(reservoir, EYstorage, t):
+    global PowellReleasTableCol
 
+    month = reservoir.para.determineMonth(t)
+
+    # initialize data before running
+    if t == 0:
+        PowellReleasTableCol = 2
+
+    # if Lake Powell is full pool, Mead start to store water
+    if reservoir.name == "Powell":
+        if month == reservoir.para.JAN:
+            if EYstorage < reservoir.maxStorage:
+                PowellReleasTableCol = 1
+            else:
+                PowellReleasTableCol = 2
+
+        return reservoir.PowellmonthlyRelease[PowellReleasTableCol][month]
 
 # IntentionallyCreatedSurplus, ICS strategy
 # i: inflowtrace

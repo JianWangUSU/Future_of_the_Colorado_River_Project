@@ -4,6 +4,7 @@ from decisionScaling import DStools
 import components.policyControl as plc
 import pandas as pd
 from tools import waterTemperature, DecisionScaling
+import datetime
 
 ### 1. create a network
 n = Network(name="Exploratory Colorado River Network")
@@ -141,24 +142,48 @@ dataExchange.readCRSSSNWPDiversionTotalDepletionRequested(Mead, filePath + fileN
 fileName = "CRSSLBMXbankBalance.csv"
 dataExchange.readCRSSBankAccount(LBM, filePath + fileName)
 
+# read temperature profile data before calculation
+profile_path = "../data/depth_temperature.csv"
+dataExchange.readDepthProfileForTemp(profile_path)
+
 # fileName = "CRSSUBMonthShort.csv"
 # dataExchange.readCRSSubShortage(Powell, filePath + fileName)
 
 ### 3.set policies
 # policy control(plc),  EQUAL_DCP: equalization rule and drought contingency plan
 # ADP: adaptive policy, only consider Pearce Ferry Rapid signpost, will add more.
+# plc.EQUAL_DCP = False
+# plc.ADP = False
+# ============ policy for Lake Powell=================
 # FPF: Fill Powell First
+plc.FPF = True
 # FMF: Fill Mead First (Re-drill Lake Powell)
-plc.EQUAL_DCP = False
-plc.ADP = False
-plc.FPF = False
 plc.FMF = False
+# CRSS Lake Powell policy for validation
+plc.CRSS_Powell = False
+# ============ policy for Lake Mead=================
+# Meet Lower basin demand
+plc.LB_demand = True
+# Drought Contigency plan
+plc.DCP = False
+# CRSS Lake Mead policy for validation
+plc.CRSS_Mead = False
 
 
 ### 4. run decision scaling
-if True:
-    DecisionScaling.DS_EmptyAndFull(Mead)
+if False:
+    starttime = datetime.datetime.now()
+    # DecisionScaling.DS_EmptyAndFullPowellMead2(Powell, Mead)
+    # DecisionScaling.DS_EmptyAndFullPowellMead(Powell, Mead)
+    # DecisionScaling.MultiUncertaintiesAnalysis(Powell, Mead)
+    DecisionScaling.MultiUncertaintiesAnalysis_3d(Powell, Mead)
 
+    # DecisionScaling.DS_EmptyAndFull(Mead)
+    # DecisionScaling.DS_EmptyAndFull2(Mead)
+    # DecisionScaling.DS_EmptyAndFull3(Mead)
+
+    endtime = datetime.datetime.now()
+    print(" time:" + str(endtime - starttime))
     # ds1 = DStools.DStools()
     # ds1.setupMead(Mead)
     # ds1.simulateCombinations()
@@ -172,11 +197,15 @@ if True:
     # dataExchange.exportDSresults(ds2, filePath + 'PowellDS.xls')
 
 ### 5. run the model
-if False:
+if True:
+
+    # run reservoir simulation
     n.simulation()
+    # run reservoir release model
+    waterTemperature.simulateResTemp(Powell)
 
 ### 6. export results
-if False:
+if True:
     filePath = "../results/"
 
     # Powell.xls will store all Lake Powell results.
@@ -187,6 +216,10 @@ if False:
     name = 'Mead.xls'
     # exports results to ExploratoryModel --> results folder.
     dataExchange.exportData(Mead, filePath + name)
+
+# Generate results for AMP white paper
+if False:
+    filePath = "../results/"
 
     # name1 = 'PowellReleaseTempDNF.xls'
     # name2 = 'PowellReleaseTemp2000.xls'
@@ -213,8 +246,6 @@ if False:
     path4 = "../data/Comp0_2000_Resample_Baseline_UB_NoCap_KeySlots.csv"
     path5 = "../data/FMF-A1_2000_KeySlots.csv"
     path6 = "../data/FPF_2000_KeySlots.csv"
-    labels_OP = ["Baseline","FMF","FPF"]
-    labels_HR = " 2000"
     title46 = "Average Summer Temperature (2000)"
 
     name7 = 'PowellReleaseTemp_1576_BASE.xls'
@@ -223,11 +254,9 @@ if False:
     path7 = "../data/Comp0_1576_Resample_Baseline_UB_NoCap_KeySlots.csv"
     path8 = "../data/FMF-A1_1576_KeySlots.csv"
     path9 = "../data/FPF_1576_KeySlots.csv"
-    labels_OP = ["Baseline","FMF","FPF"]
-    labels_HR = " 1576"
     title79 = "Average Summer Temperature"
 
-    titles = ["A: DNF Baseline","D: FMF DNF","G: FPF DNF","B: 2000 Resample Baseline","E: FMF 2000","H: FPF 2000","C: 1576 Resample Baseline","F: FMF 1576","I: FPF 1576"]
+    titles = ["A: DNF Baseline","D: FMF-A1 DNF","G: FPF DNF","B: 2000 Resample Baseline","E: FMF-A1 2000","H: FPF 2000","C: 1576 Resample Baseline","F: FMF-A1 1576","I: FPF 1576"]
     titleForEachInflow = ["DNF Hydrology","2000 Hydrology","1576 Hydrology"]
 
     # read temperature profile data before calculation
@@ -237,12 +266,12 @@ if False:
     data1 = dataExchange.exportReleaseTemperature(Powell, path1, filePath+name1)
     data2 = dataExchange.exportReleaseTemperature(Powell, path2, filePath+name2)
     data3 = dataExchange.exportReleaseTemperature(Powell, path3, filePath+name3)
-    data4 = dataExchange.exportReleaseTemperature(Powell, path4, filePath+name1)
-    data5 = dataExchange.exportReleaseTemperature(Powell, path5, filePath+name2)
-    data6 = dataExchange.exportReleaseTemperature(Powell, path6, filePath+name3)
-    data7 = dataExchange.exportReleaseTemperature(Powell, path7, filePath+name1)
-    data8 = dataExchange.exportReleaseTemperature(Powell, path8, filePath+name2)
-    data9 = dataExchange.exportReleaseTemperature(Powell, path9, filePath+name3)
+    data4 = dataExchange.exportReleaseTemperature(Powell, path4, filePath+name4)
+    data5 = dataExchange.exportReleaseTemperature(Powell, path5, filePath+name5)
+    data6 = dataExchange.exportReleaseTemperature(Powell, path6, filePath+name6)
+    data7 = dataExchange.exportReleaseTemperature(Powell, path7, filePath+name7)
+    data8 = dataExchange.exportReleaseTemperature(Powell, path8, filePath+name8)
+    data9 = dataExchange.exportReleaseTemperature(Powell, path9, filePath+name9)
 
     results1 = dataExchange.exportDetailedDottyPlot(Powell, path1, path2, path3)
     results2 = dataExchange.exportDetailedDottyPlot(Powell, path4, path5, path6)
@@ -258,7 +287,7 @@ if False:
     plots.dottyPlotforReleaseTempRange33(results1, results2, results3, titles)
     plots.ReleaseTempRangePercentage33(results1, results2, results3, titles)
 
-### 7. plot results
+### 7. plot CRSS validation results
 if False:
     date_series = pd.date_range(start= n.begtime, periods=n.periods, freq="M")
     # plotsIndex = [0,40,80,100]

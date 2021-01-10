@@ -1,25 +1,37 @@
 
 # This file is designed to change policy on/off status
 
+
+# ==============Policy for Lake Powell=================
+
 # equalization rule and DCP
-EQUAL_DCP = False
-# Drought contingency plan
-# DCP = False
+# EQUAL_DCP = False
+
+# Adaptive policy, todo
 ADP = False
+
 # Fill Mead First
 FMF = False
+
 # Fill Powell First
 FPF = False
 
 # CRSS Powell policy
-CRSS_Powell = True
+CRSS_Powell = False
 
-# Release policy for each reservoir
+# ==============Policy for Lake Mead=================
+# Meet Lower basin demand
+LB_demand = False
 
-# which inflow scenario to use
+# CRSS Mead policy
+CRSS_Mead = False
 
-# which demand scenario to use
+# Protect Pearce Ferry Rapid
+PFR = False
 
-# which signpost?
+# Drought contingency plan, todo
+DCP = False
 
-#
+# Intentional creat surplus, todo
+ICS = False
+# Release policy for each reservoir, which inflow scenario to use, which demand scenario to use, which signpost?

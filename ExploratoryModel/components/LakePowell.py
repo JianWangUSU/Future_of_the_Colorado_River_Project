@@ -27,7 +27,6 @@ class LakePowell(Reservoir):
 
     lastPowellStorage = None
 
-
     # Combined Upper Basin Storage, used by drought response operation
     ubStorage = None
     initUBstorage = None
@@ -137,17 +136,16 @@ class LakePowell(Reservoir):
                         inflowthismonth = inflowthismonth + self.ubStorage[i][t] - self.targetUBstorage
                         self.ubStorage[i][t] = self.targetUBstorage
 
-        # monthly release table
-        self.upShortage[i][t] = self.relatedUser.Depletion[k][t] - (self.inflow[i][t] - inflowthismonth)
-        if self.upShortage[i][t] < 0:
-            self.upShortage[i][t] = 0
+        # self.upShortage[i][t] = self.relatedUser.Depletion[k][t] - (self.inflow[i][t] - inflowthismonth)
+        # if self.upShortage[i][t] < 0:
+        #     self.upShortage[i][t] = 0
 
         # validation use, use CRSS INFLOW data
         inflowthismonth = self.crssInflow[i][t]
         self.totalinflow[i][t] = inflowthismonth
 
         ### 3. determine policy. equalization rule is only triggered in Apr and Aug
-        self.releasePolicy(startStorage, k, i, t)
+        self.release[i][t] = self.releasePolicy(startStorage, k, i, t)
 
         # outflow meet boundary conditions
         # self.release[i][j] = max(self.release[i][j], self.MinReleaseFun(j))
@@ -155,7 +153,7 @@ class LakePowell(Reservoir):
         month = self.para.determineMonth(t)
         self.sovleStorageGivenOutflow(startStorage, inflowthismonth, month, i, t)
 
-        ### 7. calculate UB shortage for the current time period
+        ### calculate UB shortage for the current time period
         self.upShortage[i][t] = self.relatedUser.Depletion[k][t] - (self.inflow[i][t] - inflowthismonth)
         if self.upShortage[i][t] < 0:
             self.upShortage[i][t] = 0
@@ -193,22 +191,66 @@ class LakePowell(Reservoir):
         self.outflow[i][j] = self.release[i][j] + self.spill[i][j]
         self.elevation[i][j] = self.volume_to_elevation(self.storage[i][j])
 
+    def simulationSinglePeriodGeneral(self, startStorage, inflowthismonth, release, t):
+        month = self.para.determineMonth(t)
+        return self.sovleStorageGivenOutflowGeneral(startStorage, inflowthismonth, release, month, t)
 
+    # solve water balance equation given outflow
+    def sovleStorageGivenOutflowGeneral(self, startStorage, inflowthismonth, release, month, t):
+        ### 5. set initial data for water balance calculation
+        # set initial area, evaporation values
+        area = self.volume_to_area(startStorage)
+        evaporation = area * self.evapRates[month]
+        storage = startStorage + inflowthismonth - evaporation - release
+
+        ### 6. iteration to make water budget balanced, the deviation is less than 10 to power of the negative 10
+        index = 0
+        error = 100
+        while index < self.iteration and error > self.maxError:
+            preStorage = storage
+            area = (self.volume_to_area(startStorage) + self.volume_to_area(storage)) / 2.0
+            evaporation = self.calculateEvaporationGeneral(area, startStorage, storage, t)
+            # if storage increases, water flow from reservoir to bank
+            changeBankStorage = self.bankRates * (storage - startStorage)
+            storage = startStorage + inflowthismonth - changeBankStorage - evaporation - release
+            index = index + 1
+            error = abs(preStorage - storage)
+
+        spill = 0
+        if storage > self.maxStorage:
+            spill = storage - self.maxStorage
+            storage = self.maxStorage
+        elif storage < self.minStorage:
+            storage = self.minStorage
+            area = (self.volume_to_area(startStorage) + self.volume_to_area(storage)) / 2.0
+            # self.evaporation[i][j] = self.area[i][j] * self.evapRates[month]
+            evaporation = self.calculateEvaporationGeneral(area, startStorage, storage, t)
+            changeBankStorage = self.bankRates * (storage - startStorage)
+            release = startStorage - storage + inflowthismonth - changeBankStorage - evaporation
+
+        outflow = release + spill
+        elevation = self.volume_to_elevation(storage)
+
+        return storage, outflow
+
+    # release policy, self: Lake Powell itself, startStorage: begining storage, k: depletionTrace, i: inflowTrace, t: period
     def releasePolicy(self, startStorage, k, i, t):
-        # strategy equalization + DCP
-        if self.plc.EQUAL_DCP == True:
-            RelFun.equalizationAndDCP(k, i, t)
-        # strategy adaptive policy (only consider Pearce Ferry Rapid now)
-        if self.plc.ADP == True:
-            RelFun.adaptivePolicy(k, i, t)
-        # strategy FPF
+         # strategy FPF
         if self.plc.FPF == True:
-            RelFun.FPF(startStorage)
+            return RelFun.FPF(self, startStorage, t)
         # strategy re-drill Lake Powell (FMF)
         if self.plc.FMF == True:
-            RelFun.redrillPowell(startStorage)
+            return RelFun.redrillPowell(startStorage)
+        # Major CRSS Lake Powell policies
         if self.plc.CRSS_Powell == True:
-            self.crssPolicy(i,t)
+            return self.crssPolicy(i,t)
+
+        # strategy equalization + DCP
+        # if self.plc.EQUAL_DCP == True:
+        #     RelFun.equalizationAndDCP(k, i, t)
+        # strategy adaptive policy (only consider Pearce Ferry Rapid now)
+        # if self.plc.ADP == True:
+        #     return RelFun.adaptivePolicy(k, i, t)
 
     def crssPolicy(self, i, t):
         month = self.para.determineMonth(t)
@@ -249,6 +291,8 @@ class LakePowell(Reservoir):
         if temp != None and temp > 0:
             self.release[i][t] = temp
 
+        return self.release[i][t]
+
     # Periodic Net Evaporation
     def calculateEvaporation(self, area, startS, endS, i, t):
         month = self.para.determineMonth(t)
@@ -273,6 +317,30 @@ class LakePowell(Reservoir):
                                         + self.terraceEvaporation[i][t] + self.remainingEvaporation[i][t]
 
         return self.grossEvaporation[i][t] - self.salvageEvaporation[i][t]
+
+    def calculateEvaporationGeneral(self, area, startS, endS, t):
+        month = self.para.determineMonth(t)
+        startEle = self.volume_to_elevation(startS)
+        endEle = self.volume_to_elevation(endS)
+
+        grossEvaporation = area * self.grossEvapCoef[month]
+
+        tempRiverArea = (self.elevation_to_riverArea(startEle)+ self.elevation_to_riverArea(endEle)) / 2.0
+        riverEvaporation = tempRiverArea * self.riverEvapCoef[month]
+
+        tempStreamSideArea = (self.elevation_to_streamsideArea(startEle)+ self.elevation_to_streamsideArea(endEle)) / 2.0
+        streamsideEvaporation = tempStreamSideArea * self.streamsideCoef[month] * self.averageAirTemp[month]
+
+        tempTerranceArea = (self.elevation_to_terranceArea(startEle)+ self.elevation_to_terranceArea(endEle)) / 2.0
+        terraceEvaporation = tempTerranceArea * self.terranceCoef[month] * self.averageAirTemp[month]
+
+        tempRemainArea = area - tempRiverArea - tempStreamSideArea - tempTerranceArea
+        remainingEvaporation = tempRemainArea * self.averagePrecip[month]
+
+        salvageEvaporation = riverEvaporation + streamsideEvaporation \
+                                        + terraceEvaporation + remainingEvaporation
+
+        return grossEvaporation - salvageEvaporation
 
     def elevation_to_riverArea(self,ele):
         #INPUT acre-feet, RETURN feet

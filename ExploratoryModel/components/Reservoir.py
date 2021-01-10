@@ -71,6 +71,7 @@ class Reservoir(Node):
     storage = None # end of month storage in KAF
     area = None # area in acre
     convergence = None
+    releaseTemperature = None # reservoir release temerpature
 
     # temperory data, for validation, rename validation.
     crssUBshortage = None # UB basin shortages
@@ -105,6 +106,8 @@ class Reservoir(Node):
 
     # iteration for water budget calculation
     iteration = 20
+    # 1 acre-feet, change to 1,000 acre-feet
+    maxError = 10000
 
     # PowellMinObjRelData
     PowellMinimumContent = 0
@@ -140,6 +143,7 @@ class Reservoir(Node):
         self.testSeries1 = np.zeros([self.inflowTraces, self.periods])
         self.testSeries2 = np.zeros([self.inflowTraces, self.periods])
         self.testSeries3 = np.zeros([self.inflowTraces, self.periods])
+        self.releaseTemperature = np.zeros([self.inflowTraces, self.periods])
 
     # setup depletion data
     # def setupDepletion(self, user):

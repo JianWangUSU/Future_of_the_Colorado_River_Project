@@ -69,34 +69,16 @@ class LakeMead(Reservoir):
         self.totalinflow[i][t] = inflowthismonth
 
         # 2. validation use, use CRSS inflow to Lake Mead, will be delete after validation
-        inflowthismonth = self.crssInflow[i][t]
-        self.totalinflow[i][t] = inflowthismonth
+        # inflowthismonth = self.crssInflow[i][t]
+        # self.totalinflow[i][t] = inflowthismonth
 
         # 3. determine release this month
-        # determine which month are we in
         month = self.para.determineMonth(t)
-        self.release[i][t] = 0
-
-        # determine cutbacks for drought conditions
-        if month == self.JAN:
-            self.MeadDeduction = RelFun.cutbackFromDCP(self.volume_to_elevation(startStorage)) / 12
-
-        # depletion - cutbacks
-        # self.release[i][t] = self.Depletion[k][t]
-        # self.release[i][t] = self.Depletion[k][t] - self.MeadDeduction
-        self.release[i][t] = self.relatedUser.Depletion[k][t] - self.MeadDeduction - self.relatedUser.CRSSbankPutTake[i][t]
-
-        # Use CRSS demand below Mead
-        self.release[i][t] = self.crssDemandBelowMead[i][t]
-        # self.release[i][j] = self.crssDemandBelowMead[i][j] - self.MeadDeduction
-        # self.release[i][j] = self.relatedUser.Depletion[k][j] - self.MeadDeduction + self.crssMohaveHavasu[i][j]
-
-        # outflow > minimum outflow requirement
-        self.release[i][t] = max(self.release[i][t], RelFun.MinReleaseFun(self, t))
+        self.release[i][t] = self.releasePolicy(startStorage, k, i, t)
 
         self.sovleStorageGivenOutflow(startStorage, inflowthismonth, month, i, t)
 
-        # surpluse release, todo
+        # surpluse release
         # if self.storage[i][j] >= self.maxStorage:
             # self.release[i][j] = self.relatedUser.Depletion[k][j] - self.MeadDeduction + self.SurplusRelease[j]
             # self.release[i][j] = self.crssDemandBelowMead[i][j] - self.MeadDeduction + self.SurplusRelease[j]
@@ -112,6 +94,87 @@ class LakeMead(Reservoir):
         self.downShortage[i][t] = self.relatedUser.Depletion[k][t] - self.release[i][t]
         if self.downShortage[i][t] < 0:
             self.downShortage[i][t] = 0
+
+    # release policy, self: Lake Mead itself, startStorage: begining storage, k: depletionTrace, i: inflowTrace, t: period
+    def releasePolicy(self, startStorage, k, i, t):
+        if self.plc.LB_demand == True:
+            return self.relatedUser.Depletion[k][t]
+
+        if self.plc.DCP == True:
+            month = self.para.determineMonth(t)
+            # determine cutbacks for drought conditions
+            if month == self.JAN:
+                self.MeadDeduction = RelFun.cutbackFromDCP(self.volume_to_elevation(startStorage)) / 12
+
+            return self.relatedUser.Depletion[k][t] - self.MeadDeduction
+            # self.release[i][t] = self.relatedUser.Depletion[k][t] - self.MeadDeduction - self.relatedUser.CRSSbankPutTake[i][t]
+
+        if self.plc.CRSS_Mead == True:
+            # Use CRSS demand below Mead
+            self.release[i][t] = self.crssDemandBelowMead[i][t]
+            # self.release[i][j] = self.crssDemandBelowMead[i][j] - self.MeadDeduction
+            # self.release[i][j] = self.relatedUser.Depletion[k][j] - self.MeadDeduction + self.crssMohaveHavasu[i][j]
+
+            # outflow > minimum outflow requirement
+            self.release[i][t] = max(self.release[i][t], RelFun.MinReleaseFun(self, t))
+
+            return self.release[i][t]
+
+    def simulationSinglePeriodGeneral(self, startStorage, inflowthismonth, release, t):
+        # determine which month are we in
+        month = self.para.determineMonth(t)
+
+        # outflow > minimum outflow requirement
+        release = max(release, RelFun.MinReleaseFun(self, t))
+
+        return self.sovleStorageGivenOutflowGeneral(startStorage, inflowthismonth, release, month, t)
+
+    def sovleStorageGivenOutflowGeneral(self, startStorage, inflowthismonth, release, month, t):
+        # set initial values for area, evaporation and precipitation
+        spill = 0
+        area = self.volume_to_area(startStorage)
+        evaporation = area * self.evapRates[month] * RelFun.calcualtefractionOfEvaporation(t)
+        precipitation = area * self.precipRates[month]
+        storage = startStorage + inflowthismonth + precipitation - evaporation - release
+
+        # iteration to make water budget balanced, the deviation is less than 10 to power of the negative 10
+        index = 0
+        # plot iteration vs storage. 1/5/10,000 acre-feet. Add an error to stop iteration. (decrease computational time)
+        error = 100
+        while index < self.iteration and error > self.maxError:
+            # if t == 0 or t == 100:
+            #     print(str(index) + " " + str(storage))
+            preStorage = storage
+            area = (self.volume_to_area(startStorage) + self.volume_to_area(storage)) / 2.0
+            evaporation = area * self.evapRates[month] * RelFun.calcualtefractionOfEvaporation(t)
+            precipitation = area * self.precipRates[month]
+            # if storage increases, water flow from reservoir to bank
+            changeBankStorage = self.bankRates * (storage - startStorage)
+            storage = startStorage + inflowthismonth + precipitation - changeBankStorage - evaporation - release
+            index = index + 1
+            error = abs(preStorage - storage)
+
+
+        if storage > self.maxStorage:
+            area = (self.volume_to_area(startStorage) + self.volume_to_area(self.maxStorage)) / 2.0
+            evaporation = area * self.evapRates[month] * RelFun.calcualtefractionOfEvaporation(t)
+            precipitation = area * self.precipRates[month]
+            changeBankStorage = self.bankRates * (self.maxStorage - startStorage)
+            storage = self.maxStorage
+            spill = -storage + startStorage + inflowthismonth + precipitation \
+                               - changeBankStorage - evaporation - release
+        elif storage < self.minStorage:
+            storage = self.minStorage
+            area = (self.volume_to_area(startStorage) + self.volume_to_area(storage)) / 2.0
+            evaporation = area * self.evapRates[month] * RelFun.calcualtefractionOfEvaporation(t)
+            precipitation = area * self.precipRates[month]
+            changeBankStorage = self.bankRates * (self.storage - startStorage)
+            release = startStorage - storage + inflowthismonth + precipitation - changeBankStorage - evaporation
+
+        outflow = release + spill
+        elevation = self.volume_to_elevation(storage)
+
+        return storage
 
     def sovleStorageGivenOutflow(self, startStorage, inflowthismonth, month, i, t):
         # set initial values for area, evaporation and precipitation
@@ -150,14 +213,3 @@ class LakeMead(Reservoir):
 
         self.outflow[i][t] = self.release[i][t] + self.spill[i][t]
         self.elevation[i][t] = self.volume_to_elevation(self.storage[i][t])
-
-    def releasePolicy(self, startStorage, k, i, t):
-        month = self.para.determineMonth(t)
-        self.release[i][t] = 0
-
-        # determine cutbacks for drought conditions
-        if month == self.JAN:
-            self.MeadDeduction = RelFun.cutbackFromDCP(self.volume_to_elevation(startStorage)) / 12
-
-        self.release[i][t] = self.relatedUser.Depletion[k][t] - self.MeadDeduction - self.relatedUser.CRSSbankPutTake[i][t]
-
