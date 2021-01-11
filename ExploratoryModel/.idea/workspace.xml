@@ -1,17 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="98d60ba6-0189-4aaf-8408-f025eeac5580" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/testSimulation.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/testSimulation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/LakeMeadDSResults.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/results/LakeMeadDSResults.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/simulation/start.py" beforeDir="false" afterPath="$PROJECT_DIR$/simulation/start.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools/DecisionScaling.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/DecisionScaling.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools/parallel - Copy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/tools/parallel - Copy.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools/parallel.csv" beforeDir="false" afterPath="$PROJECT_DIR$/tools/parallel.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools/parallel2.csv" beforeDir="false" afterPath="$PROJECT_DIR$/tools/parallel2.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools/parallel3.csv" beforeDir="false" />
-    </list>
+    <list default="true" id="98d60ba6-0189-4aaf-8408-f025eeac5580" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -230,7 +220,7 @@
       <workItem from="1608567964948" duration="53886000" />
       <workItem from="1609776313306" duration="20608000" />
       <workItem from="1609965069808" duration="4455000" />
-      <workItem from="1610212385722" duration="48683000" />
+      <workItem from="1610212385722" duration="48968000" />
     </task>
     <servers />
   </component>
