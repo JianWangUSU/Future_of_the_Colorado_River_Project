@@ -102,12 +102,13 @@ import plotly.express as px
 import pandas as pd
 import plotly.graph_objects as go
 
-df = px.data.iris()
-print(df)
+# df = px.data.iris()
+# print(df)
 
 # df = pd.read_csv('../tools/parallel.csv')
+df = pd.read_csv('../tools/parallel1.csv')
 # df = pd.read_csv('../tools/parallel2.csv')
-df = pd.read_csv('../tools/parallel3.csv')
+# df = pd.read_csv('../tools/parallel3.csv')
 
 # df2 = df.sort_values(by=["sepal_length"], ascending=True)
 # df.to_csv('../tools/parallel2.csv')
@@ -123,28 +124,34 @@ df = pd.read_csv('../tools/parallel3.csv')
 #                                   dimensions=['InitStorage_Powell','Inflow_Powell','Release_Powell','InitStorage_Mead','Release_Mead','YearsToEmpty'],
 #                                   color_continuous_scale=px.colors.diverging.Tealrose, color_continuous_midpoint=20)
 
-fig = go.Figure(data=
-    go.Parcoords(
-        line = dict(color = df['YearsToEmpty'],
-                   colorscale = px.colors.diverging.Tealrose,
-                   showscale = True),
-        dimensions = list([
-            dict(range = [6,19],
-                constraintrange = [7,8],
-                label = 'InitStorage_Powell', values = df['InitStorage_Powell']),
-            dict(range = [3,15],
-                label = 'Inflow_Powell', values = df['Inflow_Powell']),
-            dict(range = [3,11],
-                label = 'Release_Powell', values = df['Release_Powell']),
-            dict(range = [6,19],
-                label = 'InitStorage_Mead', values = df['InitStorage_Mead']),
-            dict(range = [3, 11],
-                 label='Release_Mead', values=df['Release_Mead']),
-            dict(range = [0, 40],
-                 label='YearsToEmpty', values=df['YearsToEmpty'])
-        ])
-    )
-)
+# fig = go.Figure(data=
+#     go.Parcoords(
+#         line = dict(color = df['YearsTo12MAF'],
+#                    colorscale = 'reds_r',
+#                    showscale = True),
+#         dimensions = list([
+#             dict(range = [12,40],
+#                 label = 'InitStorage(Powell&Mead)', values = df['InitStorage(Powell&Mead)']),
+#             dict(range = [3,11.5],
+#                 label = 'Inflow_Powell', values = df['Inflow_Powell']),
+#             dict(range = [3,11.5],
+#                 label = 'Release_Mead', values = df['Release_Mead']),
+#             dict(range = [0,40],
+#                 label = 'YearsTo12MAF', values = df['YearsTo12MAF']),
+#         ])
+#     )
+# )
+
+# fig = px.parallel_coordinates(df, color="YearsTo12MAF",
+#                               dimensions= list([dict(range = [12,40], label = 'InitStorage(Powell&Mead)', values = df['InitStorage(Powell&Mead)']),
+#                                                 dict(range = [3,15.5], label = 'Inflow_Powell', values = df['Inflow_Powell']),
+#                                                 dict(range = [3,11.5], label = 'Release_Mead', values = df['Release_Mead']),
+#                                                 dict(range = [0,40], label = 'YearsTo12MAF', values = df['YearsTo12MAF']),]),
+#                               color_continuous_scale='reds_r', color_continuous_midpoint=20)
+
+fig = px.parallel_coordinates(df, color="YearsTo12MAF",
+                              dimensions=['InitStorage(Powell&Mead)', 'Inflow_Powell', 'Release_Mead', 'YearsTo12MAF'],
+                              color_continuous_scale='reds_r', color_continuous_midpoint=20)
 
 fig.show()
 

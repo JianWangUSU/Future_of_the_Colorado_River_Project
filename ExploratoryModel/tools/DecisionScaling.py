@@ -26,6 +26,9 @@ storage = np.zeros([totalN])  # reservoir storage in MAF
 MAFtoAF = 1000000
 
 # ==== Change parameters here ====
+# steps 0.2 is used for two dimensional analysis
+# steps = 0.2
+# steps 1 is used for three dimensional analysis
 steps = 1
 
 # demand for the first reservoir to release
@@ -52,9 +55,8 @@ mininitS1 = 6
 maxinitS1 = 20
 mininitS2 = 6
 maxinitS2 = 20
-totalMinIntiS = 6
+totalMinIntiS = 12
 totalMaxIntiS = 40
-
 
 # policy
 deductionPolicy = 0
@@ -67,7 +69,7 @@ def DS_EmptyAndFull(reservoir):
     releaseRange = np.arange(minRelease2, maxRelease2, steps)
     inflowRange = np.arange(minInflow2, maxInflow2, steps)
     # initStorage = reservoir.initStorage
-    initStorage = 3 * MAFtoAF
+    initStorage = 6 * MAFtoAF
 
     xLength = len(releaseRange)
     yLength = len(inflowRange)
@@ -80,6 +82,8 @@ def DS_EmptyAndFull(reservoir):
 
     deduction = 0
     for i in range(0, xLength):
+        print(str(format(i / xLength * 100, '.0f')) + '%' + " finish!")
+
         for j in range(0, yLength):
             for t in range(0,totalN*12):
                 if t == 0:
@@ -121,7 +125,7 @@ def DS_EmptyAndFull(reservoir):
     ax.clabel(CS, inline=1, fmt='%1.0f', fontsize=8)
     CS.collections[0].set_label("Years to full pool (Unit: years)")
 
-    CS = ax.contour(X, Y, Z3, levels=[8, 12, 16, 20], colors='#44A5C2')
+    CS = ax.contour(X, Y, Z3, levels=[4, 8, 12, 16, 20, 24], colors='#44A5C2')
     ax.clabel(CS, inline=1, fmt='%1.0f', fontsize=8)
     CS.collections[0].set_label("Static reservoir storage (Unit: MAF)")
 
@@ -130,8 +134,15 @@ def DS_EmptyAndFull(reservoir):
     # CS.collections[0].set_label("Years to 1025 ft (Unit: years)")
     CS.collections[0].set_label("Years to dead pool (Unit: years)")
 
-    ax.hlines(y=7.7, xmin=3, xmax=8.2, linewidth=2, color='r')
-    ax.vlines(x=8.2, ymin=3, ymax=7.7, linewidth=2, color='r')
+    ax.hlines(y=9.3, xmin=3, xmax=9.6, linewidth=1, color='r', linestyles = 'dashed')
+    ax.hlines(y=7+1, xmin=3, xmax=9.6, linewidth=1, color='r', linestyles = 'dashed')
+    ax.hlines(y=5.7+1, xmin=3, xmax=9.6, linewidth=1, color='r', linestyles = 'dashed')
+    ax.vlines(x=9.6-1.4, ymin=3, ymax=9.3, linewidth=1, color='r', linestyles = 'dashed')
+    ax.vlines(x=9.6, ymin=3, ymax=9.3, linewidth=1, color='r', linestyles = 'dashed')
+
+    ax.vlines(x=7.5, ymin=3, ymax=5.7+1, linewidth=1, color='r', linestyles = 'dotted')
+    ax.vlines(x=6.4, ymin=3, ymax=5.7+1, linewidth=1, color='r', linestyles = 'dotted')
+
 
     plt.legend(loc='upper left')
 
@@ -373,16 +384,16 @@ def MultiUncertaintiesAnalysis_3d(reservoir1, reservoir2):
     # combined Powell and Mead storage
     initSrange = np.arange(totalMinIntiS, totalMaxIntiS, steps)
     # Release from Mead
-    releaseRange2 = np.arange(minRelease2, maxRelease2, steps)
+    releaseRange2 = np.arange(minRelease2, maxRelease2, steps/2)
     # inflow to Powell
-    inflowRange1 = np.arange(minInflow1, maxInflow1, steps)
+    inflowRange1 = np.arange(minInflow1, maxInflow1, steps/2)
 
     s_length = len(initSrange)
     r2_length = len(releaseRange2)
     i1_length = len(inflowRange1)
     interveningInflow = 0.6
 
-    df = pd.DataFrame(columns=('InitStorage(Powell&Mead)', 'Inflow_Powell', 'Release_Mead', 'YearsTo10MAF'))
+    df = pd.DataFrame(columns=('InitStorage(Powell&Mead)', 'Inflow_Powell', 'Release_Mead', 'YearsTo12MAF'))
     to_append = []
 
     # first coarse resolution, then finer resolution
@@ -419,7 +430,8 @@ def MultiUncertaintiesAnalysis_3d(reservoir1, reservoir2):
                 for t in range(0, totalN):
                     storage[t] = (storageM1[t * 12 + 11] + storageM2[t * 12 + 11]) / MAFtoAF
 
-                years = findYearsTo10MAF()
+                # years = findYearsTo12MAF()
+                years = findYearsToEmpty()
 
                 to_append.clear()
                 to_append.append(initSrange[s])
@@ -435,12 +447,12 @@ def MultiUncertaintiesAnalysis_3d(reservoir1, reservoir2):
     print(df)
     df.to_csv('../tools/parallel.csv')
     df = pd.read_csv('../tools/parallel.csv')
-    df2 = df.sort_values(by=['YearsTo10MAF'], ascending=True)
+    df2 = df.sort_values(by=['YearsTo12MAF'], ascending=False)
     print(df2)
 
-    fig = px.parallel_coordinates(df2, color="YearsTo10MAF",
-                                  dimensions=['InitStorage(Powell&Mead)','Inflow_Powell','Release_Mead','YearsTo10MAF'],
-                                  color_continuous_scale='sunset', color_continuous_midpoint=20)
+    fig = px.parallel_coordinates(df2, color="YearsTo12MAF",
+                                  dimensions=['InitStorage(Powell&Mead)','Inflow_Powell','Release_Mead','YearsTo12MAF'],
+                                  color_continuous_scale='reds_r', color_continuous_midpoint=20)
 
     # px.colors.diverging.Tealrose
     fig.show()
@@ -807,9 +819,16 @@ def cutbackFromDCPgivenStorageInflowDemand(reservoir, storage, inflow, demand):
         else:
             return 1.1
 
-def findYearsTo10MAF():
+def findYearsTo12MAF():
     for i in range(0, totalN):
-      if storage[i] <= 10: # how many years to dry
+      if storage[i] <= 12: # how many years to dry
+          return i + 1
+
+    return totalN
+
+def findYearsToEmpty():
+    for i in range(0, totalN):
+      if storage[i] <= 0: # how many years to dry
           return i + 1
 
     return totalN

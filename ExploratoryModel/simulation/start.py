@@ -169,9 +169,8 @@ plc.DCP = False
 # CRSS Lake Mead policy for validation
 plc.CRSS_Mead = False
 
-
 ### 4. run decision scaling
-if False:
+if True:
     starttime = datetime.datetime.now()
     # DecisionScaling.DS_EmptyAndFullPowellMead2(Powell, Mead)
     # DecisionScaling.DS_EmptyAndFullPowellMead(Powell, Mead)
@@ -197,15 +196,14 @@ if False:
     # dataExchange.exportDSresults(ds2, filePath + 'PowellDS.xls')
 
 ### 5. run the model
-if True:
-
+if False:
     # run reservoir simulation
     n.simulation()
     # run reservoir release model
     waterTemperature.simulateResTemp(Powell)
 
 ### 6. export results
-if True:
+if False:
     filePath = "../results/"
 
     # Powell.xls will store all Lake Powell results.
