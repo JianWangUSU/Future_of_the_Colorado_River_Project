@@ -1,6 +1,6 @@
 from components.component import Node
 import numpy as np
-import components.policyControl as policyControl
+import components.PolicyControl as policyControl
 import components.Parameters as Parameters
 from dateutil.relativedelta import relativedelta
 import calendar

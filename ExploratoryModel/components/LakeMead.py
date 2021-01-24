@@ -65,7 +65,9 @@ class LakeMead(Reservoir):
 
         # 2. determine inflow for current month
         inflowthismonth = 0
-        inflowthismonth = self.crssInflow[i][t] - self.upReservoir.crssOutflow[i][t] + self.upReservoir.outflow[i][t]
+        # inflowthismonth = self.crssInflow[i][t] - self.upReservoir.crssOutflow[i][t] + self.upReservoir.outflow[i][t]
+        inflowthismonth = self.interveningInflow(k, i, t) + self.upReservoir.outflow[i][t]
+
         self.totalinflow[i][t] = inflowthismonth
 
         # 2. validation use, use CRSS inflow to Lake Mead, will be delete after validation
@@ -76,7 +78,10 @@ class LakeMead(Reservoir):
         month = self.para.determineMonth(t)
         self.release[i][t] = self.releasePolicy(startStorage, k, i, t)
 
-        self.sovleStorageGivenOutflow(startStorage, inflowthismonth, month, i, t)
+        # self.sovleStorageGivenOutflow(startStorage, inflowthismonth, month, i, t)
+        self.storage[i][t], self.outflow[i][t], self.area[i][t], self.elevation[i][t] \
+            , self.changeBankStorage[i][t], self.elevation[i][t], self.release[i][t], self.spill[i][t] \
+            = self.sovleStorageGivenOutflowGeneral(startStorage, inflowthismonth, self.release[i][t], month, t)
 
         # surpluse release
         # if self.storage[i][j] >= self.maxStorage:
@@ -86,14 +91,19 @@ class LakeMead(Reservoir):
 
        # CRSS release for validation, use CRSS release data, will be delete after validation
         # self.release[i][j] = self.crssOutflow[i][j]
-
         # self.sovleStorageGivenOutflow(startStorage, inflowthismonth, month, i, j)
 
        # 4. calculate shortage for current period
-        # determine cutbacks
         self.downShortage[i][t] = self.relatedUser.Depletion[k][t] - self.release[i][t]
         if self.downShortage[i][t] < 0:
             self.downShortage[i][t] = 0
+
+    def interveningInflow(self, k, i, t):
+        # In validation, intervening inflow to Mead are equal to MEAD inflow (CRSS results) - Powell outflow (CRSS results).
+        if self.plc.CRSS_Mead == True:
+            return self.crssInflow[i][t] - self.upReservoir.crssOutflow[i][t]
+        else:
+            return
 
     # release policy, self: Lake Mead itself, startStorage: begining storage, k: depletionTrace, i: inflowTrace, t: period
     def releasePolicy(self, startStorage, k, i, t):
@@ -136,11 +146,12 @@ class LakeMead(Reservoir):
         evaporation = area * self.evapRates[month] * RelFun.calcualtefractionOfEvaporation(t)
         precipitation = area * self.precipRates[month]
         storage = startStorage + inflowthismonth + precipitation - evaporation - release
+        changeBankStorage = 0
 
         # iteration to make water budget balanced, the deviation is less than 10 to power of the negative 10
         index = 0
         # plot iteration vs storage. 1/5/10,000 acre-feet. Add an error to stop iteration. (decrease computational time)
-        error = 100
+        error = self.maxError + 1
         while index < self.iteration and error > self.maxError:
             # if t == 0 or t == 100:
             #     print(str(index) + " " + str(storage))
@@ -153,7 +164,6 @@ class LakeMead(Reservoir):
             storage = startStorage + inflowthismonth + precipitation - changeBankStorage - evaporation - release
             index = index + 1
             error = abs(preStorage - storage)
-
 
         if storage > self.maxStorage:
             area = (self.volume_to_area(startStorage) + self.volume_to_area(self.maxStorage)) / 2.0
@@ -174,8 +184,10 @@ class LakeMead(Reservoir):
         outflow = release + spill
         elevation = self.volume_to_elevation(storage)
 
-        return storage
+        # return storage
+        return storage, outflow, area, evaporation, changeBankStorage, elevation, release, spill
 
+    # abandoned
     def sovleStorageGivenOutflow(self, startStorage, inflowthismonth, month, i, t):
         # set initial values for area, evaporation and precipitation
         self.spill[i][t] = 0

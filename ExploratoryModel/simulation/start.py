@@ -1,9 +1,8 @@
 from components import Network, Reservoir, User, River, LakePowell, LakeMead
-from tools import dataExchange, plots
-from decisionScaling import DStools
-import components.policyControl as plc
+from tools import DataExchange, plots
+import components.PolicyControl as plc
 import pandas as pd
-from tools import waterTemperature, DecisionScaling
+from tools import ReleaseTemperature, DecisionScaling
 import datetime
 
 ### 1. create a network
@@ -54,65 +53,65 @@ filePath = "../data/"
 # zvPowell includes Lake Powell elevation-storage-area data from CRSS
 fileName = "zvPowell.csv"
 # read data from zvPowell.csv to Powell object
-dataExchange.readEleStoArea(Powell,filePath + fileName)
+DataExchange.readEleStoArea(Powell, filePath + fileName)
 # inflowPowell includes Lake Powell inflow data
 fileName = "inflowPowell.csv"
-dataExchange.readInflow(Powell,filePath + fileName)
+DataExchange.readInflow(Powell, filePath + fileName)
 # PowellReleaseTable.csv includes Lake Powell release table
 fileName = "PowellReleaseTable.csv"
-dataExchange.readPowellReleaseTable(Powell,filePath + fileName)
+DataExchange.readPowellReleaseTable(Powell, filePath + fileName)
 # otherdataPowell.csv includes other Powell information, such as start storage, minimum and maximum storages, etc.
 fileName = "otherdataPowell.csv"
-dataExchange.readOtherData(Powell,filePath + fileName)
+DataExchange.readOtherData(Powell, filePath + fileName)
 # PrecipEvapPowell.csv includes Lake Powell monthly precipitation rate and evaporation rate.
 fileName = "PrecipEvapPowell.csv"
-dataExchange.readPrecipEvap(Powell,filePath + fileName)
+DataExchange.readPrecipEvap(Powell, filePath + fileName)
 fileName = "PowellPeriodicNetEvap.csv"
-dataExchange.readPowellPeriodicNetEvapCoef(Powell, filePath + fileName)
+DataExchange.readPowellPeriodicNetEvapCoef(Powell, filePath + fileName)
 fileName = "PeriodicNetEvapTable.csv"
-dataExchange.readPowellPeriodicNetEvapTable(Powell, filePath + fileName)
+DataExchange.readPowellPeriodicNetEvapTable(Powell, filePath + fileName)
 fileName = "EqualizationLine.csv"
-dataExchange.readUpEqualizationTier(Powell, filePath + fileName)
+DataExchange.readUpEqualizationTier(Powell, filePath + fileName)
 fileName = "ShiftedEQLine.csv"
-dataExchange.readShiftedEQLine(Powell, filePath + fileName)
+DataExchange.readShiftedEQLine(Powell, filePath + fileName)
 fileName = "ForecastEOWYSPowell.csv"
-dataExchange.readCRSSForecastEOWYSPowell(Powell,filePath + fileName)
+DataExchange.readCRSSForecastEOWYSPowell(Powell, filePath + fileName)
 fileName = "ForecastPowellInflow.csv"
-dataExchange.readCRSSForecastPowellInflow(Powell,filePath + fileName)
+DataExchange.readCRSSForecastPowellInflow(Powell, filePath + fileName)
 fileName = "ForecastPowellRelease.csv"
-dataExchange.readCRSSForecastPowellRelease(Powell,filePath + fileName)
+DataExchange.readCRSSForecastPowellRelease(Powell, filePath + fileName)
 fileName = "PowellMaxTurbineQ.csv"
-dataExchange.readMaxTurbineQ(Powell,filePath + fileName)
+DataExchange.readMaxTurbineQ(Powell, filePath + fileName)
 fileName = "PowellTailwaterTable.csv"
-dataExchange.readTailwaterTable(Powell,filePath + fileName)
+DataExchange.readTailwaterTable(Powell, filePath + fileName)
 fileName = "PowellComputeRunoffSeasonRelease.csv"
-dataExchange.readCRSSPowellComputeRunoffSeasonRelease(Powell,filePath + fileName)
+DataExchange.readCRSSPowellComputeRunoffSeasonRelease(Powell, filePath + fileName)
 fileName = "PowellComputeFallSeasonRelease.csv"
-dataExchange.readCRSSPowellComputeFallSeasonRelease(Powell,filePath + fileName)
+DataExchange.readCRSSPowellComputeFallSeasonRelease(Powell, filePath + fileName)
 
 # read Lake Mead data, similar to Powell data.
 fileName = "zvMead.csv"
-dataExchange.readEleStoArea(Mead, filePath + fileName)
+DataExchange.readEleStoArea(Mead, filePath + fileName)
 fileName = "inflowMead.csv"
-dataExchange.readInflow(Mead, filePath + fileName)
+DataExchange.readInflow(Mead, filePath + fileName)
 fileName = "otherdataMead.csv"
-dataExchange.readOtherData(Mead,filePath + fileName)
+DataExchange.readOtherData(Mead, filePath + fileName)
 fileName = "PrecipEvapMead.csv"
-dataExchange.readPrecipEvap(Mead,filePath + fileName)
+DataExchange.readPrecipEvap(Mead, filePath + fileName)
 fileName = "dsMeadTable.csv"
-dataExchange.readPearceFerrySignpost(Mead,filePath + fileName)
+DataExchange.readPearceFerrySignpost(Mead, filePath + fileName)
 fileName = "SurplusRelease.csv"
-dataExchange.readMeadSurplusRelease(Mead,filePath + fileName)
+DataExchange.readMeadSurplusRelease(Mead, filePath + fileName)
 fileName = "SumCurrentDemandMead.csv"
-dataExchange.readCRSSDemandBelowMead(Mead,filePath + fileName)
+DataExchange.readCRSSDemandBelowMead(Mead, filePath + fileName)
 fileName = "CRSSMohaveHavasu.csv"
-dataExchange.readCRSSMohaveHavasu(Mead,filePath + fileName)
+DataExchange.readCRSSMohaveHavasu(Mead, filePath + fileName)
 
 # read User data
 # depletion.csv includes UB, LB depletion (demand) schedules.
 fileName = "depletion.csv"
 # read data from depletion.csv to User object
-dataExchange.readDepletion(UB, LBM, filePath + fileName)
+DataExchange.readDepletion(UB, LBM, filePath + fileName)
 
 # set up depletion data, copy depletion data to Lake Powell and Lake Mead
 # Powell.setupDepletion(UBLB)
@@ -120,31 +119,31 @@ dataExchange.readDepletion(UB, LBM, filePath + fileName)
 
 # read CRSS release information, only used for validation purpose
 fileName = "CRSSPowellOutflow.csv"
-dataExchange.readCRSSoutflow(Powell, filePath + fileName)
+DataExchange.readCRSSoutflow(Powell, filePath + fileName)
 fileName = "CRSSMeadOutflow.csv"
-dataExchange.readCRSSoutflow(Mead, filePath + fileName)
+DataExchange.readCRSSoutflow(Mead, filePath + fileName)
 fileName = "CRSSPowellInflow.csv"
-dataExchange.readCRSSinflow(Powell, filePath + fileName)
+DataExchange.readCRSSinflow(Powell, filePath + fileName)
 fileName = "CRSSMeadInflow.csv"
-dataExchange.readCRSSinflow(Mead, filePath + fileName)
+DataExchange.readCRSSinflow(Mead, filePath + fileName)
 fileName = "CRSSPowellElevation.csv"
-dataExchange.readCRSSelevation(Powell, filePath + fileName)
+DataExchange.readCRSSelevation(Powell, filePath + fileName)
 fileName = "CRSSMeadElevation.csv"
-dataExchange.readCRSSelevation(Mead, filePath + fileName)
+DataExchange.readCRSSelevation(Mead, filePath + fileName)
 fileName = "CRSSMeadInterveInflow.csv"
-dataExchange.readCRSSIntereveinflow(Mead, filePath + fileName)
+DataExchange.readCRSSIntereveinflow(Mead, filePath + fileName)
 fileName = "ForecastMeadRelease.csv"
-dataExchange.readCRSSForecastMeadRelease(Mead, filePath + fileName)
+DataExchange.readCRSSForecastMeadRelease(Mead, filePath + fileName)
 fileName = "ForecastEOWYSMead.csv"
-dataExchange.readCRSSForecastEOWYSMead(Mead, filePath + fileName)
+DataExchange.readCRSSForecastEOWYSMead(Mead, filePath + fileName)
 fileName = "SNWPDiversionTotalDepletionRequested.csv"
-dataExchange.readCRSSSNWPDiversionTotalDepletionRequested(Mead, filePath + fileName)
+DataExchange.readCRSSSNWPDiversionTotalDepletionRequested(Mead, filePath + fileName)
 fileName = "CRSSLBMXbankBalance.csv"
-dataExchange.readCRSSBankAccount(LBM, filePath + fileName)
+DataExchange.readCRSSBankAccount(LBM, filePath + fileName)
 
 # read temperature profile data before calculation
 profile_path = "../data/depth_temperature.csv"
-dataExchange.readDepthProfileForTemp(profile_path)
+DataExchange.readDepthProfileForTemp(profile_path)
 
 # fileName = "CRSSUBMonthShort.csv"
 # dataExchange.readCRSSubShortage(Powell, filePath + fileName)
@@ -154,31 +153,40 @@ dataExchange.readDepthProfileForTemp(profile_path)
 # ADP: adaptive policy, only consider Pearce Ferry Rapid signpost, will add more.
 # plc.EQUAL_DCP = False
 # plc.ADP = False
-# ============ policy for Lake Powell=================
-# FPF: Fill Powell First
-plc.FPF = True
-# FMF: Fill Mead First (Re-drill Lake Powell)
-plc.FMF = False
-# CRSS Lake Powell policy for validation
-plc.CRSS_Powell = False
-# ============ policy for Lake Mead=================
-# Meet Lower basin demand
-plc.LB_demand = True
-# Drought Contigency plan
-plc.DCP = False
-# CRSS Lake Mead policy for validation
-plc.CRSS_Mead = False
+# # ============ policy for Lake Powell=================
+# # FPF: Fill Powell First
+# plc.FPF = False
+# # FMF: Fill Mead First (Re-drill Lake Powell)
+# plc.FMF = False
+# # CRSS Lake Powell policy for validation
+# plc.CRSS_Powell = True
+# # ============ policy for Lake Mead=================
+# # Meet Lower basin demand
+# plc.LB_demand = False
+# # Drought Contigency plan
+# plc.DCP = False
+# # CRSS Lake Mead policy for validation
+# plc.CRSS_Mead = True
 
 ### 4. run decision scaling
-if True:
+if False:
     starttime = datetime.datetime.now()
+    # 2 dimensional plot
     # DecisionScaling.DS_EmptyAndFullPowellMead2(Powell, Mead)
     # DecisionScaling.DS_EmptyAndFullPowellMead(Powell, Mead)
-    # DecisionScaling.MultiUncertaintiesAnalysis(Powell, Mead)
-    DecisionScaling.MultiUncertaintiesAnalysis_3d(Powell, Mead)
 
-    # DecisionScaling.DS_EmptyAndFull(Mead)
+    # 5 dimensional plot
+    # DecisionScaling.MultiUncertaintiesAnalysis(Powell, Mead)
+
+    # 3 dimensional plot
+    # DecisionScaling.MultiUncertaintiesAnalysis_3d(Powell, Mead)
+
+    # 2 dimensional plot for Lake Mead, require higher resolution, small steps values
+    ### inflow and release
+    DecisionScaling.DS_EmptyAndFull(Mead)
+    ### inflow and initial storage
     # DecisionScaling.DS_EmptyAndFull2(Mead)
+    ### release and initial storage
     # DecisionScaling.DS_EmptyAndFull3(Mead)
 
     endtime = datetime.datetime.now()
@@ -196,26 +204,46 @@ if True:
     # dataExchange.exportDSresults(ds2, filePath + 'PowellDS.xls')
 
 ### 5. run the model
-if False:
+if True:
     # run reservoir simulation
     n.simulation()
     # run reservoir release model
-    waterTemperature.simulateResTemp(Powell)
+    ReleaseTemperature.simulateResTemp(Powell)
 
 ### 6. export results
-if False:
+if True:
     filePath = "../results/"
 
     # Powell.xls will store all Lake Powell results.
     name = 'Powell.xls'
     # exports results to  ExploratoryModel --> results folder.
-    dataExchange.exportData(Powell, filePath + name)
+    DataExchange.exportData(Powell, filePath + name)
     # Mead.xls will store all Lake Powell results.
     name = 'Mead.xls'
     # exports results to ExploratoryModel --> results folder.
-    dataExchange.exportData(Mead, filePath + name)
+    DataExchange.exportData(Mead, filePath + name)
 
-# Generate results for AMP white paper
+### 7. plot CRSS validation results
+if True:
+    date_series = pd.date_range(start= n.begtime, periods=n.periods, freq="M")
+    # plotsIndex = [0,40,80,100]
+    plotsIndex = [0, 40, 80]
+    for j in range(len(plotsIndex)):
+        i = plotsIndex[j]
+        title = "Lake Powell (Run" + str(i) +")"
+        plots.plot_Elevations_Flows_CRSS_Exploratory_Powell(date_series, Powell.crssStorage[i], Powell.crssInflow[i],
+                                                            Powell.crssOutflow[i], Powell.crssElevation[i],
+                                                            Powell.storage[i], Powell.totalinflow[i],
+                                                            Powell.outflow[i], Powell.elevation[i], title)
+        title = "Lake Mead (Run" + str(i) +")"
+        plots.plot_Elevations_Flows_CRSS_Exploratory_Mead(date_series, Mead.crssStorage[i], Mead.crssInflow[i],
+                                                          Mead.crssOutflow[i], Mead.crssElevation[i],
+                                                          Mead.storage[i], Mead.totalinflow[i],
+                                                          Mead.outflow[i], Mead.elevation[i], title)
+        # title = "Equalization (Run" + str(i) +")"
+        # plots.Equalization(date_series,Powell.crssStorage[i]/Powell.maxStorage-Mead.crssStorage[i]/Mead.maxStorage,Powell.storage[i]/Powell.maxStorage- Mead.storage[i]/Mead.maxStorage,title)
+
+# 7. Generate results for AMP white paper
 if False:
     filePath = "../results/"
 
@@ -284,24 +312,3 @@ if False:
     plots.dottyPlotforAveReleaseTemp33(data1, data2, data3, data4, data5, data6, data7, data8, data9,titles)
     plots.dottyPlotforReleaseTempRange33(results1, results2, results3, titles)
     plots.ReleaseTempRangePercentage33(results1, results2, results3, titles)
-
-### 7. plot CRSS validation results
-if False:
-    date_series = pd.date_range(start= n.begtime, periods=n.periods, freq="M")
-    # plotsIndex = [0,40,80,100]
-    plotsIndex = [0, 40, 80]
-    for j in range(len(plotsIndex)):
-        i = plotsIndex[j]
-        title = "Lake Powell (Run" + str(i) +")"
-        plots.plot_Elevations_Flows_CRSS_Exploratory_Powell(date_series, Powell.crssStorage[i], Powell.crssInflow[i],
-                                                            Powell.crssOutflow[i], Powell.crssElevation[i],
-                                                            Powell.storage[i], Powell.totalinflow[i],
-                                                            Powell.outflow[i], Powell.elevation[i], title)
-        title = "Lake Mead (Run" + str(i) +")"
-        plots.plot_Elevations_Flows_CRSS_Exploratory_Mead(date_series, Mead.crssStorage[i], Mead.crssInflow[i],
-                                                          Mead.crssOutflow[i], Mead.crssElevation[i],
-                                                          Mead.storage[i], Mead.totalinflow[i],
-                                                          Mead.outflow[i], Mead.elevation[i], title)
-        # title = "Equalization (Run" + str(i) +")"
-        # plots.Equalization(date_series,Powell.crssStorage[i]/Powell.maxStorage-Mead.crssStorage[i]/Mead.maxStorage,Powell.storage[i]/Powell.maxStorage- Mead.storage[i]/Mead.maxStorage,title)
-

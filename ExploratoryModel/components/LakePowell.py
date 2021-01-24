@@ -98,6 +98,44 @@ class LakePowell(Reservoir):
         self.salvageEvaporation = np.zeros([self.inflowTraces, self.periods])
         self.EQTrumpUpperLevelBalancingFlag = np.zeros([self.inflowTraces, self.periods])
 
+    def inflowToPowell(self, k, i, t):
+        if self.plc.CRSS_Powell == True:
+            # CRSS INFLOW data for validation purpose
+            return self.crssInflow[i][t]
+        else:
+            # ubStorage is the aggregated storage above Lake Powell
+            # inflowthismonth = self.inflow[i][j] - (self.relatedUser.Depletion[k][j] + self.crssUBshortage[i][j])
+
+            inflowthismonth = self.inflow[i][t] - self.relatedUser.Depletion[k][t]
+            if inflowthismonth < 0:
+                inflowthismonth = 0
+            if self.UBreleaseFlag == True:
+                if self.UBmonthRelease <= self.ubStorage[i][t]:
+                    inflowthismonth = inflowthismonth + self.UBmonthRelease
+                    self.ubStorage[i][t] = self.ubStorage[i][t] - self.UBmonthRelease
+                else:
+                    inflowthismonth = inflowthismonth + self.ubStorage[i][t]
+                    self.ubStorage[i][t] = self.ubStorage[i][t] - self.ubStorage[i][t]
+            else:
+                if self.ubStorage[i][t] < self.targetUBstorage:
+                    if inflowthismonth < self.UBmonthRefill:
+                        inflowthismonth = 0
+                        self.ubStorage[i][t] = self.ubStorage[i][t] + inflowthismonth
+                        if self.ubStorage[i][t] > self.targetUBstorage:
+                            inflowthismonth = inflowthismonth + self.ubStorage[i][t] - self.targetUBstorage
+                            self.ubStorage[i][t] = self.targetUBstorage
+                    else:
+                        inflowthismonth = inflowthismonth - self.UBmonthRefill
+                        self.ubStorage[i][t] = self.ubStorage[i][t] + self.UBmonthRefill
+                        if self.ubStorage[i][t] > self.targetUBstorage:
+                            inflowthismonth = inflowthismonth + self.ubStorage[i][t] - self.targetUBstorage
+                            self.ubStorage[i][t] = self.targetUBstorage
+
+            # self.upShortage[i][t] = self.relatedUser.Depletion[k][t] - (self.inflow[i][t] - inflowthismonth)
+            # if self.upShortage[i][t] < 0:
+            #     self.upShortage[i][t] = 0
+            return inflowthismonth
+
     # simulate one time period, k: depletionTrace, i: inflowTrace, t: period
     def simulationSinglePeriod(self, k, i, t):
         ### 1. determine the start of reservoir storage in the current time period.
@@ -110,38 +148,8 @@ class LakePowell(Reservoir):
             self.ubStorage[i][t] = self.ubStorage[i][t - 1]
 
         ### 2. determine inflow for the current month, add shortage
-        # inflowthismonth = self.inflow[i][j] - (self.relatedUser.Depletion[k][j] + self.crssUBshortage[i][j])
-        inflowthismonth = self.inflow[i][t] - self.relatedUser.Depletion[k][t]
-        if inflowthismonth < 0:
-            inflowthismonth = 0
-        if self.UBreleaseFlag == True:
-            if self.UBmonthRelease <= self.ubStorage[i][t]:
-                inflowthismonth = inflowthismonth + self.UBmonthRelease
-                self.ubStorage[i][t] = self.ubStorage[i][t] - self.UBmonthRelease
-            else:
-                inflowthismonth = inflowthismonth + self.ubStorage[i][t]
-                self.ubStorage[i][t] = self.ubStorage[i][t] - self.ubStorage[i][t]
-        else:
-            if self.ubStorage[i][t] < self.targetUBstorage:
-                if inflowthismonth < self.UBmonthRefill:
-                    inflowthismonth = 0
-                    self.ubStorage[i][t] = self.ubStorage[i][t] + inflowthismonth
-                    if self.ubStorage[i][t] > self.targetUBstorage:
-                        inflowthismonth = inflowthismonth + self.ubStorage[i][t] - self.targetUBstorage
-                        self.ubStorage[i][t] = self.targetUBstorage
-                else:
-                    inflowthismonth = inflowthismonth - self.UBmonthRefill
-                    self.ubStorage[i][t] = self.ubStorage[i][t] + self.UBmonthRefill
-                    if self.ubStorage[i][t] > self.targetUBstorage:
-                        inflowthismonth = inflowthismonth + self.ubStorage[i][t] - self.targetUBstorage
-                        self.ubStorage[i][t] = self.targetUBstorage
-
-        # self.upShortage[i][t] = self.relatedUser.Depletion[k][t] - (self.inflow[i][t] - inflowthismonth)
-        # if self.upShortage[i][t] < 0:
-        #     self.upShortage[i][t] = 0
-
-        # validation use, use CRSS INFLOW data
-        inflowthismonth = self.crssInflow[i][t]
+        # inflowthismonth = self.crssInflow[i][t]
+        inflowthismonth = self.inflowToPowell(k,i,t)
         self.totalinflow[i][t] = inflowthismonth
 
         ### 3. determine policy. equalization rule is only triggered in Apr and Aug
@@ -151,14 +159,17 @@ class LakePowell(Reservoir):
         # self.release[i][j] = max(self.release[i][j], self.MinReleaseFun(j))
 
         month = self.para.determineMonth(t)
-        self.sovleStorageGivenOutflow(startStorage, inflowthismonth, month, i, t)
+        # self.sovleStorageGivenOutflow(startStorage, inflowthismonth, month, i, t)
+        self.storage[i][t], self.outflow[i][t], self.area[i][t], self.elevation[i][t]\
+            , self.changeBankStorage[i][t], self.elevation[i][t], self.release[i][t], self.spill[i][t] \
+            = self.sovleStorageGivenOutflowGeneral(startStorage, inflowthismonth, self.release[i][t], month, t)
 
         ### calculate UB shortage for the current time period
         self.upShortage[i][t] = self.relatedUser.Depletion[k][t] - (self.inflow[i][t] - inflowthismonth)
         if self.upShortage[i][t] < 0:
             self.upShortage[i][t] = 0
 
-    # solve water balance equation given outflow
+    # solve water balance equation given outflow, abandoned.
     def sovleStorageGivenOutflow(self, startStorage, inflowthismonth, month, i, j):
         ### 5. set initial data for water balance calculation
         # set initial area, evaporation values
@@ -202,11 +213,14 @@ class LakePowell(Reservoir):
         area = self.volume_to_area(startStorage)
         evaporation = area * self.evapRates[month]
         storage = startStorage + inflowthismonth - evaporation - release
+        changeBankStorage = 0
 
         ### 6. iteration to make water budget balanced, the deviation is less than 10 to power of the negative 10
         index = 0
-        error = 100
+        # needs to be greater than maxError in the very begining.
+        error = self.maxError + 1
         while index < self.iteration and error > self.maxError:
+        # while index < self.iteration:
             preStorage = storage
             area = (self.volume_to_area(startStorage) + self.volume_to_area(storage)) / 2.0
             evaporation = self.calculateEvaporationGeneral(area, startStorage, storage, t)
@@ -231,19 +245,22 @@ class LakePowell(Reservoir):
         outflow = release + spill
         elevation = self.volume_to_elevation(storage)
 
-        return storage, outflow
+        return storage, outflow, area, evaporation, changeBankStorage, elevation, release, spill
 
     # release policy, self: Lake Powell itself, startStorage: begining storage, k: depletionTrace, i: inflowTrace, t: period
     def releasePolicy(self, startStorage, k, i, t):
+        # Major CRSS Lake Powell policies
+        if self.plc.CRSS_Powell == True:
+            return self.crssPolicy(i, t)
          # strategy FPF
         if self.plc.FPF == True:
             return RelFun.FPF(self, startStorage, t)
         # strategy re-drill Lake Powell (FMF)
         if self.plc.FMF == True:
-            return RelFun.redrillPowell(startStorage)
-        # Major CRSS Lake Powell policies
-        if self.plc.CRSS_Powell == True:
-            return self.crssPolicy(i,t)
+            return RelFun.FMF(self, startStorage)
+        # Equalization
+        if self.plc.EQUAL == True:
+            return RelFun.equalization(startStorage)
 
         # strategy equalization + DCP
         # if self.plc.EQUAL_DCP == True:

@@ -103,7 +103,7 @@ def DS_EmptyAndFull(reservoir):
                 inflow = inflowRange[j]/12*MAFtoAF
                 release = releaseRange[i]/12*MAFtoAF
 
-                storageM[t] = reservoir.simulationSinglePeriodGeneral(startStorage, inflow, release, t)
+                storageM[t] = reservoir.simulationSinglePeriodGeneral(startStorage, inflow, release, t)[0]
 
                 # simulation(t, reservoir, demandRange[i], inflowRange[j])
             for t in range(0,totalN):
@@ -189,7 +189,7 @@ def DS_EmptyAndFull2(reservoir):
                 defaultRelease2 = 6.6
                 release = defaultRelease2 / 12 * MAFtoAF
 
-                storageM[t] = reservoir.simulationSinglePeriodGeneral(startStorage, inflow, release, t)
+                storageM[t] = reservoir.simulationSinglePeriodGeneral(startStorage, inflow, release, t)[0]
 
                 # simulation(t, reservoir, demandRange[i], inflowRange[j])
             for t in range(0,totalN):
@@ -257,7 +257,7 @@ def DS_EmptyAndFull3(reservoir):
                 release = releaseRange[j]/12*MAFtoAF
                 inflow = defaultInflow2 / 12 * MAFtoAF
 
-                storageM[t] = reservoir.simulationSinglePeriodGeneral(startStorage, inflow, release, t)
+                storageM[t] = reservoir.simulationSinglePeriodGeneral(startStorage, inflow, release, t)[0]
 
                 # simulation(t, reservoir, demandRange[i], inflowRange[j])
             for t in range(0,totalN):
@@ -333,7 +333,9 @@ def MultiUncertaintiesAnalysis(reservoir1, reservoir2):
                                     startStorage1 = storageM1[t - 1]
                                 inflow1 = inflowRange1[i1]/12 * MAFtoAF
                                 release1 = releaseRange1[r1]/12 * MAFtoAF
-                                storageM1[t], inflow2 = reservoir1.simulationSinglePeriodGeneral(startStorage1, inflow1, release1, t)
+                                results = reservoir1.simulationSinglePeriodGeneral(startStorage1, inflow1, release1, t)
+                                storageM1[t] = results[0]
+                                inflow2 = results[1]
 
                                 if t == 0:
                                     startStorage2 = initSrange2[s2] * MAFtoAF
@@ -341,7 +343,8 @@ def MultiUncertaintiesAnalysis(reservoir1, reservoir2):
                                     startStorage2 = storageM2[t - 1]
                                 inflow2 = inflow2 + 0.6 / 12 * MAFtoAF
                                 release2 = releaseRange2[r2] / 12 * MAFtoAF
-                                storageM2[t] = reservoir2.simulationSinglePeriodGeneral(startStorage2, inflow2, release2, t)
+                                resutls = reservoir2.simulationSinglePeriodGeneral(startStorage2, inflow2, release2, t)
+                                storageM2[t] = results[0]
 
                             for t in range(0,totalN):
                                 storage[t] = storageM2[t*12+11]/MAFtoAF
@@ -415,7 +418,9 @@ def MultiUncertaintiesAnalysis_3d(reservoir1, reservoir2):
 
                     inflow1 = inflowRange1[i1] / 12 * MAFtoAF
                     # release1 = (releaseRange2[r2]/2+1) / 12 * MAFtoAF
-                    storageM1[t], inflow2 = reservoir1.simulationSinglePeriodGeneral(startStorage1, inflow1, release1, t)
+                    results = reservoir1.simulationSinglePeriodGeneral(startStorage1, inflow1, release1, t)
+                    storageM1[t] = results[0]
+                    inflow2 = results[1]
 
                     if t == 0:
                         startStorage2 = initSrange[s]/2 * MAFtoAF
@@ -423,7 +428,8 @@ def MultiUncertaintiesAnalysis_3d(reservoir1, reservoir2):
                         startStorage2 = storageM2[t - 1]
                     inflow2 = inflow2 + interveningInflow / 12 * MAFtoAF
                     release2 = releaseRange2[r2] / 12 * MAFtoAF
-                    storageM2[t] = reservoir2.simulationSinglePeriodGeneral(startStorage2, inflow2, release2, t)
+                    results = reservoir2.simulationSinglePeriodGeneral(startStorage2, inflow2, release2, t)
+                    storageM2[t] = results[0]
 
                     # print(str(t)+" "+str(storageM1[t])+" "+str(storageM2[t]))
 
@@ -488,7 +494,7 @@ def DS_EmptyAndFullPowellMead(reservoir1, reservoir2):
 
                 inflow1 = inflowRange1[j]/12*MAFtoAF
                 release1 = defaultRelease1/12*MAFtoAF
-                inflow2 = reservoir1.simulationSinglePeriodGeneral(startStorage, inflow1, release1, t)
+                inflow2 = reservoir1.simulationSinglePeriodGeneral(startStorage, inflow1, release1, t)[1]
 
                 if t == 0:
                     startStorage = reservoir2.initStorage
@@ -496,7 +502,7 @@ def DS_EmptyAndFullPowellMead(reservoir1, reservoir2):
                     startStorage = storageM2[t-1]
                 inflow2 = inflow2 + 0.2/12*MAFtoAF
                 release2 = releaseRange2[i]/12*MAFtoAF
-                storageM2[t] = reservoir2.simulationSinglePeriodGeneral(startStorage, inflow2, release2, t)
+                storageM2[t] = reservoir2.simulationSinglePeriodGeneral(startStorage, inflow2, release2, t)[0]
 
                 # simulation(t, reservoir, demandRange[i], inflowRange[j])
             for t in range(0,totalN):
@@ -563,7 +569,7 @@ def DS_EmptyAndFullPowellMead2(reservoir1, reservoir2):
 
                 inflow1 = defaultInflow1/12*MAFtoAF
                 release1 = releaseRange1[j]/12*MAFtoAF
-                inflow2 = reservoir1.simulationSinglePeriodGeneral(startStorage, inflow1, release1, t)
+                inflow2 = reservoir1.simulationSinglePeriodGeneral(startStorage, inflow1, release1, t)[1]
 
                 if t == 0:
                     startStorage = reservoir2.initStorage
@@ -571,7 +577,7 @@ def DS_EmptyAndFullPowellMead2(reservoir1, reservoir2):
                     startStorage = storageM2[t-1]
                 inflow2 = inflow2 + 0.2/12*MAFtoAF
                 release2 = releaseRange2[i]/12*MAFtoAF
-                storageM2[t] = reservoir2.simulationSinglePeriodGeneral(startStorage, inflow2, release2, t)
+                storageM2[t] = reservoir2.simulationSinglePeriodGeneral(startStorage, inflow2, release2, t)[0]
 
                 # simulation(t, reservoir, demandRange[i], inflowRange[j])
             for t in range(0,totalN):

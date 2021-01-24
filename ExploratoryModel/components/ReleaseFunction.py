@@ -775,13 +775,13 @@ def PowellReleaseFun(self, elevation, i, j):
     self.column = min(self.column, 9)
 
 # fill Mead first
-def FMF(self, meadS):
+def FMF(reservoir, meadS):
     # Powell to 3370 feet, if Mead reaches to full pool, Powell store water
-    if self.name == "Powell":
-        if meadS < self.downReservoir.maxStorage:
-            self.column = 9
+    if reservoir.name == "Powell":
+        if meadS < reservoir.downReservoir.maxStorage:
+            reservoir.column = 9
         else:
-            self.column = 3
+            reservoir.column = 3
 
 # fill Powell first
 # parameter, column for Powell monthly release table
@@ -1075,6 +1075,10 @@ def forecastFutureElevations(self, demandtrace, inflowtrace, period, num, col, t
     result[1] = self.downReservoir.volume_to_elevation(endStorage2)
 
     return result
+
+# Equalization policy for Lake Powell and Lake Mead
+def Equalization(reservoir, startStorage, t):
+    pass
 
 # re-drill Lake Powell
 def redrillPowell(self, storage):

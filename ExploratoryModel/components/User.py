@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import os
 
+# todo
 class User(Node):
     Depletion = None
     upDepletion = None # demand above this reservoir

@@ -1,9 +1,20 @@
 import datetime
-import components.policyControl as policy
+import components.PolicyControl as policy
 from dateutil.relativedelta import relativedelta
 import calendar
 import sys
 import numpy as np
+
+
+def test():
+    return 1,2,3
+
+x = test()
+a = x[0]
+b = x[1]
+print(a)
+print(b)
+
 
 # For developers, test purpose
 
@@ -106,9 +117,12 @@ import plotly.graph_objects as go
 # print(df)
 
 # df = pd.read_csv('../tools/parallel.csv')
-df = pd.read_csv('../tools/parallel1.csv')
+# df = pd.read_csv('../tools/parallel1.csv')
 # df = pd.read_csv('../tools/parallel2.csv')
 # df = pd.read_csv('../tools/parallel3.csv')
+
+# df = pd.read_csv('../tools/parallel_empty.csv')
+df = pd.read_csv('../tools/parallel_empty8.csv')
 
 # df2 = df.sort_values(by=["sepal_length"], ascending=True)
 # df.to_csv('../tools/parallel2.csv')
@@ -152,6 +166,10 @@ df = pd.read_csv('../tools/parallel1.csv')
 fig = px.parallel_coordinates(df, color="YearsTo12MAF",
                               dimensions=['InitStorage(Powell&Mead)', 'Inflow_Powell', 'Release_Mead', 'YearsTo12MAF'],
                               color_continuous_scale='reds_r', color_continuous_midpoint=20)
+
+# fig = px.parallel_coordinates(df, color="YearsToEmpty",
+#                               dimensions=['InitStorage(Powell&Mead)', 'Inflow_Powell', 'Release_Mead', 'YearsToEmpty'],
+#                               color_continuous_scale='reds_r', color_continuous_midpoint=20)
 
 fig.show()
 
