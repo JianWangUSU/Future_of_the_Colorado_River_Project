@@ -56,21 +56,14 @@ class LakeMead(Reservoir):
         # self.MeadBankInitialBalance = self.para.MeadBankInitialBalance
 
     def simulationSinglePeriod(self, k, i, t):
-       # 1. determine initial values for reservoir storage
-        startStorage = 0
-        if t == 0:
-            startStorage = self.initStorage
-        else:
-            startStorage = self.storage[i][t - 1]
+       # 1. get initial values for reservoir storage
+        startStorage = self.getinitStorageForEachPeriod(i,t)
 
         # 2. determine inflow for current month
-        inflowthismonth = 0
-        # inflowthismonth = self.crssInflow[i][t] - self.upReservoir.crssOutflow[i][t] + self.upReservoir.outflow[i][t]
         inflowthismonth = self.interveningInflow(k, i, t) + self.upReservoir.outflow[i][t]
-
         self.totalinflow[i][t] = inflowthismonth
 
-        # 2. validation use, use CRSS inflow to Lake Mead, will be delete after validation
+        # 2. validate Mead only, use CRSS inflow to Lake Mead, will be delete after validation
         # inflowthismonth = self.crssInflow[i][t]
         # self.totalinflow[i][t] = inflowthismonth
 
@@ -94,21 +87,49 @@ class LakeMead(Reservoir):
         # self.sovleStorageGivenOutflow(startStorage, inflowthismonth, month, i, j)
 
        # 4. calculate shortage for current period
-        self.downShortage[i][t] = self.relatedUser.Depletion[k][t] - self.release[i][t]
-        if self.downShortage[i][t] < 0:
-            self.downShortage[i][t] = 0
+        self.LBMShortage[i][t] = self.relatedUser.DepletionNormal[k][t] \
+                                 - self.outflow[i][t] - self.relatedUser.GainLoss/12
+        if self.LBMShortage[i][t] < 0:
+            self.LBMShortage[i][t] = 0
+
+    def getinitStorageForEachPeriod(self, i, t):
+        if t == 0:
+            return self.initStorage
+        else:
+            return self.storage[i][t - 1]
 
     def interveningInflow(self, k, i, t):
         # In validation, intervening inflow to Mead are equal to MEAD inflow (CRSS results) - Powell outflow (CRSS results).
         if self.plc.CRSS_Mead == True:
             return self.crssInflow[i][t] - self.upReservoir.crssOutflow[i][t]
+        elif self.plc.ADP_DemandtoInflow == True:
+            return self.crssInflow[i][t] - self.upReservoir.crssOutflow[i][t]
         else:
-            return
+            # todo, use CRSS results for the time being
+            return self.crssInflow[i][t] - self.upReservoir.crssOutflow[i][t]
 
-    # release policy, self: Lake Mead itself, startStorage: begining storage, k: depletionTrace, i: inflowTrace, t: period
+    def getOneYearInterveningInflow(self, k, i, t):
+        # In validation, intervening inflow to Mead are equal to MEAD inflow (CRSS results) - Powell outflow (CRSS results).
+        if self.plc.CRSS_Mead == True:
+            return sum(self.crssInflow[i][t:t+12]) \
+                   - sum(self.upReservoir.crssOutflow[i][t:t+12])
+        elif self.plc.ADP_DemandtoInflow == True:
+            return sum(self.crssInflow[i][t:t+12]) \
+                   - sum(self.upReservoir.crssOutflow[i][t:t+12])
+        else:
+            # todo, use CRSS results for the time being
+            return sum(self.crssInflow[i][t:t+12]) \
+                   - sum(self.upReservoir.crssOutflow[i][t:t+12])
+
+    # Lake Mead release policy,
+    #   self: Lake Mead itself,
+    #   startStorage: start of month storage,
+    #   k: depletionTrace,
+    #   i: inflowTrace,
+    #   t: period
     def releasePolicy(self, startStorage, k, i, t):
         if self.plc.LB_demand == True:
-            return self.relatedUser.Depletion[k][t]
+            return self.relatedUser.DepletionNormal[k][t]
 
         if self.plc.DCP == True:
             month = self.para.determineMonth(t)
@@ -116,19 +137,21 @@ class LakeMead(Reservoir):
             if month == self.JAN:
                 self.MeadDeduction = RelFun.cutbackFromDCP(self.volume_to_elevation(startStorage)) / 12
 
-            return self.relatedUser.Depletion[k][t] - self.MeadDeduction
-            # self.release[i][t] = self.relatedUser.Depletion[k][t] - self.MeadDeduction - self.relatedUser.CRSSbankPutTake[i][t]
+            return self.relatedUser.DepletionNormal[k][t] - self.MeadDeduction
+            # self.release[i][t] = self.relatedUser.DepletionNormal[k][t] - self.MeadDeduction - self.relatedUser.CRSSbankPutTake[i][t]
 
         if self.plc.CRSS_Mead == True:
             # Use CRSS demand below Mead
             self.release[i][t] = self.crssDemandBelowMead[i][t]
-            # self.release[i][j] = self.crssDemandBelowMead[i][j] - self.MeadDeduction
-            # self.release[i][j] = self.relatedUser.Depletion[k][j] - self.MeadDeduction + self.crssMohaveHavasu[i][j]
-
             # outflow > minimum outflow requirement
             self.release[i][t] = max(self.release[i][t], RelFun.MinReleaseFun(self, t))
 
             return self.release[i][t]
+
+        # adapt release to inflow
+        if self.plc.ADP_DemandtoInflow == True:
+            # release = normal demand - gains (inflow below - Mohave and Havasu loss) - LB AND MEXICO contribution
+            return self.relatedUser.DepletionNormal[k][t] - self.relatedUser.GainLoss/12 - self.relatedUser.Contribution/12
 
     def simulationSinglePeriodGeneral(self, startStorage, inflowthismonth, release, t):
         # determine which month are we in

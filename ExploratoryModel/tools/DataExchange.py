@@ -218,21 +218,21 @@ def readDepletion(user1, user2, filePath):
     user1.basicData = pd.read_csv(os.path.basename(user1.basicDataFile))
     os.chdir(pwd)
 
-    user1.Depletion = np.zeros([6, user1.periods])
-    user2.Depletion = np.zeros([6, user1.periods])
+    user1.DepletionNormal = np.zeros([6, user1.periods])
+    user2.DepletionNormal = np.zeros([6, user1.periods])
     # 0:baseline; 1:Scenario B; 2: Scenario C1; 3: Scenario C2; 4: Scenario D1; 5: Scenario D2
-    user1.Depletion[0] = user1.basicData.TotalUpper0.values #in feet
-    user2.Depletion[0] = user1.basicData.TotalLowerMexico0.values #in acre-feet
-    user1.Depletion[1] = user1.basicData.TotalUpper1.values #in feet
-    user2.Depletion[1] = user1.basicData.TotalLowerMexico1.values #in acre-feet
-    user1.Depletion[2] = user1.basicData.TotalUpper2.values #in feet
-    user2.Depletion[2] = user1.basicData.TotalLowerMexico2.values #in acre-feet
-    user1.Depletion[3] = user1.basicData.TotalUpper3.values #in feet
-    user2.Depletion[3] = user1.basicData.TotalLowerMexico3.values #in acre-feet
-    user1.Depletion[4] = user1.basicData.TotalUpper4.values #in feet
-    user2.Depletion[4] = user1.basicData.TotalLowerMexico4.values #in acre-feet
-    user1.Depletion[5] = user1.basicData.TotalUpper5.values #in feet
-    user2.Depletion[5] = user1.basicData.TotalLowerMexico5.values #in acre-feet
+    user1.DepletionNormal[0] = user1.basicData.TotalUpper0.values #in feet
+    user2.DepletionNormal[0] = user1.basicData.TotalLowerMexico0.values #in acre-feet
+    user1.DepletionNormal[1] = user1.basicData.TotalUpper1.values #in feet
+    user2.DepletionNormal[1] = user1.basicData.TotalLowerMexico1.values #in acre-feet
+    user1.DepletionNormal[2] = user1.basicData.TotalUpper2.values #in feet
+    user2.DepletionNormal[2] = user1.basicData.TotalLowerMexico2.values #in acre-feet
+    user1.DepletionNormal[3] = user1.basicData.TotalUpper3.values #in feet
+    user2.DepletionNormal[3] = user1.basicData.TotalLowerMexico3.values #in acre-feet
+    user1.DepletionNormal[4] = user1.basicData.TotalUpper4.values #in feet
+    user2.DepletionNormal[4] = user1.basicData.TotalLowerMexico4.values #in acre-feet
+    user1.DepletionNormal[5] = user1.basicData.TotalUpper5.values #in feet
+    user2.DepletionNormal[5] = user1.basicData.TotalLowerMexico5.values #in acre-feet
 
 # export data to xls
 def exportData(reservoir, path):
@@ -392,46 +392,48 @@ def exportData(reservoir, path):
             sheetArea.write(0, j+1, "Run " +str(j))
             sheetArea.write(i+1, j+1, reservoir.area[j][i])
 
-    sheet10 = f.add_sheet(u'upDepletion', cell_overwrite_ok=True)  # create sheet
-    [h, l] = reservoir.relatedUser.Depletion.shape  # h is row，l is column
-    time = begtime
-    for i in range(l):
-        sheet10.write(i+1, 0, str(time.strftime("%b %Y")))
-        time = time + relativedelta(months=+1)
-        for j in range(h):
-            sheet10.write(0, j+1, "Run " +str(j))
-            sheet10.write(i+1, j+1, reservoir.relatedUser.Depletion[j][i])
+    if reservoir.name == "Powell":
+        sheet10 = f.add_sheet(u'UBDepletion', cell_overwrite_ok=True)  # create sheet
+        [h, l] = reservoir.relatedUser.DepletionNormal.shape  # h is row，l is column
+        time = begtime
+        for i in range(l):
+            sheet10.write(i+1, 0, str(time.strftime("%b %Y")))
+            time = time + relativedelta(months=+1)
+            for j in range(h):
+                sheet10.write(0, j+1, "Run " +str(j))
+                sheet10.write(i+1, j+1, reservoir.relatedUser.DepletionNormal[j][i])
 
-    sheet11 = f.add_sheet(u'downDepletion', cell_overwrite_ok=True)  # create sheet
-    [h, l] = reservoir.relatedUser.Depletion.shape  # h is row，l is column
-    time = begtime
-    for i in range(l):
-        sheet11.write(i+1, 0, str(time.strftime("%b %Y")))
-        time = time + relativedelta(months=+1)
-        for j in range(h):
-            sheet11.write(0, j+1, "Run " +str(j))
-            sheet11.write(i+1, j+1, reservoir.relatedUser.Depletion[j][i])
+    if reservoir.name == "Mead":
+        sheet11 = f.add_sheet(u'LB&MDepletion', cell_overwrite_ok=True)  # create sheet
+        [h, l] = reservoir.relatedUser.DepletionNormal.shape  # h is row，l is column
+        time = begtime
+        for i in range(l):
+            sheet11.write(i+1, 0, str(time.strftime("%b %Y")))
+            time = time + relativedelta(months=+1)
+            for j in range(h):
+                sheet11.write(0, j+1, "Run " +str(j))
+                sheet11.write(i+1, j+1, reservoir.relatedUser.DepletionNormal[j][i])
 
     if reservoir.name == "Powell":
-        sheet12 = f.add_sheet(u'upShortage', cell_overwrite_ok=True)  # create sheet
-        [h, l] = reservoir.upShortage.shape  # h is row，l is column
+        sheet12 = f.add_sheet(u'UBShortage', cell_overwrite_ok=True)  # create sheet
+        [h, l] = reservoir.UBShortage.shape  # h is row，l is column
         time = begtime
         for i in range(l):
             sheet12.write(i+1, 0, str(time.strftime("%b %Y")))
             time = time + relativedelta(months=+1)
             for j in range(h):
                 sheet12.write(0, j+1, "Run " +str(j))
-                sheet12.write(i+1, j+1, reservoir.upShortage[j][i])
+                sheet12.write(i+1, j+1, reservoir.UBShortage[j][i])
     elif reservoir.name == "Mead":
-        sheet12 = f.add_sheet(u'downShortage', cell_overwrite_ok=True)  # create sheet
-        [h, l] = reservoir.downShortage.shape  # h is row，l is column
+        sheet12 = f.add_sheet(u'LB&MShortage', cell_overwrite_ok=True)  # create sheet
+        [h, l] = reservoir.LBMShortage.shape  # h is row，l is column
         time = begtime
         for i in range(l):
             sheet12.write(i+1, 0, str(time.strftime("%b %Y")))
             time = time + relativedelta(months=+1)
             for j in range(h):
                 sheet12.write(0, j+1, "Run " +str(j))
-                sheet12.write(i+1, j+1, reservoir.downShortage[j][i])
+                sheet12.write(i+1, j+1, reservoir.LBMShortage[j][i])
 
     sheet13 = f.add_sheet(u'ReleaseTemp', cell_overwrite_ok=True)  # create sheet
     [h, l] = reservoir.elevation.shape  # h is row，l is column

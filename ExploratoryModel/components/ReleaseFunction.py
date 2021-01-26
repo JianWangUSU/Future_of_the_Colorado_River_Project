@@ -243,13 +243,15 @@ def ConvertPowellReleaseBalancing(reservoir, equalizationRelease, i, t):
     return (equalizationRelease - reservoir.ForecastPowellRelease[i][t])
 
 
-# CRSS problem, Jian: I think ComputeNewPowellRelease should be TotalPowellRelease. Also, equazliation here means Powell storage == Mead storage
+# one potential CRSS problem
+# Jian: I think ComputeNewPowellRelease should be TotalPowellRelease.
+# Note: Equazliation here means Powell storage == Mead storage
 def ComputeEqualizationReleaseList(reservoir, i, t):
     PowellS = reservoir.ForecastEOWYSPowell[i][t]
     MeadS = reservoir.downReservoir.ForecastEOWYSMead[i][t]
     PowellRelease = reservoir.ForecastPowellRelease[i][t]
     index = 0
-    # logic here is the same as CRSS, but it's not right.
+    # logic here is the same as CRSS, but I think it's not quite right.
     while abs(PowellS - MeadS) > reservoir.EqualizationTolerance and index < 30:
         index = index + 1
 
@@ -1077,8 +1079,49 @@ def forecastFutureElevations(self, demandtrace, inflowtrace, period, num, col, t
     return result
 
 # Equalization policy for Lake Powell and Lake Mead
-def Equalization(reservoir, startStorage, t):
-    pass
+def Equalization(reservoir1, reservoir2, startStorage1, startStorage2, inflow1, release2, intervenningInflow2, t):
+    # Step 1: Get current Powell and Mead storage
+    # Step 2: Calculate End of year storage
+    # Step 3: change Lake Powell release and find the release balance two reservoirs
+    JAN = reservoir1.para.JAN
+    DEC = reservoir1.para.DEC
+
+    # gap = Powell storage - Mead storage
+    allCol = reservoir1.allColumns
+    gap = np.zeros([len(allCol)])
+
+    for col in allCol:
+        release1 = sum(reservoir1.PowellmonthlyRelease[col][JAN:DEC+1])
+        endStorage1 = startStorage1 + inflow1 - release1
+        inflow2 = release1 + intervenningInflow2
+        endStorage2 = startStorage2 + inflow2 - release2
+        startPeriod = t
+        endPeriod = t + 12
+
+        index = 0
+        tempEndStorage1 = 0
+        tempEndStorage2 = 0
+        while (abs(endStorage1 - tempEndStorage1) > reservoir1.EqualizationTolerance \
+                or abs(endStorage2 - tempEndStorage2) > reservoir1.EqualizationTolerance) \
+                and index < 30:
+            index = index + 1
+            tempEndStorage1 = endStorage1
+            tempEndStorage2 = endStorage2
+
+            endStorage1 = startStorage1 + inflow1 - release1 \
+                          - EstimateEvaporation(reservoir1, startStorage1, endStorage1, startPeriod, endPeriod) \
+                          - EstimateBankStoragewithoutEvap(reservoir1, startStorage1, endStorage1)
+
+            endStorage2 = startStorage2 + inflow2 - release2\
+                          - EstimateEvaporation(reservoir2, startStorage2, endStorage2, startPeriod, endPeriod) \
+                          - EstimateBankStoragewithoutEvap(reservoir2, startStorage2, endStorage2)
+
+        gap[col] = abs(endStorage2 - endStorage1)
+
+    minGAP = min(gap)
+    for col in allCol:
+        if gap[col] == minGAP:
+            return col
 
 # re-drill Lake Powell
 def redrillPowell(self, storage):

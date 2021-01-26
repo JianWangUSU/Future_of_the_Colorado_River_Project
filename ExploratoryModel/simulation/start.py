@@ -5,7 +5,7 @@ import pandas as pd
 from tools import ReleaseTemperature, DecisionScaling
 import datetime
 
-### 1. create a network
+############ 1. create a network
 n = Network(name="Exploratory Colorado River Network")
 # setup planning horizon, inflow traces and demand traces
 n.setupPeriods(40*12, 113, 1)
@@ -45,7 +45,7 @@ UB.setupPeriodsandTraces()
 # initialize User variables
 # UBLB.setupPeriodsandTraces()
 
-### 2. load data
+############ 2. load data
 # relative folder path
 filePath = "../data/"
 
@@ -57,7 +57,7 @@ DataExchange.readEleStoArea(Powell, filePath + fileName)
 # inflowPowell includes Lake Powell inflow data
 fileName = "inflowPowell.csv"
 DataExchange.readInflow(Powell, filePath + fileName)
-# PowellReleaseTable.csv includes Lake Powell release table
+# PowellReleaseTable.csv includes Lake Powell monthly release table, currently used in CRSS
 fileName = "PowellReleaseTable.csv"
 DataExchange.readPowellReleaseTable(Powell, filePath + fileName)
 # otherdataPowell.csv includes other Powell information, such as start storage, minimum and maximum storages, etc.
@@ -140,15 +140,14 @@ fileName = "SNWPDiversionTotalDepletionRequested.csv"
 DataExchange.readCRSSSNWPDiversionTotalDepletionRequested(Mead, filePath + fileName)
 fileName = "CRSSLBMXbankBalance.csv"
 DataExchange.readCRSSBankAccount(LBM, filePath + fileName)
+fileName = "CRSSUBMonthShort.csv"
+DataExchange.readCRSSubShortage(Powell, filePath + fileName)
 
 # read temperature profile data before calculation
 profile_path = "../data/depth_temperature.csv"
 DataExchange.readDepthProfileForTemp(profile_path)
 
-# fileName = "CRSSUBMonthShort.csv"
-# dataExchange.readCRSSubShortage(Powell, filePath + fileName)
-
-### 3.set policies
+############ 3.set policies
 # policy control(plc),  EQUAL_DCP: equalization rule and drought contingency plan
 # ADP: adaptive policy, only consider Pearce Ferry Rapid signpost, will add more.
 # plc.EQUAL_DCP = False
@@ -211,7 +210,7 @@ if True:
     ReleaseTemperature.simulateResTemp(Powell)
 
 ### 6. export results
-if True:
+# if True:
     filePath = "../results/"
 
     # Powell.xls will store all Lake Powell results.
@@ -224,7 +223,7 @@ if True:
     DataExchange.exportData(Mead, filePath + name)
 
 ### 7. plot CRSS validation results
-if True:
+if plc.CRSS_Powell == True and plc.CRSS_Mead == True:
     date_series = pd.date_range(start= n.begtime, periods=n.periods, freq="M")
     # plotsIndex = [0,40,80,100]
     plotsIndex = [0, 40, 80]
@@ -243,7 +242,7 @@ if True:
         # title = "Equalization (Run" + str(i) +")"
         # plots.Equalization(date_series,Powell.crssStorage[i]/Powell.maxStorage-Mead.crssStorage[i]/Mead.maxStorage,Powell.storage[i]/Powell.maxStorage- Mead.storage[i]/Mead.maxStorage,title)
 
-# 7. Generate results for AMP white paper
+# 8. Generate results for AMP white paper
 if False:
     filePath = "../results/"
 

@@ -6,14 +6,14 @@ import sys
 import numpy as np
 
 
-def test():
-    return 1,2,3
-
-x = test()
-a = x[0]
-b = x[1]
-print(a)
-print(b)
+# def test():
+#     return 1,2,3
+#
+# x = test()
+# a = x[0]
+# b = x[1]
+# print(a)
+# print(b)
 
 
 # For developers, test purpose
@@ -28,7 +28,10 @@ from dateutil.relativedelta import relativedelta
 #
 #
 
+releaseTemp = [5, 1, 2, 3]
+print(min(releaseTemp))
 # releaseTemp = [[5,1],[2,3]]
+
 # print(releaseTemp[0][0])
 # print(releaseTemp[0][1])
 # print(releaseTemp[1][0])
@@ -36,11 +39,11 @@ from dateutil.relativedelta import relativedelta
 
 # print(sum(releaseTemp[0:2][0]))
 # print(len(releaseTemp[0:3]))
-# print(sum(releaseTemp[0:4]))
+print(sum(releaseTemp[2:3]))
 
 # print(sum(range(0,4)))
-
-
+import math
+print(math.floor(0.9))
 
 # import matplotlib.pyplot as plt
 # import numpy as np
