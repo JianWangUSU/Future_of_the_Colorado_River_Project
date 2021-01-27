@@ -5,6 +5,7 @@ import pandas as pd
 from tools import ReleaseTemperature, DecisionScaling
 import datetime
 
+
 ############ 1. create a network
 n = Network(name="Exploratory Colorado River Network")
 # setup planning horizon, inflow traces and demand traces
@@ -147,26 +148,6 @@ DataExchange.readCRSSubShortage(Powell, filePath + fileName)
 profile_path = "../data/depth_temperature.csv"
 DataExchange.readDepthProfileForTemp(profile_path)
 
-############ 3.set policies
-# policy control(plc),  EQUAL_DCP: equalization rule and drought contingency plan
-# ADP: adaptive policy, only consider Pearce Ferry Rapid signpost, will add more.
-# plc.EQUAL_DCP = False
-# plc.ADP = False
-# # ============ policy for Lake Powell=================
-# # FPF: Fill Powell First
-# plc.FPF = False
-# # FMF: Fill Mead First (Re-drill Lake Powell)
-# plc.FMF = False
-# # CRSS Lake Powell policy for validation
-# plc.CRSS_Powell = True
-# # ============ policy for Lake Mead=================
-# # Meet Lower basin demand
-# plc.LB_demand = False
-# # Drought Contigency plan
-# plc.DCP = False
-# # CRSS Lake Mead policy for validation
-# plc.CRSS_Mead = True
-
 ### 4. run decision scaling
 if False:
     starttime = datetime.datetime.now()
@@ -201,6 +182,39 @@ if False:
     # ds2.simulateCombinations()
     # # ds2.plot()
     # dataExchange.exportDSresults(ds2, filePath + 'PowellDS.xls')
+
+# Policy check
+count = 0
+index = 0
+for p in range(len(plc.LakePowellPolicyList)):
+    if plc.LakePowellPolicyList[p] == True:
+        index = p
+        count = count + 1
+if count == 0:
+    print('\033[91m' + "Warning: No Policy for Lake Powell is selected, please check PolicyControl.py!" + '\033[0m')
+    exit()
+elif count > 1:
+    print(
+        '\033[91m' + "Warning: Two or more policies for Lake Powell are selected, please please check PolicyControl.py!" + '\033[0m')
+    exit()
+else:
+    print(str(plc.LakePowellPolicyListNames[index]) + " for Lake Powell is selected!")
+
+count = 0
+index = 0
+for p in range(len(plc.LakeMeadPolicyList)):
+    if plc.LakeMeadPolicyList[p] == True:
+        index = p
+        count = count + 1
+if count == 0:
+    print('\033[91m' + "Warning: No Policy for Lake Mead is selected, please check PolicyControl.py!" + '\033[0m')
+    exit()
+elif count > 1:
+    print(
+        '\033[91m' + "Warning: Two or more policies for Lake Mead are selected, please please check PolicyControl.py!" + '\033[0m')
+    exit()
+else:
+    print(str(plc.LakeMeadPolicyListNames[index]) + " for Lake Mead is selected!")
 
 ### 5. run the model
 if True:
@@ -311,3 +325,37 @@ if False:
     plots.dottyPlotforAveReleaseTemp33(data1, data2, data3, data4, data5, data6, data7, data8, data9,titles)
     plots.dottyPlotforReleaseTempRange33(results1, results2, results3, titles)
     plots.ReleaseTempRangePercentage33(results1, results2, results3, titles)
+
+
+def ReleasePolicyCheck():
+    count = 0
+    index = 0
+    for p in range(len(plc.LakePowellPolicyList)):
+        if plc.LakePowellPolicyList[p] == True:
+            index = p
+            count = count + 1
+    if count == 0:
+        print('\033[91m' + "Warning: No Policy for Lake Powell is selected, please check PolicyControl.py!" + '\033[0m')
+        exit()
+    elif count > 1:
+        print(
+            '\033[91m' + "Warning: Two or more policies for Lake Powell are selected, please please check PolicyControl.py!" + '\033[0m')
+        exit()
+    else:
+        print(str(plc.LakePowellPolicyListNames[index]) + " for Lake Powell is selected!")
+
+    count = 0
+    index = 0
+    for p in range(len(plc.LakeMeadPolicyList)):
+        if plc.LakeMeadPolicyList[p] == True:
+            index = p
+            count = count + 1
+    if count == 0:
+        print('\033[91m' + "Warning: No Policy for Lake Mead is selected, please check PolicyControl.py!" + '\033[0m')
+        exit()
+    elif count > 1:
+        print(
+            '\033[91m' + "Warning: Two or more policies for Lake Mead are selected, please please check PolicyControl.py!" + '\033[0m')
+        exit()
+    else:
+        print(str(plc.LakeMeadPolicyListNames[index]) + " for Lake Mead is selected!")

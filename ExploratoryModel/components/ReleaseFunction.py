@@ -1101,7 +1101,7 @@ def Equalization(reservoir1, reservoir2, startStorage1, startStorage2, inflow1, 
         index = 0
         tempEndStorage1 = 0
         tempEndStorage2 = 0
-        while (abs(endStorage1 - tempEndStorage1) > reservoir1.EqualizationTolerance \
+        while (abs(endStorage1 - tempEndStorage1) > reservoir1.EqualizationTolerance
                 or abs(endStorage2 - tempEndStorage2) > reservoir1.EqualizationTolerance) \
                 and index < 30:
             index = index + 1
@@ -1116,9 +1116,16 @@ def Equalization(reservoir1, reservoir2, startStorage1, startStorage2, inflow1, 
                           - EstimateEvaporation(reservoir2, startStorage2, endStorage2, startPeriod, endPeriod) \
                           - EstimateBankStoragewithoutEvap(reservoir2, startStorage2, endStorage2)
 
+        # print(inflow2, release2)
+        # if t == 0:
+        #     print(col, endStorage2, endStorage1)
+
         gap[col] = abs(endStorage2 - endStorage1)
 
+    # print("====================================")
+
     minGAP = min(gap)
+
     for col in allCol:
         if gap[col] == minGAP:
             return col

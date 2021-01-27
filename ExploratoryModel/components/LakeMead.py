@@ -2,7 +2,6 @@ from components.Reservoir import Reservoir
 import components.ReleaseFunction as RelFun
 
 class LakeMead(Reservoir):
-
     # PearceFerryRapid signpost look up table
     Mead_Storage = None # storage for Mead
     inflow_demand = None # inflow - demand
@@ -72,7 +71,8 @@ class LakeMead(Reservoir):
         self.release[i][t] = self.releasePolicy(startStorage, k, i, t)
 
         # self.sovleStorageGivenOutflow(startStorage, inflowthismonth, month, i, t)
-        self.storage[i][t], self.outflow[i][t], self.area[i][t], self.elevation[i][t] \
+
+        self.storage[i][t], self.outflow[i][t], self.area[i][t], self.evaporation[i][t] \
             , self.changeBankStorage[i][t], self.elevation[i][t], self.release[i][t], self.spill[i][t] \
             = self.sovleStorageGivenOutflowGeneral(startStorage, inflowthismonth, self.release[i][t], month, t)
 
@@ -121,6 +121,15 @@ class LakeMead(Reservoir):
             return sum(self.crssInflow[i][t:t+12]) \
                    - sum(self.upReservoir.crssOutflow[i][t:t+12])
 
+    def getOneYearRlease(self, k, i, t):
+        if self.plc.ADP_DemandtoInflow == True:
+            startStorage = self.getinitStorageForEachPeriod(i,t)
+            results = 0
+            for tt in range(12):
+                results = results + self.releasePolicy(startStorage, k, i, t)
+
+            return results
+
     # Lake Mead release policy,
     #   self: Lake Mead itself,
     #   startStorage: start of month storage,
@@ -150,8 +159,11 @@ class LakeMead(Reservoir):
 
         # adapt release to inflow
         if self.plc.ADP_DemandtoInflow == True:
-            # release = normal demand - gains (inflow below - Mohave and Havasu loss) - LB AND MEXICO contribution
-            return self.relatedUser.DepletionNormal[k][t] - self.relatedUser.GainLoss/12 - self.relatedUser.Contribution/12
+            if startStorage < self.plc.ADP_triggerS:
+                # release = normal demand - gains (inflow below - Mohave and Havasu loss) - LB AND MEXICO contribution
+                return self.relatedUser.DepletionNormal[k][t] - self.relatedUser.GainLoss/12 - self.relatedUser.Contribution/12
+            else:
+                return self.relatedUser.DepletionNormal[k][t] - self.relatedUser.GainLoss / 12
 
     def simulationSinglePeriodGeneral(self, startStorage, inflowthismonth, release, t):
         # determine which month are we in
@@ -201,7 +213,7 @@ class LakeMead(Reservoir):
             area = (self.volume_to_area(startStorage) + self.volume_to_area(storage)) / 2.0
             evaporation = area * self.evapRates[month] * RelFun.calcualtefractionOfEvaporation(t)
             precipitation = area * self.precipRates[month]
-            changeBankStorage = self.bankRates * (self.storage - startStorage)
+            changeBankStorage = self.bankRates * (self.minStorage - startStorage)
             release = startStorage - storage + inflowthismonth + precipitation - changeBankStorage - evaporation
 
         outflow = release + spill

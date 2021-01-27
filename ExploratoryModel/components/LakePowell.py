@@ -94,7 +94,7 @@ class LakePowell(Reservoir):
 
         # if choosing CRSS policy, then use CRSS inflow to Lake Powell
         if self.plc.CRSS_Powell == True:
-            self.UBShortage[i][t] = 0
+            self.UBShortage[i][t] = -self.crssUBshortage[i][t]
             # CRSS INFLOW data for validation purpose
             return self.crssInflow[i][t]
 
@@ -159,11 +159,22 @@ class LakePowell(Reservoir):
                     # LB and Mexico contribution
                     self.downReservoir.relatedUser.Contribution = LBMdemandThisYear/ totalDemandThisYear * gap
 
-                    self.UBShortage[i][t] = self.relatedUser.Contribution/12 - self.crssUBshortage[i][t]
-                    return self.crssInflow[i][t] + self.relatedUser.Contribution/12
+                    if self.getinitStorageForEachPeriod(i,t) < self.plc.ADP_triggerS:
+                        self.UBShortage[i][t] = self.relatedUser.Contribution / 12 - self.crssUBshortage[i][t]
+                        return self.crssInflow[i][t] + self.relatedUser.Contribution / 12
+                    else:
+                        self.UBShortage[i][t] = - self.crssUBshortage[i][t]
+                        return self.crssInflow[i][t]
             else:
-                self.UBShortage[i][t] = self.relatedUser.Contribution/12 - self.crssUBshortage[i][t]
-                return self.crssInflow[i][t] + self.relatedUser.Contribution/12
+                # self.UBShortage[i][t] = self.relatedUser.Contribution/12 - self.crssUBshortage[i][t]
+                # return self.crssInflow[i][t] + self.relatedUser.Contribution/12
+
+                if self.getinitStorageForEachPeriod(i, t) < self.plc.ADP_triggerS:
+                    self.UBShortage[i][t] = self.relatedUser.Contribution / 12 - self.crssUBshortage[i][t]
+                    return self.crssInflow[i][t] + self.relatedUser.Contribution / 12
+                else:
+                    self.UBShortage[i][t] = - self.crssUBshortage[i][t]
+                    return self.crssInflow[i][t]
 
         else:
             # todo
@@ -202,6 +213,10 @@ class LakePowell(Reservoir):
 
             return inflowthismonth
 
+    def getOneYearInflow(self, k, i, t):
+        if self.plc.ADP_DemandtoInflow == True:
+            return sum(self.crssInflow[i][t:t+12]) + self.relatedUser.Contribution
+
     # simulate a single time period
     #   self: Lake Powell itself,
     #   k: depletionTrace,
@@ -225,7 +240,7 @@ class LakePowell(Reservoir):
 
         month = self.para.determineMonth(t)
         # self.sovleStorageGivenOutflow(startStorage, inflowthismonth, month, i, t)
-        self.storage[i][t], self.outflow[i][t], self.area[i][t], self.elevation[i][t]\
+        self.storage[i][t], self.outflow[i][t], self.area[i][t], self.evaporation[i][t]\
             , self.changeBankStorage[i][t], self.elevation[i][t], self.release[i][t], self.spill[i][t] \
             = self.sovleStorageGivenOutflowGeneral(startStorage, inflowthismonth, self.release[i][t], month, t)
 
@@ -323,20 +338,19 @@ class LakePowell(Reservoir):
                 startStorage2 = self.downReservoir.getinitStorageForEachPeriod(i,t)
 
                 # Lake Powell inflow
-                inflow1 = sum(self.totalinflow[i][t:t+12])
+                inflow1 = self.getOneYearInflow(k, i, t)
 
                 # Lake Mead release
-                release2 = sum(self.downReservoir.relatedUser.DepletionNormal[k][t:t+12]) \
-                           - self.downReservoir.relatedUser.GainLoss \
-                           - self.downReservoir.relatedUser.Contribution
+                release2 = self.downReservoir.getOneYearRlease(k, i, t)
 
+                # Lake Mead intervening inflow
                 intervenningInflow2 = self.downReservoir.getOneYearInterveningInflow(k,i,t)
 
+                # equalization, calculate Lake Powell release
                 self.column = RelFun.Equalization(self, self.downReservoir,
                                            startStorage1, startStorage2, inflow1, release2, intervenningInflow2, t)
 
             return self.PowellmonthlyRelease[self.column][month]
-
 
         # strategy equalization + DCP
         # if self.plc.EQUAL_DCP == True:

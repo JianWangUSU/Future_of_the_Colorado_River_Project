@@ -7,18 +7,43 @@
       <change beforePath="$PROJECT_DIR$/components/LakePowell.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/LakePowell.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/PolicyControl.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/PolicyControl.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/ReleaseFunction.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/ReleaseFunction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/Reservoir.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/Reservoir.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/User.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/User.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/testSimulation.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/testSimulation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/CRSSUBMonthShort-old.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/depletion - Copy.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/depletion.csv" beforeDir="false" afterPath="$PROJECT_DIR$/data/depletion.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/note.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/upshortage.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/Mead.xls" beforeDir="false" afterPath="$PROJECT_DIR$/results/Mead.xls" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/Powell.xls" beforeDir="false" afterPath="$PROJECT_DIR$/results/Powell.xls" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/LakeMeadDSResults.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Mead - Copy (2).xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Mead - Copy.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Mead.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Powell - Copy (2).xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Powell - Copy.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Powell - check inputs for 399.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Powell - evapRate.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Powell - good to show carryover release.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Powell - with CRSS DATA.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Powell.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/PowellReleaseTemp - Copy.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/PowellReleaseTemp - a quarter.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/PowellReleaseTemp - comparison.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/PowellReleaseTemp - dotty- AMP 1576.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/PowellReleaseTemp - dotty- AMP 2000.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/PowellReleaseTemp - dotty- AMP DNF.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/PowellReleaseTemp - dotty- run25.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/PowellReleaseTemp - dotty- run94 - new.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/PowellReleaseTemp - dotty- run94.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/PowellReleaseTemp - half from penstock.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/PowellReleaseTemp- No from penstock.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/PowellReleaseTemp.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/PowellReleaseTemp1576.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/PowellReleaseTemp2000.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/PowellReleaseTempDNF.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/PowellReleaseTempResults.rar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/PowellReleaseTemp_1576_BASE.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/PowellReleaseTemp_1576_FMF.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/PowellReleaseTemp_1576_FPF.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/PowellReleaseTemp_2000_BASE.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/PowellReleaseTemp_2000_FMF.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/PowellReleaseTemp_2000_FPF.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/PowellReleaseTemp_DNF_BASE.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/PowellReleaseTemp_DNF_FMF.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/PowellReleaseTemp_DNF_FPF.xls" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/simulation/start.py" beforeDir="false" afterPath="$PROJECT_DIR$/simulation/start.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools/DataExchange.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/DataExchange.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -241,7 +266,7 @@
       <workItem from="1610212385722" duration="51548000" />
       <workItem from="1610573669447" duration="831000" />
       <workItem from="1610657670442" duration="5169000" />
-      <workItem from="1611160509178" duration="59708000" />
+      <workItem from="1611160509178" duration="80093000" />
     </task>
     <servers />
   </component>
@@ -257,22 +282,22 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="550" y="171" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1609542850778" />
-    <state width="1493" height="211" key="GridCell.Tab.0.bottom" timestamp="1611635302105">
+    <state width="1493" height="192" key="GridCell.Tab.0.bottom" timestamp="1611715603386">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="211" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1611635302105" />
-    <state width="1493" height="211" key="GridCell.Tab.0.center" timestamp="1611635302105">
+    <state width="1493" height="192" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1611715603386" />
+    <state width="1493" height="192" key="GridCell.Tab.0.center" timestamp="1611715603386">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="211" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1611635302105" />
-    <state width="1493" height="211" key="GridCell.Tab.0.left" timestamp="1611635302105">
+    <state width="1493" height="192" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1611715603386" />
+    <state width="1493" height="192" key="GridCell.Tab.0.left" timestamp="1611715603386">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="211" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1611635302105" />
-    <state width="1493" height="211" key="GridCell.Tab.0.right" timestamp="1611635302105">
+    <state width="1493" height="192" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1611715603386" />
+    <state width="1493" height="192" key="GridCell.Tab.0.right" timestamp="1611715603386">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="211" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1611635302105" />
+    <state width="1493" height="192" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1611715603386" />
     <state width="1493" height="252" key="GridCell.Tab.1.bottom" timestamp="1603573102837">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
@@ -320,7 +345,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/ScopingModel$DStools.coverage" NAME="DStools Coverage Results" MODIFIED="1597854927162" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/decisionScaling" />
-    <SUITE FILE_PATH="coverage/ExploratoryModel$start.coverage" NAME="start Coverage Results" MODIFIED="1611635225968" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/simulation" />
+    <SUITE FILE_PATH="coverage/ExploratoryModel$start.coverage" NAME="start Coverage Results" MODIFIED="1611704447964" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/simulation" />
     <SUITE FILE_PATH="coverage/ExploratoryModel$test.coverage" NAME="test Coverage Results" MODIFIED="1607661940255" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/simulation" />
     <SUITE FILE_PATH="coverage/SimplifiedColoradoRiverSimulationModel$start.coverage" NAME="start Coverage Results" MODIFIED="1595515609557" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/simulation" />
     <SUITE FILE_PATH="coverage/SimplifiedColoradoRiverSimulationModel$testSimulation__1_.coverage" NAME="testSimulation (1) Coverage Results" MODIFIED="1594335042066" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/components" />

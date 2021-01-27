@@ -28,6 +28,10 @@ FMF = False
 # Fill Powell First
 FPF = False
 
+LakePowellPolicyList = [CRSS_Powell, EQUAL, ADP, FMF, FPF]
+LakePowellPolicyListNames = ['CRSS_Powell', 'Equalization', 'ADP', 'FMF', 'FPF']
+
+
 # ================================Policy for Lake Mead===================================
 
 #########
@@ -42,6 +46,8 @@ CRSS_Mead = False
 
 # Adapt demand to inflow policy (it will change Lake Powell inflow and Lake Mead release)
 ADP_DemandtoInflow = True
+# trigger ADP policy only when reservoir storage is < self.plc.ADP_triggerS
+ADP_triggerS = 12000000
 
 # Protect Pearce Ferry Rapid
 PFR = False
@@ -55,3 +61,6 @@ DCP = False
 # Intentional creat surplus, todo
 ICS = False
 # Release policy for each reservoir, which inflow scenario to use, which demand scenario to use, which signpost?
+
+LakeMeadPolicyList = [CRSS_Mead, ADP_DemandtoInflow, PFR, LB_demand, DCP, ICS]
+LakeMeadPolicyListNames = ['CRSS_Mead', 'ADP_DemandtoInflow', 'PFR', 'LB_demand', 'DCP', 'ICS']
