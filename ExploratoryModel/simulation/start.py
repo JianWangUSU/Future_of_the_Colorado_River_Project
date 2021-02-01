@@ -89,6 +89,9 @@ fileName = "PowellComputeRunoffSeasonRelease.csv"
 DataExchange.readCRSSPowellComputeRunoffSeasonRelease(Powell, filePath + fileName)
 fileName = "PowellComputeFallSeasonRelease.csv"
 DataExchange.readCRSSPowellComputeFallSeasonRelease(Powell, filePath + fileName)
+fileName = "PariaInflow.csv"
+DataExchange.readPariaInflow(Powell, filePath + fileName)
+
 
 # read Lake Mead data, similar to Powell data.
 fileName = "zvMead.csv"
@@ -222,6 +225,8 @@ if True:
     n.simulation()
     # run reservoir release model
     ReleaseTemperature.simulateResTemp(Powell)
+    # post processing about Release at Compact point
+    Powell.CalcualteFlowAtCompactPoint()
 
 ### 6. export results
 # if True:

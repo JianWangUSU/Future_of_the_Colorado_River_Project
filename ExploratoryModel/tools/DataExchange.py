@@ -239,16 +239,530 @@ def exportData(reservoir, path):
     # begining time
     begtime = datetime.datetime(2021, 1, 1)
 
+    StarCell = "B"
+    EndCell = "DJ"
+
+    decimal_style = xlwt.XFStyle()
+    decimal_style.num_format_str = '0'
+    decimal_style1 = xlwt.XFStyle()
+    decimal_style1.num_format_str = '0.0'
+
     f = xlwt.Workbook(encoding='utf-8')
     sheet1 = f.add_sheet(u'elevation', cell_overwrite_ok=True)  # create sheet
-    [h, l] = reservoir.elevation.shape  # h is row，l is column
+    [inflowTraces, Periods] = reservoir.elevation.shape  # h is row，l is column
     time = begtime
-    for i in range(l):
-        sheet1.write(i+1, 0, str(time.strftime("%m"+"/"+"%Y")))
+    for t in range(Periods):
+        sheet1.write(t+1, 0, str(time.strftime("%m"+"/"+"%Y")))
         time = time + relativedelta(months=+1)
-        for j in range(h):
-            sheet1.write(0, j+1, "Run " +str(j))
-            sheet1.write(i+1, j+1, reservoir.elevation[j][i])
+        for i in range(inflowTraces):
+            sheet1.write(0, i+1, "Run " +str(i))
+            sheet1.write(t+1, i+1, reservoir.elevation[i][t], decimal_style)
+
+        colindex = 1
+        sheet1.write(0, inflowTraces + colindex, "Min")
+        formula = "MIN(" + StarCell + str(t+2) + ":"+ EndCell + str(t+2) +")"
+        sheet1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula),decimal_style)
+
+        colindex = colindex + 1
+        sheet1.write(0, inflowTraces + colindex, "Ave")
+        formula = "AVERAGE(" + StarCell + str(t+2) + ":"+ EndCell + str(t+2) +")"
+        sheet1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula),decimal_style)
+
+        colindex = colindex + 1
+        sheet1.write(0, inflowTraces + colindex, "Max")
+        formula = "MAX(" + StarCell + str(t+2) + ":"+ EndCell + str(t+2) +")"
+        sheet1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula),decimal_style)
+
+        colindex = colindex + 1
+        sheet1.write(0, inflowTraces + colindex, "10th")
+        formula = "PERCENTILE(" + StarCell + str(t+2) + ":"+ EndCell + str(t+2) +", 0.1)"
+        sheet1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula),decimal_style)
+
+        colindex = colindex + 1
+        sheet1.write(0, inflowTraces + colindex, "50th")
+        formula = "PERCENTILE(" + StarCell + str(t+2) + ":"+ EndCell + str(t+2) +", 0.5)"
+        sheet1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula),decimal_style)
+
+        colindex = colindex + 1
+        sheet1.write(0, inflowTraces + colindex, "90th")
+        formula = "PERCENTILE(" + StarCell + str(t+2) + ":"+ EndCell + str(t+2) +", 0.9)"
+        sheet1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula),decimal_style)
+
+        colindex = colindex + 1
+        if reservoir.name == "Powell":
+            sheet1.write(0, inflowTraces + colindex, "Count3490")
+            formula = "COUNTIF(" + StarCell + str(t+2) + ":"+ EndCell + str(t+2) +", \"<3490\")"
+            sheet1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula))
+        if reservoir.name == "Mead":
+            sheet1.write(0, inflowTraces + colindex, "Count1025")
+            formula = "COUNTIF(" + StarCell + str(t+2) + ":"+ EndCell + str(t+2) +", \"<1025\")"
+            sheet1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula))
+
+    sheet2 = f.add_sheet(u'inflow', cell_overwrite_ok=True)  # create sheet
+    [inflowTraces, Periods] = reservoir.totalinflow.shape  # h is row，l is column
+    time = begtime
+    for t in range(Periods):
+        sheet2.write(t+1, 0, str(time.strftime("%b %Y")))
+        time = time + relativedelta(months=+1)
+        for i in range(inflowTraces):
+            sheet2.write(0, i+1, "Run " +str(i))
+            sheet2.write(t+1, i+1, reservoir.totalinflow[i][t])
+
+    sheet33 = f.add_sheet(u'outflow', cell_overwrite_ok=True)  # create sheet
+    [inflowTraces, Periods] = reservoir.outflow.shape  # h is row，l is column
+    time = begtime
+    for t in range(Periods):
+        sheet33.write(t+1, 0, str(time.strftime("%m"+"/"+"%Y")))
+        time = time + relativedelta(months=+1)
+        for i in range(inflowTraces):
+            sheet33.write(0, i+1, "Run " +str(i))
+            sheet33.write(t+1, i+1, reservoir.outflow[i][t])
+
+    sheet3 = f.add_sheet(u'release', cell_overwrite_ok=True)  # create sheet
+    [inflowTraces, Periods] = reservoir.release.shape  # h is row，l is column
+    time = begtime
+    for t in range(Periods):
+        sheet3.write(t+1, 0, str(time.strftime("%m"+"/"+"%Y")))
+        time = time + relativedelta(months=+1)
+        for i in range(inflowTraces):
+            sheet3.write(0, i+1, "Run " +str(i))
+            sheet3.write(t+1, i+1, reservoir.release[i][t])
+
+    sheet4 = f.add_sheet(u'evaporation', cell_overwrite_ok=True)  # create sheet
+    [inflowTraces, Periods] = reservoir.evaporation.shape  # h is row，l is column
+    time = begtime
+    for t in range(Periods):
+        sheet4.write(t+1, 0, str(time.strftime("%b %Y")))
+        time = time + relativedelta(months=+1)
+        for i in range(inflowTraces):
+            sheet4.write(0, i+1, "Run " +str(i))
+            sheet4.write(t+1, i+1, reservoir.evaporation[i][t],decimal_style)
+
+    sheet5 = f.add_sheet(u'precipitation', cell_overwrite_ok=True)  # create sheet
+    [inflowTraces, Periods] = reservoir.precipitation.shape  # h is row，l is column
+    time = begtime
+    for t in range(Periods):
+        sheet5.write(t+1, 0, str(time.strftime("%b %Y")))
+        time = time + relativedelta(months=+1)
+        for i in range(inflowTraces):
+            sheet5.write(0, i+1, "Run " +str(i))
+            sheet5.write(t+1, i+1, reservoir.precipitation[i][t])
+
+    sheet6 = f.add_sheet(u'changeinBank', cell_overwrite_ok=True)  # create sheet
+    [inflowTraces, Periods] = reservoir.changeBankStorage.shape  # h is row，l is column
+    time = begtime
+    for t in range(Periods):
+        sheet6.write(t+1, 0, str(time.strftime("%b %Y")))
+        time = time + relativedelta(months=+1)
+        for i in range(inflowTraces):
+            sheet6.write(0, i+1, "Run " +str(i))
+            sheet6.write(t+1, i+1, reservoir.changeBankStorage[i][t],decimal_style)
+
+    sheet7 = f.add_sheet(u'storage', cell_overwrite_ok=True)  # create sheet
+    [inflowTraces, Periods] = reservoir.storage.shape  # h is row，l is column
+    time = begtime
+    for t in range(Periods):
+        sheet7.write(t+1, 0, str(time.strftime("%b %Y")))
+        time = time + relativedelta(months=+1)
+        for i in range(inflowTraces):
+            sheet7.write(0, i+1, "Run " +str(i))
+            sheet7.write(t+1, i+1, reservoir.storage[i][t])
+
+    sheet8 = f.add_sheet(u'spill_M', cell_overwrite_ok=True)  # create sheet
+    [inflowTraces, Periods] = reservoir.spill.shape  # h is row，l is column
+    time = begtime
+    for t in range(Periods):
+        sheet8.write(t+1, 0, str(time.strftime("%b %Y")))
+        time = time + relativedelta(months=+1)
+        for i in range(inflowTraces):
+            sheet8.write(0, i+1, "Run " +str(i))
+            sheet8.write(t+1, i+1, reservoir.spill[i][t],decimal_style)
+
+        colindex = 1
+        sheet8.write(0, inflowTraces + colindex, "Min")
+        formula = "MIN(" + StarCell + str(t+2) + ":"+ EndCell + str(t+2) +")"
+        sheet8.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula),decimal_style)
+
+        colindex = colindex + 1
+        sheet8.write(0, inflowTraces + colindex, "Ave")
+        formula = "AVERAGE(" + StarCell + str(t+2) + ":"+ EndCell + str(t+2) +")"
+        sheet8.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula),decimal_style)
+
+        colindex = colindex + 1
+        sheet8.write(0, inflowTraces + colindex, "Max")
+        formula = "MAX(" + StarCell + str(t+2) + ":"+ EndCell + str(t+2) +")"
+        sheet8.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula),decimal_style)
+
+        colindex = colindex + 1
+        sheet8.write(0, inflowTraces + colindex, "10th")
+        formula = "PERCENTILE(" + StarCell + str(t+2) + ":"+ EndCell + str(t+2) +", 0.1)"
+        sheet8.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula),decimal_style)
+
+        colindex = colindex + 1
+        sheet8.write(0, inflowTraces + colindex, "50th")
+        formula = "PERCENTILE(" + StarCell + str(t+2) + ":"+ EndCell + str(t+2) +", 0.5)"
+        sheet8.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula),decimal_style)
+
+        colindex = colindex + 1
+        sheet8.write(0, inflowTraces + colindex, "90th")
+        formula = "PERCENTILE(" + StarCell + str(t+2) + ":"+ EndCell + str(t+2) +", 0.9)"
+        sheet8.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula),decimal_style)
+
+    sheet8_1 = f.add_sheet(u'spill_Y', cell_overwrite_ok=True)  # create sheet
+    [inflowTraces, Periods] = reservoir.spill.shape  # h is row，l is column
+    time = begtime
+    for t in range(int(Periods/12)):
+        sheet8_1.write(t+1, 0, str(time.strftime("%b %Y")))
+        time = time + relativedelta(years=+1)
+        for i in range(inflowTraces):
+            sheet8_1.write(0, i+1, "Run " +str(i))
+            sheet8_1.write(t+1, i+1, sum(reservoir.spill[i][t*12:t*12+12]),decimal_style)
+
+        colindex = 1
+        sheet8_1.write(0, inflowTraces + colindex, "Min")
+        formula = "MIN(" + StarCell + str(t+2) + ":"+ EndCell + str(t+2) +")"
+        sheet8_1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula),decimal_style)
+
+        colindex = colindex + 1
+        sheet8_1.write(0, inflowTraces + colindex, "Ave")
+        formula = "AVERAGE(" + StarCell + str(t+2) + ":"+ EndCell + str(t+2) +")"
+        sheet8_1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula),decimal_style)
+
+        colindex = colindex + 1
+        sheet8_1.write(0, inflowTraces + colindex, "Max")
+        formula = "MAX(" + StarCell + str(t+2) + ":"+ EndCell + str(t+2) +")"
+        sheet8_1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula),decimal_style)
+
+        colindex = colindex + 1
+        sheet8_1.write(0, inflowTraces + colindex, "10th")
+        formula = "PERCENTILE(" + StarCell + str(t+2) + ":"+ EndCell + str(t+2) +", 0.1)"
+        sheet8_1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula),decimal_style)
+
+        colindex = colindex + 1
+        sheet8_1.write(0, inflowTraces + colindex, "50th")
+        formula = "PERCENTILE(" + StarCell + str(t+2) + ":"+ EndCell + str(t+2) +", 0.5)"
+        sheet8_1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula),decimal_style)
+
+        colindex = colindex + 1
+        sheet8_1.write(0, inflowTraces + colindex, "90th")
+        formula = "PERCENTILE(" + StarCell + str(t+2) + ":"+ EndCell + str(t+2) +", 0.9)"
+        sheet8_1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula),decimal_style)
+
+    for t in range (0, reservoir.inflowTraces):
+        for i in range (0, reservoir.periods):
+            startStorage = 0
+            if i == 0:
+                startStorage = reservoir.initStorage
+            else:
+                startStorage = reservoir.storage[t][i - 1]
+
+            temp = startStorage - reservoir.storage[t][i] + reservoir.totalinflow[t][i] + reservoir.precipitation[t][i] \
+                   - reservoir.evaporation[t][i] - reservoir.outflow[t][i] - reservoir.changeBankStorage[t][i]
+            reservoir.balance[t][i] = temp
+
+    sheet9 = f.add_sheet(u'balance', cell_overwrite_ok=True)  # create sheet
+    [inflowTraces, Periods] = reservoir.balance.shape  # h is row，l is column
+    time = begtime
+    for t in range(Periods):
+        sheet9.write(t+1, 0, str(time.strftime("%b %Y")))
+        time = time + relativedelta(months=+1)
+        for i in range(inflowTraces):
+            sheet9.write(0, i+1, "Run " +str(i))
+            sheet9.write(t+1, i+1, reservoir.balance[i][t],decimal_style)
+
+    sheetArea = f.add_sheet(u'area', cell_overwrite_ok=True)  # create sheet
+    [inflowTraces, Periods] = reservoir.area.shape  # h is row，l is column
+    time = begtime
+    for t in range(Periods):
+        sheetArea.write(t+1, 0, str(time.strftime("%b %Y")))
+        time = time + relativedelta(months=+1)
+        for i in range(inflowTraces):
+            sheetArea.write(0, i+1, "Run " +str(i))
+            sheetArea.write(t+1, i+1, reservoir.area[i][t],decimal_style)
+
+    if reservoir.name == "Powell":
+        sheet10 = f.add_sheet(u'UBDepletion', cell_overwrite_ok=True)  # create sheet
+        [inflowTraces, Periods] = reservoir.relatedUser.DepletionNormal.shape  # h is row，l is column
+        time = begtime
+        for t in range(Periods):
+            sheet10.write(t+1, 0, str(time.strftime("%b %Y")))
+            time = time + relativedelta(months=+1)
+            for i in range(inflowTraces):
+                sheet10.write(0, i+1, "Run " +str(i))
+                sheet10.write(t+1, i+1, reservoir.relatedUser.DepletionNormal[i][t],decimal_style)
+
+    if reservoir.name == "Mead":
+        sheet11 = f.add_sheet(u'LB&MDepletion', cell_overwrite_ok=True)  # create sheet
+        [inflowTraces, Periods] = reservoir.relatedUser.DepletionNormal.shape  # h is row，l is column
+        time = begtime
+        for t in range(Periods):
+            sheet11.write(t+1, 0, str(time.strftime("%b %Y")))
+            time = time + relativedelta(months=+1)
+            for i in range(inflowTraces):
+                sheet11.write(0, i+1, "Run " +str(i))
+                sheet11.write(t+1, i+1, reservoir.relatedUser.DepletionNormal[i][t],decimal_style)
+
+    if reservoir.name == "Powell":
+        sheet12 = f.add_sheet(u'UBShortage_M', cell_overwrite_ok=True)  # create sheet
+        [inflowTraces, Periods] = reservoir.UBShortage.shape  # h is row，l is column
+        time = begtime
+        for t in range(Periods):
+            sheet12.write(t+1, 0, str(time.strftime("%b %Y")))
+            time = time + relativedelta(months=+1)
+            for i in range(inflowTraces):
+                sheet12.write(0, i+1, "Run " +str(i))
+                sheet12.write(t+1, i+1, reservoir.UBShortage[i][t],decimal_style)
+
+            colindex = 1
+            sheet12.write(0, inflowTraces + colindex, "Min")
+            formula = "MIN(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ")"
+            sheet12.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+            colindex = colindex + 1
+            sheet12.write(0, inflowTraces + colindex, "Ave")
+            formula = "AVERAGE(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ")"
+            sheet12.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+            colindex = colindex + 1
+            sheet12.write(0, inflowTraces + colindex, "Max")
+            formula = "MAX(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ")"
+            sheet12.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+            colindex = colindex + 1
+            sheet12.write(0, inflowTraces + colindex, "10th")
+            formula = "PERCENTILE(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ", 0.1)"
+            sheet12.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+            colindex = colindex + 1
+            sheet12.write(0, inflowTraces + colindex, "50th")
+            formula = "PERCENTILE(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ", 0.5)"
+            sheet12.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+            colindex = colindex + 1
+            sheet12.write(0, inflowTraces + colindex, "90th")
+            formula = "PERCENTILE(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ", 0.9)"
+            sheet12.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+        sheet12_1 = f.add_sheet(u'UBShortage_Y', cell_overwrite_ok=True)  # create sheet
+        [inflowTraces, Periods] = reservoir.UBShortage.shape  # h is row，l is column
+        time = begtime
+        for t in range(int(Periods/12)):
+            sheet12_1.write(t+1, 0, str(time.strftime("%b %Y")))
+            time = time + relativedelta(years=+1)
+            for i in range(inflowTraces):
+                sheet12_1.write(0, i+1, "Run " +str(i))
+                sheet12_1.write(t+1, i+1, sum(reservoir.UBShortage[i][t*12:t*12+12]),decimal_style)
+
+            colindex = 1
+            sheet12_1.write(0, inflowTraces + colindex, "Min")
+            formula = "MIN(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ")"
+            sheet12_1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+            colindex = colindex + 1
+            sheet12_1.write(0, inflowTraces + colindex, "Ave")
+            formula = "AVERAGE(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ")"
+            sheet12_1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+            colindex = colindex + 1
+            sheet12_1.write(0, inflowTraces + colindex, "Max")
+            formula = "MAX(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ")"
+            sheet12_1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+            colindex = colindex + 1
+            sheet12_1.write(0, inflowTraces + colindex, "10th")
+            formula = "PERCENTILE(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ", 0.1)"
+            sheet12_1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+            colindex = colindex + 1
+            sheet12_1.write(0, inflowTraces + colindex, "50th")
+            formula = "PERCENTILE(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ", 0.5)"
+            sheet12_1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+            colindex = colindex + 1
+            sheet12_1.write(0, inflowTraces + colindex, "90th")
+            formula = "PERCENTILE(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ", 0.9)"
+            sheet12_1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+        sheet13 = f.add_sheet(u'ReleaseTemp', cell_overwrite_ok=True)  # create sheet
+        [inflowTraces, Periods] = reservoir.releaseTemperature.shape  # h is row，l is column
+        time = begtime
+        for t in range(Periods):
+            sheet13.write(t + 1, 0, str(time.strftime("%m" + "/" + "%Y")))
+            time = time + relativedelta(months=+1)
+            for i in range(inflowTraces):
+                sheet13.write(0, i + 1, "Run " + str(i))
+                sheet13.write(t + 1, i + 1, reservoir.releaseTemperature[i][t],decimal_style1)
+
+        sheet13_1 = f.add_sheet(u'SummerReleaseTemp', cell_overwrite_ok=True)  # create sheet
+        [inflowTraces, Periods] = reservoir.summerReleaseTemperature.shape  # h is row，l is column
+        time = begtime
+        for t in range(Periods):
+            sheet13_1.write(t + 1, 0, str(time.strftime("%m" + "/" + "%Y")))
+            time = time + relativedelta(years=+1)
+            for i in range(inflowTraces):
+                sheet13_1.write(0, i + 1, "Run " + str(i))
+                sheet13_1.write(t + 1, i + 1, reservoir.summerReleaseTemperature[i][t], decimal_style1)
+
+            colindex = 1
+            sheet13_1.write(0, inflowTraces + colindex, "Min")
+            formula = "MIN(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ")"
+            sheet13_1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style1)
+
+            colindex = colindex + 1
+            sheet13_1.write(0, inflowTraces + colindex, "Ave")
+            formula = "AVERAGE(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ")"
+            sheet13_1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style1)
+
+            colindex = colindex + 1
+            sheet13_1.write(0, inflowTraces + colindex, "Max")
+            formula = "MAX(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ")"
+            sheet13_1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style1)
+
+            colindex = colindex + 1
+            sheet13_1.write(0, inflowTraces + colindex, "10th")
+            formula = "PERCENTILE(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ", 0.1)"
+            sheet13_1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style1)
+
+            colindex = colindex + 1
+            sheet13_1.write(0, inflowTraces + colindex, "50th")
+            formula = "PERCENTILE(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ", 0.5)"
+            sheet13_1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style1)
+
+            colindex = colindex + 1
+            sheet13_1.write(0, inflowTraces + colindex, "90th")
+            formula = "PERCENTILE(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ", 0.9)"
+            sheet13_1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style1)
+
+        sheet14 = f.add_sheet(u'CPRelease', cell_overwrite_ok=True)  # create sheet
+        [inflowTraces, Periods] = reservoir.CPRelease.shape  # h is row，l is column
+        time = begtime
+        for t in range(Periods):
+            sheet14.write(t+1, 0, str(time.strftime("%b %Y")))
+            time = time + relativedelta(years=+1)
+            for i in range(inflowTraces):
+                sheet14.write(0, i+1, "Run " +str(i))
+                sheet14.write(t+1, i+1, reservoir.CPRelease[i][t],decimal_style)
+
+        sheet15 = f.add_sheet(u'CPRelease_10Y', cell_overwrite_ok=True)  # create sheet
+        [inflowTraces, Periods] = reservoir.CPRelease_10Y.shape  # h is row，l is column
+        time = begtime
+        for t in range(Periods):
+            sheet15.write(t+1, 0, str(time.strftime("%b %Y")))
+            time = time + relativedelta(years=+1)
+            for i in range(inflowTraces):
+                sheet15.write(0, i+1, "Run " +str(i))
+                sheet15.write(t+1, i+1, reservoir.CPRelease_10Y[i][t],decimal_style)
+
+            colindex = 1
+            sheet15.write(0, inflowTraces + colindex, "Min")
+            formula = "MIN(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ")"
+            sheet15.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+            colindex = colindex + 1
+            sheet15.write(0, inflowTraces + colindex, "Ave")
+            formula = "AVERAGE(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ")"
+            sheet15.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+            colindex = colindex + 1
+            sheet15.write(0, inflowTraces + colindex, "Max")
+            formula = "MAX(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ")"
+            sheet15.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+            colindex = colindex + 1
+            sheet15.write(0, inflowTraces + colindex, "10th")
+            formula = "PERCENTILE(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ", 0.1)"
+            sheet15.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+            colindex = colindex + 1
+            sheet15.write(0, inflowTraces + colindex, "50th")
+            formula = "PERCENTILE(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ", 0.5)"
+            sheet15.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+            colindex = colindex + 1
+            sheet15.write(0, inflowTraces + colindex, "90th")
+            formula = "PERCENTILE(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ", 0.9)"
+            sheet15.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+    elif reservoir.name == "Mead":
+        sheet12 = f.add_sheet(u'LB&MShortage_M', cell_overwrite_ok=True)  # create sheet
+        [inflowTraces, Periods] = reservoir.LBMShortage.shape  # h is row，l is column
+        time = begtime
+        for t in range(Periods):
+            sheet12.write(t+1, 0, str(time.strftime("%b %Y")))
+            time = time + relativedelta(months=+1)
+            for i in range(inflowTraces):
+                sheet12.write(0, i+1, "Run " +str(i))
+                sheet12.write(t+1, i+1, reservoir.LBMShortage[i][t],decimal_style)
+
+            colindex = 1
+            sheet12.write(0, inflowTraces + colindex, "Min")
+            formula = "MIN(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ")"
+            sheet12.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+            colindex = colindex + 1
+            sheet12.write(0, inflowTraces + colindex, "Ave")
+            formula = "AVERAGE(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ")"
+            sheet12.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+            colindex = colindex + 1
+            sheet12.write(0, inflowTraces + colindex, "Max")
+            formula = "MAX(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ")"
+            sheet12.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+            colindex = colindex + 1
+            sheet12.write(0, inflowTraces + colindex, "10th")
+            formula = "PERCENTILE(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ", 0.1)"
+            sheet12.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+            colindex = colindex + 1
+            sheet12.write(0, inflowTraces + colindex, "50th")
+            formula = "PERCENTILE(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ", 0.5)"
+            sheet12.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+            colindex = colindex + 1
+            sheet12.write(0, inflowTraces + colindex, "90th")
+            formula = "PERCENTILE(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ", 0.9)"
+            sheet12.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+        sheet12_1 = f.add_sheet(u'LB&MShortage_Y', cell_overwrite_ok=True)  # create sheet
+        [inflowTraces, Periods] = reservoir.LBMShortage.shape  # h is row，l is column
+        time = begtime
+        for t in range(int(Periods/12)):
+            sheet12_1.write(t+1, 0, str(time.strftime("%b %Y")))
+            time = time + relativedelta(years=+1)
+            for i in range(inflowTraces):
+                sheet12_1.write(0, i+1, "Run " +str(i))
+                sheet12_1.write(t+1, i+1, sum(reservoir.LBMShortage[i][t*12:t*12+12]),decimal_style)
+
+            colindex = 1
+            sheet12_1.write(0, inflowTraces + colindex, "Min")
+            formula = "MIN(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ")"
+            sheet12_1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+            colindex = colindex + 1
+            sheet12_1.write(0, inflowTraces + colindex, "Ave")
+            formula = "AVERAGE(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ")"
+            sheet12_1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+            colindex = colindex + 1
+            sheet12_1.write(0, inflowTraces + colindex, "Max")
+            formula = "MAX(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ")"
+            sheet12_1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+            colindex = colindex + 1
+            sheet12_1.write(0, inflowTraces + colindex, "10th")
+            formula = "PERCENTILE(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ", 0.1)"
+            sheet12_1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+            colindex = colindex + 1
+            sheet12_1.write(0, inflowTraces + colindex, "50th")
+            formula = "PERCENTILE(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ", 0.5)"
+            sheet12_1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
+
+            colindex = colindex + 1
+            sheet12_1.write(0, inflowTraces + colindex, "90th")
+            formula = "PERCENTILE(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ", 0.9)"
+            sheet12_1.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
 
     # sheet11 = f.add_sheet(u'test1', cell_overwrite_ok=True)  # create sheet
     # [h, l] = reservoir.totalinflow.shape  # h is row，l is column
@@ -279,171 +793,6 @@ def exportData(reservoir, path):
     #     for j in range(h):
     #         sheet13.write(0, j+1, "Run " +str(j))
     #         sheet13.write(i+1, j+1, reservoir.testSeries3[j][i])
-
-    sheet2 = f.add_sheet(u'inflow', cell_overwrite_ok=True)  # create sheet
-    [h, l] = reservoir.totalinflow.shape  # h is row，l is column
-    time = begtime
-    for i in range(l):
-        sheet2.write(i+1, 0, str(time.strftime("%b %Y")))
-        time = time + relativedelta(months=+1)
-        for j in range(h):
-            sheet2.write(0, j+1, "Run " +str(j))
-            sheet2.write(i+1, j+1, reservoir.totalinflow[j][i])
-
-    sheet33 = f.add_sheet(u'outflow', cell_overwrite_ok=True)  # create sheet
-    [h, l] = reservoir.outflow.shape  # h is row，l is column
-    time = begtime
-    for i in range(l):
-        sheet33.write(i+1, 0, str(time.strftime("%m"+"/"+"%Y")))
-        time = time + relativedelta(months=+1)
-        for j in range(h):
-            sheet33.write(0, j+1, "Run " +str(j))
-            sheet33.write(i+1, j+1, reservoir.outflow[j][i])
-
-    sheet3 = f.add_sheet(u'release', cell_overwrite_ok=True)  # create sheet
-    [h, l] = reservoir.release.shape  # h is row，l is column
-    time = begtime
-    for i in range(l):
-        sheet3.write(i+1, 0, str(time.strftime("%m"+"/"+"%Y")))
-        time = time + relativedelta(months=+1)
-        for j in range(h):
-            sheet3.write(0, j+1, "Run " +str(j))
-            sheet3.write(i+1, j+1, reservoir.release[j][i])
-
-    sheet4 = f.add_sheet(u'evaporation', cell_overwrite_ok=True)  # create sheet
-    [h, l] = reservoir.evaporation.shape  # h is row，l is column
-    time = begtime
-    for i in range(l):
-        sheet4.write(i+1, 0, str(time.strftime("%b %Y")))
-        time = time + relativedelta(months=+1)
-        for j in range(h):
-            sheet4.write(0, j+1, "Run " +str(j))
-            sheet4.write(i+1, j+1, reservoir.evaporation[j][i])
-
-    sheet5 = f.add_sheet(u'precipitation', cell_overwrite_ok=True)  # create sheet
-    [h, l] = reservoir.precipitation.shape  # h is row，l is column
-    time = begtime
-    for i in range(l):
-        sheet5.write(i+1, 0, str(time.strftime("%b %Y")))
-        time = time + relativedelta(months=+1)
-        for j in range(h):
-            sheet5.write(0, j+1, "Run " +str(j))
-            sheet5.write(i+1, j+1, reservoir.precipitation[j][i])
-
-    sheet6 = f.add_sheet(u'changeinBank', cell_overwrite_ok=True)  # create sheet
-    [h, l] = reservoir.changeBankStorage.shape  # h is row，l is column
-    time = begtime
-    for i in range(l):
-        sheet6.write(i+1, 0, str(time.strftime("%b %Y")))
-        time = time + relativedelta(months=+1)
-        for j in range(h):
-            sheet6.write(0, j+1, "Run " +str(j))
-            sheet6.write(i+1, j+1, reservoir.changeBankStorage[j][i])
-
-    sheet7 = f.add_sheet(u'storage', cell_overwrite_ok=True)  # create sheet
-    [h, l] = reservoir.storage.shape  # h is row，l is column
-    time = begtime
-    for i in range(l):
-        sheet7.write(i+1, 0, str(time.strftime("%b %Y")))
-        time = time + relativedelta(months=+1)
-        for j in range(h):
-            sheet7.write(0, j+1, "Run " +str(j))
-            sheet7.write(i+1, j+1, reservoir.storage[j][i])
-
-    sheet8 = f.add_sheet(u'spill', cell_overwrite_ok=True)  # create sheet
-    [h, l] = reservoir.spill.shape  # h is row，l is column
-    time = begtime
-    for i in range(l):
-        sheet8.write(i+1, 0, str(time.strftime("%b %Y")))
-        time = time + relativedelta(months=+1)
-        for j in range(h):
-            sheet8.write(0, j+1, "Run " +str(j))
-            sheet8.write(i+1, j+1, reservoir.spill[j][i])
-
-    for i in range (0, reservoir.inflowTraces):
-        for j in range (0, reservoir.periods):
-            startStorage = 0
-            if j == 0:
-                startStorage = reservoir.initStorage
-            else:
-                startStorage = reservoir.storage[i][j - 1]
-
-            temp = startStorage - reservoir.storage[i][j] + reservoir.totalinflow[i][j] + reservoir.precipitation[i][j] \
-                   - reservoir.evaporation[i][j] - reservoir.outflow[i][j] - reservoir.changeBankStorage[i][j]
-            reservoir.balance[i][j] = temp
-
-    sheet9 = f.add_sheet(u'balance', cell_overwrite_ok=True)  # create sheet
-    [h, l] = reservoir.balance.shape  # h is row，l is column
-    time = begtime
-    for i in range(l):
-        sheet9.write(i+1, 0, str(time.strftime("%b %Y")))
-        time = time + relativedelta(months=+1)
-        for j in range(h):
-            sheet9.write(0, j+1, "Run " +str(j))
-            sheet9.write(i+1, j+1, reservoir.balance[j][i])
-
-    sheetArea = f.add_sheet(u'area', cell_overwrite_ok=True)  # create sheet
-    [h, l] = reservoir.area.shape  # h is row，l is column
-    time = begtime
-    for i in range(l):
-        sheetArea.write(i+1, 0, str(time.strftime("%b %Y")))
-        time = time + relativedelta(months=+1)
-        for j in range(h):
-            sheetArea.write(0, j+1, "Run " +str(j))
-            sheetArea.write(i+1, j+1, reservoir.area[j][i])
-
-    if reservoir.name == "Powell":
-        sheet10 = f.add_sheet(u'UBDepletion', cell_overwrite_ok=True)  # create sheet
-        [h, l] = reservoir.relatedUser.DepletionNormal.shape  # h is row，l is column
-        time = begtime
-        for i in range(l):
-            sheet10.write(i+1, 0, str(time.strftime("%b %Y")))
-            time = time + relativedelta(months=+1)
-            for j in range(h):
-                sheet10.write(0, j+1, "Run " +str(j))
-                sheet10.write(i+1, j+1, reservoir.relatedUser.DepletionNormal[j][i])
-
-    if reservoir.name == "Mead":
-        sheet11 = f.add_sheet(u'LB&MDepletion', cell_overwrite_ok=True)  # create sheet
-        [h, l] = reservoir.relatedUser.DepletionNormal.shape  # h is row，l is column
-        time = begtime
-        for i in range(l):
-            sheet11.write(i+1, 0, str(time.strftime("%b %Y")))
-            time = time + relativedelta(months=+1)
-            for j in range(h):
-                sheet11.write(0, j+1, "Run " +str(j))
-                sheet11.write(i+1, j+1, reservoir.relatedUser.DepletionNormal[j][i])
-
-    if reservoir.name == "Powell":
-        sheet12 = f.add_sheet(u'UBShortage', cell_overwrite_ok=True)  # create sheet
-        [h, l] = reservoir.UBShortage.shape  # h is row，l is column
-        time = begtime
-        for i in range(l):
-            sheet12.write(i+1, 0, str(time.strftime("%b %Y")))
-            time = time + relativedelta(months=+1)
-            for j in range(h):
-                sheet12.write(0, j+1, "Run " +str(j))
-                sheet12.write(i+1, j+1, reservoir.UBShortage[j][i])
-    elif reservoir.name == "Mead":
-        sheet12 = f.add_sheet(u'LB&MShortage', cell_overwrite_ok=True)  # create sheet
-        [h, l] = reservoir.LBMShortage.shape  # h is row，l is column
-        time = begtime
-        for i in range(l):
-            sheet12.write(i+1, 0, str(time.strftime("%b %Y")))
-            time = time + relativedelta(months=+1)
-            for j in range(h):
-                sheet12.write(0, j+1, "Run " +str(j))
-                sheet12.write(i+1, j+1, reservoir.LBMShortage[j][i])
-
-    sheet13 = f.add_sheet(u'ReleaseTemp', cell_overwrite_ok=True)  # create sheet
-    [h, l] = reservoir.elevation.shape  # h is row，l is column
-    time = begtime
-    for i in range(l):
-        sheet13.write(i+1, 0, str(time.strftime("%m"+"/"+"%Y")))
-        time = time + relativedelta(months=+1)
-        for j in range(h):
-            sheet13.write(0, j+1, "Run " +str(j))
-            sheet13.write(i+1, j+1, reservoir.releaseTemperature[j][i])
 
     # other metrics
     # [h, l] = reservoir.inflow.shape  # h is row，l is column
@@ -522,6 +871,13 @@ def exportData(reservoir, path):
 
     f.save(path)
 
+def readPariaInflow(reservoir, filePath):
+    reservoir.basicDataFile = filePath
+    pwd = os.getcwd()
+    os.chdir(os.path.dirname(reservoir.basicDataFile))
+    reservoir.basicData = pd.read_csv(os.path.basename(reservoir.basicDataFile))
+    os.chdir(pwd)
+    reservoir.PariaInflow = np.transpose(reservoir.basicData.values)
 
 def readCRSSPowellComputeRunoffSeasonRelease(reservoir, filePath):
     reservoir.basicDataFile = filePath

@@ -70,6 +70,18 @@ class LakePowell(Reservoir):
     EQTrumpUpperLevelBalancingFlag = None
     EqualizationTolerance = 10000
 
+    # =======Release at Compact Point=========
+    # Paria River inflow
+    PariaInflow = None
+    # CPRelease, CP: compact point
+    CPRelease = None
+
+    # CPRelease_10Ave, 10 year average of CP release
+    CPRelease_10Y = None
+    # Past 9 years (2012,2013,...2020) of Flow (acre-feet) at Compact Point
+    # used to calculate 10year average in 2021, 2022, ... 2029.
+    CPRelease_Past = [8263699, 8033390, 8086761, 8945348, 9356329, 8877457, 9252468, 9218610, 8201979]
+
     def __init__(self, name, upR):
         Reservoir.__init__(self, name, upR)
         self.lastPowellStorage = self.para.lastPowellStorage
@@ -88,6 +100,8 @@ class LakePowell(Reservoir):
         self.remainingEvaporation = np.zeros([self.inflowTraces, self.periods])
         self.salvageEvaporation = np.zeros([self.inflowTraces, self.periods])
         self.EQTrumpUpperLevelBalancingFlag = np.zeros([self.inflowTraces, self.periods])
+        self.CPRelease = np.zeros([self.inflowTraces, self.periods])
+        self.CPRelease_10Y = np.zeros([self.inflowTraces, self.years])
 
     # calculate inflow to Lake Powell, this value changed based on UB contribution
     def inflowToPowell(self, k, i, t):
@@ -109,6 +123,11 @@ class LakePowell(Reservoir):
             # Step 3: calculate shortages based on the change of inflow and release
             #        LB+MEXICO: demand - outflow from Mead
             #        UB: incremental of inflow + base shortages from CRSS
+
+            # to avoid using contribution data calculated in previous inflow traces.
+            if t == 0:
+                self.relatedUser.Contribution = 0
+                self.downReservoir.relatedUser.Contribution = 0
 
             month = self.para.determineMonth(t)
             year = self.para.getCurrentYear(t)
@@ -154,14 +173,52 @@ class LakePowell(Reservoir):
                 else:
                     # release = totalReleaseThisYear
                     gap = totalDemandThisYear - totalReleaseThisYear
-                    # UB contribution
-                    self.relatedUser.Contribution = UBdemandThisYear/ totalDemandThisYear * gap
-                    # LB and Mexico contribution
-                    self.downReservoir.relatedUser.Contribution = LBMdemandThisYear/ totalDemandThisYear * gap
 
-                    if self.getinitStorageForEachPeriod(i,t) < self.plc.ADP_triggerS:
-                        self.UBShortage[i][t] = self.relatedUser.Contribution / 12 - self.crssUBshortage[i][t]
-                        return self.crssInflow[i][t] + self.relatedUser.Contribution / 12
+                    # Strategy 1. Arranged by UB and LBM contributions proportionally
+                    if False:
+                        # UB contribution
+                        self.relatedUser.Contribution = UBdemandThisYear/ totalDemandThisYear * gap
+                        # LB and Mexico contribution
+                        self.downReservoir.relatedUser.Contribution = LBMdemandThisYear/ totalDemandThisYear * gap
+
+                    # Strategy 2. All contribution made by UB 
+                    if False:
+                        self.relatedUser.Contribution = gap
+                        self.downReservoir.relatedUser.Contribution = 0
+
+                    # Strategy 3. All contribution made by LBM
+                    if False:
+                        self.relatedUser.Contribution = 0
+                        self.downReservoir.relatedUser.Contribution = gap
+
+                    # Strategy 4. Equally arranged by UB and LBM
+                    if False:
+                        self.relatedUser.Contribution = gap/2.0
+                        self.downReservoir.relatedUser.Contribution = gap/2.0
+
+                    # Strategy 5. 75% by UB and 25% by LBM
+                    if False:
+                        self.relatedUser.Contribution = gap * 0.75
+                        self.downReservoir.relatedUser.Contribution = gap * 0.25
+
+                    # Strategy 6. 25% by UB and 75% by LBM
+                    if True:
+                        self.relatedUser.Contribution = gap * 0.25
+                        self.downReservoir.relatedUser.Contribution = gap * 0.75
+
+                    # if Lake Mead elevation is smaller than 1090 feet:
+                    # CRSS shortages are negative values
+                    if self.downReservoir.getinitStorageForEachPeriod(i,t) < self.plc.ADP_triggerS:
+                        # don't have enough water to contribute
+                        if self.relatedUser.Contribution / 12 > \
+                                (self.relatedUser.DepletionNormal[k][t] + self.crssUBshortage[i][t]):
+                            self.UBShortage[i][t] = (self.relatedUser.DepletionNormal[k][t] + self.crssUBshortage[i][t])\
+                                                    - self.crssUBshortage[i][t]
+                            # crssinflow considers the unresolved shortages by UB.
+                            return self.crssInflow[i][t] + self.relatedUser.DepletionNormal[k][t] + self.crssUBshortage[i][t]
+                        else:
+                            self.UBShortage[i][t] = self.relatedUser.Contribution / 12 - self.crssUBshortage[i][t]
+                            return self.crssInflow[i][t] + self.relatedUser.Contribution / 12
                     else:
                         self.UBShortage[i][t] = - self.crssUBshortage[i][t]
                         return self.crssInflow[i][t]
@@ -169,15 +226,22 @@ class LakePowell(Reservoir):
                 # self.UBShortage[i][t] = self.relatedUser.Contribution/12 - self.crssUBshortage[i][t]
                 # return self.crssInflow[i][t] + self.relatedUser.Contribution/12
 
-                if self.getinitStorageForEachPeriod(i, t) < self.plc.ADP_triggerS:
-                    self.UBShortage[i][t] = self.relatedUser.Contribution / 12 - self.crssUBshortage[i][t]
-                    return self.crssInflow[i][t] + self.relatedUser.Contribution / 12
+                if self.downReservoir.getinitStorageForEachPeriod(i, t) < self.plc.ADP_triggerS:
+                    # don't have enough water to contribute
+                    if self.relatedUser.Contribution / 12 > \
+                            (self.relatedUser.DepletionNormal[k][t] + self.crssUBshortage[i][t]):
+                        self.UBShortage[i][t] = (self.relatedUser.DepletionNormal[k][t] + self.crssUBshortage[i][t]) \
+                                                - self.crssUBshortage[i][t]
+                        return self.crssInflow[i][t] + self.relatedUser.DepletionNormal[k][t]
+                    else:
+                        self.UBShortage[i][t] = self.relatedUser.Contribution / 12 - self.crssUBshortage[i][t]
+                        return self.crssInflow[i][t] + self.relatedUser.Contribution / 12
                 else:
                     self.UBShortage[i][t] = - self.crssUBshortage[i][t]
                     return self.crssInflow[i][t]
 
         else:
-            # todo
+            # todo, other policies
             # ubStorage is the aggregated storage above Lake Powell
             # inflowthismonth = self.inflow[i][j] - (self.relatedUser.DepletionNormal[k][j] + self.crssUBshortage[i][j])
 
@@ -463,8 +527,31 @@ class LakePowell(Reservoir):
         #INPUT acre-feet, RETURN feet
         return np.interp(ele, self.PNETableElevation, self.PNETableTerranceArea)
 
+    # Compact point release = Powell release + Paria inflow from CRSS.
+    def CalcualteFlowAtCompactPoint(self):
+        # calculate monthly streamflow at Compact Point
+        for i in range(0, self.inflowTraces):
+            for t in range(0, self.periods):
+                self.CPRelease[i][t] = self.outflow[i][t]+ self.PariaInflow[i][t]
 
-    # =================================================NOT USED=========================================================
+        pastYears = 9
+        # create a temporary array to store yearly streamflow at compact point, start from (start year - 9)
+        temp = np.zeros([self.inflowTraces, pastYears + self.years])
+        for i in range(0, self.inflowTraces):
+            for y in range(len(self.CPRelease_Past)):
+                temp[i][y] = self.CPRelease_Past[y]
+
+        # add simulation results right behind historical records
+        for i in range(0, self.inflowTraces):
+            for y in range(0, self.years):
+                temp[i][y+pastYears] = sum(self.CPRelease[i][y*12:y*12+12])
+
+        # calculate 10 year streamflow at Compact Point
+        for i in range(0, self.inflowTraces):
+            for y in range(0, self.years):
+                self.CPRelease_10Y[i][y] = sum(temp[i][y:y+10])
+
+    # =================================================NOT USED NOW=====================================================
     # # used in CRSS, not exactly the same
     # targetSpace = 0
     # lastPowellStorage = None

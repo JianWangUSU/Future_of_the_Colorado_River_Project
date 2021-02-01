@@ -154,6 +154,13 @@ def simulateResTemp(reservoir):
                 Ave_Elevation = (reservoir.elevation[i][t] + reservoir.elevation[i][t-1])/2.0
                 reservoir.releaseTemperature[i][t] = getReleaseTempDeltaD(month, Ave_Elevation)
 
+    for i in range(reservoir.inflowTraces):
+        for t in range(reservoir.years):
+            # Jun Jul Aug Sep
+            reservoir.summerReleaseTemperature[i][t] \
+                = sum(reservoir.releaseTemperature[i][t * 12 + 5:t * 12 + 9]) \
+                  / len(reservoir.releaseTemperature[i][t * 12 + 5:t * 12 + 9])
+
 def getReleaseTempNEW(month, elevation):
     if month == JAN:
         return getJanReleaseTempNEW(elevation)

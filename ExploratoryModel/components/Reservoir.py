@@ -72,6 +72,8 @@ class Reservoir(Node):
     area = None # area in acre
     convergence = None
     releaseTemperature = None # reservoir release temerpature
+    summerReleaseTemperature = None # reservoir summer release temerpature
+
 
     # temperory data, for validation, rename validation.
     crssUBshortage = None # UB basin shortages
@@ -123,6 +125,7 @@ class Reservoir(Node):
         self.inflowTraces = self.network.inflowTraces
         self.depletionTraces = self.network.depletionTraces
         self.periods = self.network.periods
+        self.years = self.network.years
 
         self.inflow = np.zeros([self.inflowTraces, self.periods])
         self.totalinflow = np.zeros([self.inflowTraces, self.periods])
@@ -144,6 +147,7 @@ class Reservoir(Node):
         self.testSeries2 = np.zeros([self.inflowTraces, self.periods])
         self.testSeries3 = np.zeros([self.inflowTraces, self.periods])
         self.releaseTemperature = np.zeros([self.inflowTraces, self.periods])
+        self.summerReleaseTemperature = np.zeros([self.inflowTraces, self.years])
 
     # setup depletion data
     # def setupDepletion(self, user):

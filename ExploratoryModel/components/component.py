@@ -55,6 +55,7 @@ class Network(Component):
         self.periods = periods
         self.inflowTraces = inflowTraces
         self.depletionTraces = depletionTraces
+        self.years = int(self.periods/12)
 
     def simulation(self):
         nodeLen = len(self.nodes)

@@ -46,8 +46,8 @@ CRSS_Mead = False
 
 # Adapt demand to inflow policy (it will change Lake Powell inflow and Lake Mead release)
 ADP_DemandtoInflow = True
-# trigger ADP policy only when reservoir storage is < self.plc.ADP_triggerS
-ADP_triggerS = 12000000
+# trigger ADP policy only when reservoir storage is < self.plc.ADP_triggerS, 10857008 af respond to 1090 feet
+ADP_triggerS = 10857008
 
 # Protect Pearce Ferry Rapid
 PFR = False

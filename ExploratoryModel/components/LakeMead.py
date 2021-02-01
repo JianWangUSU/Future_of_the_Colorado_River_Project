@@ -55,6 +55,7 @@ class LakeMead(Reservoir):
         # self.MeadBankInitialBalance = self.para.MeadBankInitialBalance
 
     def simulationSinglePeriod(self, k, i, t):
+
        # 1. get initial values for reservoir storage
         startStorage = self.getinitStorageForEachPeriod(i,t)
 
@@ -160,8 +161,10 @@ class LakeMead(Reservoir):
         # adapt release to inflow
         if self.plc.ADP_DemandtoInflow == True:
             if startStorage < self.plc.ADP_triggerS:
-                # release = normal demand - gains (inflow below - Mohave and Havasu loss) - LB AND MEXICO contribution
-                return self.relatedUser.DepletionNormal[k][t] - self.relatedUser.GainLoss/12 - self.relatedUser.Contribution/12
+                # release = normal demand - gains (inflow below - Mohave and Havasu loss) - LB AND MEXICO contribution.
+                # release must be a positive number.
+                result = max(self.relatedUser.DepletionNormal[k][t] - self.relatedUser.GainLoss/12 - self.relatedUser.Contribution/12, 0)
+                return result
             else:
                 return self.relatedUser.DepletionNormal[k][t] - self.relatedUser.GainLoss / 12
 
