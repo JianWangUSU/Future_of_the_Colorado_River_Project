@@ -28,8 +28,8 @@ from dateutil.relativedelta import relativedelta
 #
 #
 
-releaseTemp = [5, 1, 2, 3]
-print(min(releaseTemp))
+# releaseTemp = [5, 1, 2, 3]
+# print(min(releaseTemp))
 # releaseTemp = [[5,1],[2,3]]
 
 # print(releaseTemp[0][0])
@@ -39,11 +39,11 @@ print(min(releaseTemp))
 
 # print(sum(releaseTemp[0:2][0]))
 # print(len(releaseTemp[0:3]))
-print(sum(releaseTemp[2:3]))
+# print(sum(releaseTemp[2:3]))
 
 # print(sum(range(0,4)))
-import math
-print(math.floor(0.9))
+# import math
+# print(math.floor(0.9))
 
 # import matplotlib.pyplot as plt
 # import numpy as np
@@ -119,13 +119,25 @@ import plotly.graph_objects as go
 # df = px.data.iris()
 # print(df)
 
+# a = [4.400000000000001, 5]
+# b= np.round(a,0)
+# x = np.arange(3, 13, 0.1)
+# print(x)
+
+import math
+print(math.floor(11/12))
+
 # df = pd.read_csv('../tools/parallel.csv')
 # df = pd.read_csv('../tools/parallel1.csv')
 # df = pd.read_csv('../tools/parallel2.csv')
 # df = pd.read_csv('../tools/parallel3.csv')
 
-# df = pd.read_csv('../tools/parallel_empty.csv')
-df = pd.read_csv('../tools/parallel_empty8.csv')
+df = pd.read_csv('../tools/parallel-toEmpty.csv')
+# df = pd.read_csv('../tools/parallel-toEmpty-3Y.csv')
+# df = pd.read_csv('../tools/parallel-toEmpty-5Y.csv')
+# df = pd.read_csv('../tools/parallel-to12.csv')
+# df = pd.read_csv('../tools/parallel-to12-3Y.csv')
+# df = pd.read_csv('../tools/parallel-to12-5Y.csv')
 
 # df2 = df.sort_values(by=["sepal_length"], ascending=True)
 # df.to_csv('../tools/parallel2.csv')
@@ -166,13 +178,13 @@ df = pd.read_csv('../tools/parallel_empty8.csv')
 #                                                 dict(range = [0,40], label = 'YearsTo12MAF', values = df['YearsTo12MAF']),]),
 #                               color_continuous_scale='reds_r', color_continuous_midpoint=20)
 
-fig = px.parallel_coordinates(df, color="YearsTo12MAF",
-                              dimensions=['InitStorage(Powell&Mead)', 'Inflow_Powell', 'Release_Mead', 'YearsTo12MAF'],
-                              color_continuous_scale='reds_r', color_continuous_midpoint=20)
-
-# fig = px.parallel_coordinates(df, color="YearsToEmpty",
-#                               dimensions=['InitStorage(Powell&Mead)', 'Inflow_Powell', 'Release_Mead', 'YearsToEmpty'],
+# fig = px.parallel_coordinates(df, color="YearsTo12MAF",
+#                               dimensions=['InitStorage(Powell&Mead)', 'Inflow_Powell', 'Release_Mead', 'YearsTo12MAF'],
 #                               color_continuous_scale='reds_r', color_continuous_midpoint=20)
+
+fig = px.parallel_coordinates(df, color="YearsToEmpty",
+                              dimensions=['InitStorage(Powell&Mead)', 'Inflow_Powell', 'Release_Mead', 'YearsToEmpty'],
+                              color_continuous_scale='reds_r', color_continuous_midpoint=20)
 
 fig.show()
 

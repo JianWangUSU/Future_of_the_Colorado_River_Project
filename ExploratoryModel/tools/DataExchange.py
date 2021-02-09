@@ -1028,21 +1028,51 @@ def readCRSSMohaveHavasu(reservoir, filePath):
     os.chdir(pwd)
     reservoir.crssMohaveHavasu = np.transpose(reservoir.basicData.values)
 
-def exportDSresults(dstools, path):
+# multi dimensional sensitivity analysis
+def exportMSAresults(path, Inflows, Releases, YearstToEmpty, YearsToFull, EOPHStorage):
+
+    # np.round(Inflows, 1)
+    # np.round(Releases, 1)
+    # np.round(YearstToEmpty, 0)
+    # np.round(YearsToFull, 0)
+
     f = xlwt.Workbook(encoding='utf-8')
+    decimal_style = xlwt.XFStyle()
+    decimal_style.num_format_str = '0'
 
-    xlen = len(dstools.demandRange)
-    ylen = len(dstools.inflowRange)
-    zlen = len(dstools.initSorage)
+    sheet1 = f.add_sheet(u'YearsToEmpty', cell_overwrite_ok=True)  # create sheet
+    [inflowLen, releaseLen] = YearstToEmpty.shape  # h is row，l is column
 
-    for k in range(0, zlen):
-        name = str (dstools.initSorage[k])
-        newSheet = f.add_sheet(str(name), cell_overwrite_ok=True)  # create sheet
-        for i in range (0, xlen):
-            newSheet.write(i+1, 0, str(dstools.demandRange[i]))
-            for j in range (0, ylen):
-                newSheet.write(0, j+1, str(dstools.inflowRange[j]))
-                newSheet.write(i+1, j+1, dstools.results[i][j][k])
+    for t in range(releaseLen):
+        sheet1.write(t+2, 1, str(Releases[t]))
+        for i in range(inflowLen):
+            sheet1.write(1, i+2, str(Inflows[i]))
+            sheet1.write(t+2, i+2, str(YearstToEmpty[i][t]))
+
+    sheet1.write(0, 2, "Release")
+    sheet1.write(2, 0, "Inflow")
+
+    sheet2 = f.add_sheet(u'YearsToFull', cell_overwrite_ok=True)  # create sheet
+    [inflowLen, releaseLen] = YearsToFull.shape  # h is row，l is column
+    for t in range(releaseLen):
+        sheet2.write(t+2, 1, str(Releases[t]))
+        for i in range(inflowLen):
+            sheet2.write(1, i+2, str(Inflows[i]))
+            sheet2.write(t+2, i+2, str(YearsToFull[i][t]))
+
+    sheet2.write(0, 2, "Release")
+    sheet2.write(2, 0, "Inflow")
+
+    sheet3 = f.add_sheet(u'EOPHStorage', cell_overwrite_ok=True)  # create sheet
+    [inflowLen, releaseLen] = EOPHStorage.shape  # h is row，l is column
+    for t in range(releaseLen):
+        sheet3.write(t+2, 1, str(Releases[t]))
+        for i in range(inflowLen):
+            sheet3.write(1, i+2, str(Inflows[i]))
+            sheet3.write(t+2, i+2, str(EOPHStorage[i][t]))
+
+    sheet3.write(0, 2, "Release")
+    sheet3.write(2, 0, "Inflow")
 
     f.save(path)
 

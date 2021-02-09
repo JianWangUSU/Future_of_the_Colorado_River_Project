@@ -2,20 +2,21 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="98d60ba6-0189-4aaf-8408-f025eeac5580" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/other.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/ExploratoryModel.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ExploratoryModel.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/LakeMead.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/LakeMead.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/LakePowell.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/LakePowell.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/PolicyControl.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/PolicyControl.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/Reservoir.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/Reservoir.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/component.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/component.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/Comparison.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/Mead - CRSS.xls" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/Mead-ADP.xls" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/Powell - CRSS.xls" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/Powell-ADP.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/testSimulation.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/testSimulation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/0130Results/Comparison0130.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/results/0130Results/Comparison0130.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/simulation/start.py" beforeDir="false" afterPath="$PROJECT_DIR$/simulation/start.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tools/DataExchange.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/DataExchange.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools/ReleaseTemperature.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/ReleaseTemperature.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/DecisionScaling.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/SensitivityAnalysis.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/parallel - Copy.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/parallel.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/parallel1.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/parallel2.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/parallel_empty - Copy.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/parallel_empty.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/parallel_empty8.csv" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,9 +57,15 @@
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="E:/PycharmProjects" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\Future_of_the_Colorado_River_Project\ExploratoryModel\tools" />
+    </key>
   </component>
   <component name="RunManager" selected="Python.start">
     <configuration name="CalculateHistoryTempElevation" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
@@ -99,6 +106,28 @@
       <option name="SCRIPT_NAME" value="E:\Future_of_the_Colorado_River_Project\ExploratoryModel\tools\ReleaseTemperature.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <module name="ExploratoryModel" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
       <option name="REDIRECT_INPUT" value="false" />
@@ -239,7 +268,9 @@
       <workItem from="1610573669447" duration="831000" />
       <workItem from="1610657670442" duration="5169000" />
       <workItem from="1611160509178" duration="80688000" />
-      <workItem from="1611756495640" duration="41444000" />
+      <workItem from="1611756495640" duration="63433000" />
+      <workItem from="1612799397767" duration="22731000" />
+      <workItem from="1612882608258" duration="12809000" />
     </task>
     <servers />
   </component>
@@ -247,54 +278,34 @@
     <option name="version" value="1" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="500" y="163" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1603126763080">
+    <state x="550" y="171" key="FileChooserDialogImpl" timestamp="1612817960834">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="500" y="163" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1536.824@0.0.1536.824" timestamp="1603126763080" />
-    <state x="550" y="171" key="FileChooserDialogImpl" timestamp="1609542850778">
+    <state x="550" y="171" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1612817960834" />
+    <state width="1493" height="192" key="GridCell.Tab.0.bottom" timestamp="1612908992038">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="550" y="171" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1609542850778" />
-    <state width="1493" height="192" key="GridCell.Tab.0.bottom" timestamp="1612219597875">
+    <state width="1493" height="192" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1612908992038" />
+    <state width="1493" height="192" key="GridCell.Tab.0.center" timestamp="1612908992038">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="192" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1612219597875" />
-    <state width="1493" height="192" key="GridCell.Tab.0.center" timestamp="1612219597875">
+    <state width="1493" height="192" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1612908992038" />
+    <state width="1493" height="192" key="GridCell.Tab.0.left" timestamp="1612908992038">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="192" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1612219597875" />
-    <state width="1493" height="192" key="GridCell.Tab.0.left" timestamp="1612219597875">
+    <state width="1493" height="192" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1612908992038" />
+    <state width="1493" height="192" key="GridCell.Tab.0.right" timestamp="1612908992038">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="192" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1612219597875" />
-    <state width="1493" height="192" key="GridCell.Tab.0.right" timestamp="1612219597875">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state width="1493" height="192" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1612219597875" />
-    <state width="1493" height="252" key="GridCell.Tab.1.bottom" timestamp="1603573102837">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state width="1493" height="252" key="GridCell.Tab.1.bottom/0.0.1536.824@0.0.1536.824" timestamp="1603573102837" />
-    <state width="1493" height="252" key="GridCell.Tab.1.center" timestamp="1603573102837">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state width="1493" height="252" key="GridCell.Tab.1.center/0.0.1536.824@0.0.1536.824" timestamp="1603573102837" />
-    <state width="1493" height="252" key="GridCell.Tab.1.left" timestamp="1603573102837">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state width="1493" height="252" key="GridCell.Tab.1.left/0.0.1536.824@0.0.1536.824" timestamp="1603573102837" />
-    <state width="1493" height="252" key="GridCell.Tab.1.right" timestamp="1603573102837">
-      <screen x="0" y="0" width="1536" height="824" />
-    </state>
-    <state width="1493" height="252" key="GridCell.Tab.1.right/0.0.1536.824@0.0.1536.824" timestamp="1603573102837" />
+    <state width="1493" height="192" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1612908992038" />
     <state x="50" y="0" width="975" height="774" key="SettingsEditor" timestamp="1609621814083">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="50" y="0" width="975" height="774" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1609621814083" />
-    <state x="479" y="241" key="com.intellij.ide.util.TipDialog" timestamp="1611756542946">
+    <state x="479" y="241" key="com.intellij.ide.util.TipDialog" timestamp="1612882680916">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="479" y="241" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1611756542946" />
+    <state x="479" y="241" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1612882680916" />
     <state x="431" y="145" width="672" height="678" key="search.everywhere.popup" timestamp="1611610528377">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
@@ -318,7 +329,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/ScopingModel$DStools.coverage" NAME="DStools Coverage Results" MODIFIED="1597854927162" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/decisionScaling" />
-    <SUITE FILE_PATH="coverage/ExploratoryModel$start.coverage" NAME="start Coverage Results" MODIFIED="1612065715112" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/simulation" />
+    <SUITE FILE_PATH="coverage/ExploratoryModel$start.coverage" NAME="start Coverage Results" MODIFIED="1612908992032" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/simulation" />
     <SUITE FILE_PATH="coverage/ExploratoryModel$test.coverage" NAME="test Coverage Results" MODIFIED="1607661940255" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/simulation" />
     <SUITE FILE_PATH="coverage/SimplifiedColoradoRiverSimulationModel$start.coverage" NAME="start Coverage Results" MODIFIED="1595515609557" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/simulation" />
     <SUITE FILE_PATH="coverage/SimplifiedColoradoRiverSimulationModel$testSimulation__1_.coverage" NAME="testSimulation (1) Coverage Results" MODIFIED="1594335042066" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/components" />
@@ -329,6 +340,6 @@
     <SUITE FILE_PATH="coverage/ExploratoryModel$plots.coverage" NAME="plots Coverage Results" MODIFIED="1600615803630" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools" />
     <SUITE FILE_PATH="coverage/SimplifiedColoradoRiverSimulationModel$test.coverage" NAME="test Coverage Results" MODIFIED="1593700954658" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/components" />
     <SUITE FILE_PATH="coverage/ScopingModel$test.coverage" NAME="test Coverage Results" MODIFIED="1596388460072" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/simulation" />
-    <SUITE FILE_PATH="coverage/ExploratoryModel$testSimulation__1_.coverage" NAME="testSimulation (1) Coverage Results" MODIFIED="1611631677379" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/components" />
+    <SUITE FILE_PATH="coverage/ExploratoryModel$testSimulation__1_.coverage" NAME="testSimulation (1) Coverage Results" MODIFIED="1612892811739" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/components" />
   </component>
 </project>

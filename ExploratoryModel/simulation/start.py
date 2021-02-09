@@ -2,7 +2,7 @@ from components import Network, Reservoir, User, River, LakePowell, LakeMead
 from tools import DataExchange, plots
 import components.PolicyControl as plc
 import pandas as pd
-from tools import ReleaseTemperature, DecisionScaling
+from tools import ReleaseTemperature, SensitivityAnalysis
 import datetime
 
 
@@ -152,11 +152,24 @@ profile_path = "../data/depth_temperature.csv"
 DataExchange.readDepthProfileForTemp(profile_path)
 
 ### 4. run decision scaling
-if False:
+if True:
+    filePath = "../tools/results/SensitivityAnalysis.xls"
+
     starttime = datetime.datetime.now()
+    # 2 dimensional plot for Lake Mead, require higher resolution, small steps values
+    ### Lake Mead inflow and release
+    SensitivityAnalysis.SA_EmptyAndFull(Mead, filePath)
+
+    # 2 dimensional plot for Lake Powell and Lake Mead, require higher resolution, small steps values
+    ### Lake Powell inflow and Lake Mead release
+    # SensitivityAnalysis.SA_EmptyAndFullPowellMead(Powell, Mead, filePath)
+
+    endtime = datetime.datetime.now()
+    print(" time:" + str(endtime - starttime))
+
     # 2 dimensional plot
     # DecisionScaling.DS_EmptyAndFullPowellMead2(Powell, Mead)
-    # DecisionScaling.DS_EmptyAndFullPowellMead(Powell, Mead)
+    # SensitivityAnalysis.DS_EmptyAndFullPowellMead(Powell, Mead)
 
     # 5 dimensional plot
     # DecisionScaling.MultiUncertaintiesAnalysis(Powell, Mead)
@@ -164,63 +177,41 @@ if False:
     # 3 dimensional plot
     # DecisionScaling.MultiUncertaintiesAnalysis_3d(Powell, Mead)
 
-    # 2 dimensional plot for Lake Mead, require higher resolution, small steps values
-    ### inflow and release
-    DecisionScaling.DS_EmptyAndFull(Mead)
-    ### inflow and initial storage
-    # DecisionScaling.DS_EmptyAndFull2(Mead)
-    ### release and initial storage
-    # DecisionScaling.DS_EmptyAndFull3(Mead)
-
-    endtime = datetime.datetime.now()
-    print(" time:" + str(endtime - starttime))
-    # ds1 = DStools.DStools()
-    # ds1.setupMead(Mead)
-    # ds1.simulateCombinations()
-    # ds1.plot()
-    # dataExchange.exportDSresults(ds1, filePath + 'MeadDS.xls')
-    #
-    # ds2 = DStools.DStools()
-    # ds2.setupPowell(Powell)
-    # ds2.simulateCombinations()
-    # # ds2.plot()
-    # dataExchange.exportDSresults(ds2, filePath + 'PowellDS.xls')
-
-# Policy check
-count = 0
-index = 0
-for p in range(len(plc.LakePowellPolicyList)):
-    if plc.LakePowellPolicyList[p] == True:
-        index = p
-        count = count + 1
-if count == 0:
-    print('\033[91m' + "Warning: No Policy for Lake Powell is selected, please check PolicyControl.py!" + '\033[0m')
-    exit()
-elif count > 1:
-    print(
-        '\033[91m' + "Warning: Two or more policies for Lake Powell are selected, please please check PolicyControl.py!" + '\033[0m')
-    exit()
-else:
-    print(str(plc.LakePowellPolicyListNames[index]) + " for Lake Powell is selected!")
-
-count = 0
-index = 0
-for p in range(len(plc.LakeMeadPolicyList)):
-    if plc.LakeMeadPolicyList[p] == True:
-        index = p
-        count = count + 1
-if count == 0:
-    print('\033[91m' + "Warning: No Policy for Lake Mead is selected, please check PolicyControl.py!" + '\033[0m')
-    exit()
-elif count > 1:
-    print(
-        '\033[91m' + "Warning: Two or more policies for Lake Mead are selected, please please check PolicyControl.py!" + '\033[0m')
-    exit()
-else:
-    print(str(plc.LakeMeadPolicyListNames[index]) + " for Lake Mead is selected!")
-
 ### 5. run the model
-if True:
+if False:
+    # Policy check
+    count = 0
+    index = 0
+    for p in range(len(plc.LakePowellPolicyList)):
+        if plc.LakePowellPolicyList[p] == True:
+            index = p
+            count = count + 1
+    if count == 0:
+        print('\033[91m' + "Warning: No Policy for Lake Powell is selected, please check PolicyControl.py!" + '\033[0m')
+        exit()
+    elif count > 1:
+        print(
+            '\033[91m' + "Warning: Two or more policies for Lake Powell are selected, please please check PolicyControl.py!" + '\033[0m')
+        exit()
+    else:
+        print(str(plc.LakePowellPolicyListNames[index]) + " for Lake Powell is selected!")
+
+    count = 0
+    index = 0
+    for p in range(len(plc.LakeMeadPolicyList)):
+        if plc.LakeMeadPolicyList[p] == True:
+            index = p
+            count = count + 1
+    if count == 0:
+        print('\033[91m' + "Warning: No Policy for Lake Mead is selected, please check PolicyControl.py!" + '\033[0m')
+        exit()
+    elif count > 1:
+        print(
+            '\033[91m' + "Warning: Two or more policies for Lake Mead are selected, please please check PolicyControl.py!" + '\033[0m')
+        exit()
+    else:
+        print(str(plc.LakeMeadPolicyListNames[index]) + " for Lake Mead is selected!")
+
     # run reservoir simulation
     n.simulation()
     # run reservoir release model
@@ -229,7 +220,6 @@ if True:
     Powell.CalcualteFlowAtCompactPoint()
 
 ### 6. export results
-# if True:
     filePath = "../results/"
 
     # Powell.xls will store all Lake Powell results.
