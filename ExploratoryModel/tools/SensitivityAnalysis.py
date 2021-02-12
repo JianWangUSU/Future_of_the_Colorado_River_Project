@@ -82,11 +82,15 @@ def SA_EmptyAndFull(reservoir, filePath):
     ### Mead storage start at 6 maf, end at 0;
     # else:
     ### Mead storage start at 10 maf, end at storage(1025 ft)
-    ToEmpty = True
+    ToEmpty = False
     if ToEmpty:
+        # initStorage = 10 * MAFtoAF
         initStorage = 6 * MAFtoAF
+        # initStorage = 3 * MAFtoAF
     else:
-        initStorage = 10 * MAFtoAF
+        # initStorage = 10 * MAFtoAF
+        initStorage = 13 * MAFtoAF
+        # initStorage = 16 * MAFtoAF
 
     releaseLength = len(releaseRange)
     inflowLength = len(inflowRange)
@@ -156,14 +160,19 @@ def SA_EmptyAndFull(reservoir, filePath):
         ax.clabel(CS, inline=1, fmt='%1.0f', fontsize=8)
         CS.collections[0].set_label("Years to 1025 ft (Unit: years)")
 
-    ax.hlines(y=9.3, xmin=3, xmax=9.6, linewidth=1, color='r', linestyles = 'dashed')
-    ax.hlines(y=7+1, xmin=3, xmax=9.6, linewidth=1, color='r', linestyles = 'dashed')
-    ax.hlines(y=5.7+1, xmin=3, xmax=9.6, linewidth=1, color='r', linestyles = 'dashed')
-    ax.vlines(x=9.6-1.4, ymin=3, ymax=9.3, linewidth=1, color='r', linestyles = 'dashed')
-    ax.vlines(x=9.6, ymin=3, ymax=9.3, linewidth=1, color='r', linestyles = 'dashed')
 
-    ax.vlines(x=7.5, ymin=3, ymax=5.7+1, linewidth=1, color='r', linestyles = 'dotted')
-    ax.vlines(x=6.4, ymin=3, ymax=5.7+1, linewidth=1, color='r', linestyles = 'dotted')
+    if ToEmpty:
+        ax.hlines(y=7 + 1, xmin=3, xmax=9.6, linewidth=1, color='grey', linestyles='dashed')
+        ax.vlines(x=9.6 - 1.4, ymin=3, ymax=7 + 1, linewidth=1, color='grey', linestyles='dashed')
+        ax.vlines(x=9.6, ymin=3, ymax=7 + 1, linewidth=1, color='grey', linestyles='dashed')
+
+        ax.hlines(y=5.7 + 1, xmin=3, xmax=7.5, linewidth=1, color='r', linestyles='dotted')
+        ax.vlines(x=7.5, ymin=3, ymax=5.7 + 1, linewidth=1, color='r', linestyles='dotted')
+        ax.vlines(x=6.4, ymin=3, ymax=5.7 + 1, linewidth=1, color='r', linestyles='dotted')
+    else:
+        ax.hlines(y=9.3, xmin=3, xmax=9.6, linewidth=1, color='grey', linestyles='dashed')
+        ax.vlines(x=9.6 - 0.66, ymin=3, ymax=9.3, linewidth=1, color='grey', linestyles='dashed')
+        ax.vlines(x=9.6, ymin=3, ymax=9.3, linewidth=1, color='grey', linestyles='dashed')
 
     plt.legend(loc='upper left')
 
@@ -178,12 +187,15 @@ def SA_EmptyAndFull(reservoir, filePath):
 
     x = np.round(x, 1)
     y = np.round(y, 1)
-    z1 = np.round(z1, 0)
-    z2 = np.round(z2, 0)
+    z1 = np.round(z1, 1)
+    z2 = np.round(z2, 1)
     z3 = np.round(z3, 1)
 
-    DataExchange.exportMSAresults(filePath, x, y, z1, z2, z3)
-
+    if ToEmpty:
+        tabName = 'YearsToDeadPool'
+    else:
+        tabName = 'YearsTo1025ft'
+    DataExchange.exportMSAresults(filePath, y, x, z1, z2, z3, tabName)
 
 def SA_EmptyAndFullPowellMead(reservoir1, reservoir2, filePath):
     print("Multi-dimensional sensitivity for Lake Powell and Lake Mead analysis start!")
@@ -201,18 +213,24 @@ def SA_EmptyAndFullPowellMead(reservoir1, reservoir2, filePath):
     z2 = np.zeros([r2_length, i1_length])
     z3 = np.zeros([r2_length, i1_length])
 
-    ToEmpty = True
+    ToEmpty = False
     if ToEmpty:
-        totalInitS = 12 * MAFtoAF
+        # totalInitS = 20 * MAFtoAF
+        # totalInitS = 12 * MAFtoAF
+        totalInitS = 6 * MAFtoAF
     else:
-        totalInitS = 20 * MAFtoAF
+        # totalInitS = 20 * MAFtoAF
+        # totalInitS = 30 * MAFtoAF
+        totalInitS = 40 * MAFtoAF
 
     # intervening inflow (intervening inflow + Virgin river) in maf/yr
     # Wang and Schmidt. (2020) Stream flow and Losses of the Colorado River in the Southern Colorado Plateau
-    interveningInflow = 0.9
+    # 2007-2018 average is 1.064 amf (including Virgin river); 1990-2018 average is 1.03 maf (including Virgin river)
+    interveningInflow = 1 * MAFtoAF
 
     for r2 in range(0, r2_length):
         print(str(format(r2 / r2_length * 100, '.0f')) + '%' + " finish!")
+
         for i1 in range(0, i1_length):
             for t in range(0,totalN*12):
                 if t == 0:
@@ -232,23 +250,24 @@ def SA_EmptyAndFullPowellMead(reservoir1, reservoir2, filePath):
                 # The combined storage will increase 1, 0.5 by each. Release from Powell should be (10+10-1)/2
                 # Experiment 3: if inflow to Powell is 4, release from Mead is 12, interveningInflow = 1 maf
                 # The combined storage will decrease by 7, 3.5 by each. Release from Powell should be (4+12-1)/2
-                release1 = (inflow1 + release2 - interveningInflow / 12 * MAFtoAF) / 2
+                release1 = (inflow1 + release2 - interveningInflow / 12 ) / 2
                 results = reservoir1.simulationSinglePeriodGeneral(startStorage1, inflow1, release1, t)
                 storageM1[t] = results[0]
                 inflow2 = results[1]
 
                 if t == 0:
-                    startStorage2 = totalInitS / 2 * MAFtoAF
+                    startStorage2 = totalInitS / 2
                 else:
                     startStorage2 = storageM2[t - 1]
-                inflow2 = inflow2 + interveningInflow / 12 * MAFtoAF
+                inflow2 = inflow2 + interveningInflow / 12
                 results = reservoir2.simulationSinglePeriodGeneral(startStorage2, inflow2, release2, t)
                 storageM2[t] = results[0]
                 # print(str(t)+" "+str(storageM1[t])+" "+str(storageM2[t]))
 
                 CombinedStorage[t] = storageM1[t] + storageM2[t]
-                # if inflowRange1[i1] == 15 and releaseRange2[r2] == 3:
-                #     print(storageM2[t])
+
+                # if round(inflowRange1[i1],1) == 3 and round(releaseRange2[r2], 1) == 11.9:
+                #     print(CombinedStorage[t])
 
             if ToEmpty:
                 z1[r2][i1] = findYearsToEmpty2(reservoir1, reservoir2, CombinedStorage)
@@ -266,7 +285,7 @@ def SA_EmptyAndFullPowellMead(reservoir1, reservoir2, filePath):
 
     fig, ax = plt.subplots()
 
-    CS = ax.contour(X, Y, Z2, levels=[5, 10, 15, 30, 39], colors="#024979")
+    CS = ax.contour(X, Y, Z2, levels=[5, 10, 15, 30], colors="#024979")
     ax.clabel(CS, inline=1, fmt='%1.0f', fontsize=8)
     CS.collections[0].set_label("Years to full pool (Unit: years)")
 
@@ -299,44 +318,49 @@ def SA_EmptyAndFullPowellMead(reservoir1, reservoir2, filePath):
 
     x = np.round(x, 1)
     y = np.round(y, 1)
-    z1 = np.round(z1, 0)
-    z2 = np.round(z2, 0)
+    z1 = np.round(z1, 1)
+    z2 = np.round(z2, 1)
     z3 = np.round(z3, 1)
 
-    DataExchange.exportMSAresults(filePath, x, y, z1, z2, z3)
+    if ToEmpty:
+        tabName = 'YearsToDeadPool'
+    else:
+        tabName = 'YearsTo12MAF'
+    DataExchange.exportMSAresults(filePath, y, x, z1, z2, z3, tabName)
 
 def findYearsToEmpty(reservoir, s):
     for i in range(0, totalN*12):
       if s[i] <= reservoir.minStorage: # how many years to dry
-          return math.floor(i / 12)
+          # return math.floor(i / 12)
+          return i / 12
 
 # for two reservoirs
 def findYearsToEmpty2(reservoir1, reservoir2, s):
     for i in range(0, totalN*12):
       if s[i] <= reservoir1.minStorage + reservoir2.minStorage: # how many years to dry
-          return math.floor(i / 12)
+          return i / 12
 
 def findYearsTo1025ft(reservoir, s):
     for i in range(0, totalN*12):
       if s[i] <= reservoir.elevation_to_volume(1025): # how many years to 1025 feet
-          return math.floor(i / 12)
+          return i / 12
 
 def findYearsTo12maf(s):
     for i in range(0, totalN*12):
       if s[i] <= 12 * MAFtoAF: # how many years to 12 maf
-          return math.floor(i/12) # months divided by 12
+          return i/12 # months divided by 12
 
 # s: storage array
 def findYearsToFull(reservoir, s):
     for i in range(0, totalN*12):
       if s[i] >= reservoir.maxStorage: # how many years to fill
-          return math.floor(i / 12)
+          return i / 12
 
 # for two reservoirs
 def findYearsToFull2(reservoir1, reservoir2, s):
     for i in range(0, totalN*12):
       if s[i] >= reservoir1.maxStorage + reservoir2.maxStorage: # how many years to fill
-          return math.floor(i / 12)
+          return i / 12
 
 # return unit: MAF
 def findEndStorageBetween1025ftandFull(reservoir, s):

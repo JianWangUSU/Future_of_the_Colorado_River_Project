@@ -158,11 +158,11 @@ if True:
     starttime = datetime.datetime.now()
     # 2 dimensional plot for Lake Mead, require higher resolution, small steps values
     ### Lake Mead inflow and release
-    SensitivityAnalysis.SA_EmptyAndFull(Mead, filePath)
+    # SensitivityAnalysis.SA_EmptyAndFull(Mead, filePath)
 
     # 2 dimensional plot for Lake Powell and Lake Mead, require higher resolution, small steps values
     ### Lake Powell inflow and Lake Mead release
-    # SensitivityAnalysis.SA_EmptyAndFullPowellMead(Powell, Mead, filePath)
+    SensitivityAnalysis.SA_EmptyAndFullPowellMead(Powell, Mead, filePath)
 
     endtime = datetime.datetime.now()
     print(" time:" + str(endtime - starttime))

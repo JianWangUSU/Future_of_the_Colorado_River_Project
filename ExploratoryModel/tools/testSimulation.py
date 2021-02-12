@@ -125,7 +125,8 @@ import plotly.graph_objects as go
 # print(x)
 
 import math
-print(math.floor(11/12))
+# print(math.floor(11/12))
+print(11/12)
 
 # df = pd.read_csv('../tools/parallel.csv')
 # df = pd.read_csv('../tools/parallel1.csv')
