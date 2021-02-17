@@ -152,7 +152,7 @@ profile_path = "../data/depth_temperature.csv"
 DataExchange.readDepthProfileForTemp(profile_path)
 
 ### 4. run decision scaling
-if True:
+if False:
     filePath = "../tools/results/SensitivityAnalysis.xls"
 
     starttime = datetime.datetime.now()
@@ -178,7 +178,7 @@ if True:
     # DecisionScaling.MultiUncertaintiesAnalysis_3d(Powell, Mead)
 
 ### 5. run the model
-if False:
+if True:
     # Policy check
     count = 0
     index = 0

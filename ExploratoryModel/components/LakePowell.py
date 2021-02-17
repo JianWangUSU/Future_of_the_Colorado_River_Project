@@ -142,15 +142,20 @@ class LakePowell(Reservoir):
                 # Step 1:
                 # Calculate 5 past year total inflow to the system: inflow to Powell + intervening inflow to Mead
                 # sum works in this way [ , ) instead of [ , ]
-                totalInflow5Y = sum(self.crssInflow[i][t-pastYears*12:t]) \
-                                      + sum(self.downReservoir.crssInflow[i][t-pastYears*12:t])\
-                                      - sum(self.crssOutflow[i][t-pastYears*12:t])
-                # totalDemand5Y = sum(self.relatedUser.DepletionNormal[k][t-5*12:t]) \
-                #                       + sum(self.downReservoir.relatedUser.DepletionNormal[k][t-5*12:t]) \
-                #                       - self.downReservoir.relatedUser.GainLoss * 5
+                # total inflow to the system = water consumed before going to Lake Powell
+                #                              + inflow to Lake Powell + intervening inflow to Lake Mead
+                totalInflow5Y = sum(self.relatedUser.DepletionNormal[k][t-pastYears*12:t]) \
+                                + sum(self.crssUBshortage[i][t-pastYears*12:t]) \
+                                + sum(self.crssInflow[i][t-pastYears*12:t]) \
+                                + sum(self.downReservoir.crssInflow[i][t-pastYears*12:t])\
+                                - sum(self.crssOutflow[i][t-pastYears*12:t])
+
+                # Powell and Mead evaporation
+                totalEvaporation5Y = sum(self.evaporation[i][t-pastYears*12:t]) + sum(self.downReservoir.evaporation[i][t-pastYears*12:t])
+
                 # Step 2:
-                # adapt total release this year to total inflow in the past 5 years
-                totalReleaseThisYear = totalInflow5Y/pastYears
+                # adapt total release this year to total inflow - evaporation in the past 5 years
+                totalReleaseThisYear = totalInflow5Y/pastYears - totalEvaporation5Y/pastYears
 
                 # calculate total demand this year
                 UBdemandThisYear = sum(self.relatedUser.DepletionNormal[k][t:t + 12])
@@ -172,10 +177,15 @@ class LakePowell(Reservoir):
                     return self.crssInflow[i][t]
                 else:
                     # release = totalReleaseThisYear
+
                     gap = totalDemandThisYear - totalReleaseThisYear
 
+                    # Maximum contribution cap
+                    if gap > 1.5 * self.MAFtoAF:
+                        gap = 1.5 * self.MAFtoAF
+
                     # Strategy 1. Arranged by UB and LBM contributions proportionally
-                    if False:
+                    if True:
                         # UB contribution
                         self.relatedUser.Contribution = UBdemandThisYear/ totalDemandThisYear * gap
                         # LB and Mexico contribution
@@ -202,14 +212,13 @@ class LakePowell(Reservoir):
                         self.downReservoir.relatedUser.Contribution = gap * 0.25
 
                     # Strategy 6. 25% by UB and 75% by LBM
-                    if True:
-                        self.relatedUser.Contribution = gap * 0.25
-                        self.downReservoir.relatedUser.Contribution = gap * 0.75
+                    # if True:
+                    #     self.relatedUser.Contribution = gap * 0.25
+                    #     self.downReservoir.relatedUser.Contribution = gap * 0.75
 
                     # if Lake Mead elevation is smaller than 1090 feet:
-                    # CRSS shortages are negative values
-                    if self.downReservoir.getinitStorageForEachPeriod(i,t) < self.plc.ADP_triggerS:
-                        # don't have enough water to contribute
+                    if self.downReservoir.getinitStorageForEachPeriod(i,t) < self.plc.ADP_triggerS_LOW:
+                        # don't have enough water to contribute, crssUBshortage are negative values
                         if self.relatedUser.Contribution / 12 > \
                                 (self.relatedUser.DepletionNormal[k][t] + self.crssUBshortage[i][t]):
                             self.UBShortage[i][t] = (self.relatedUser.DepletionNormal[k][t] + self.crssUBshortage[i][t])\
@@ -220,14 +229,15 @@ class LakePowell(Reservoir):
                             self.UBShortage[i][t] = self.relatedUser.Contribution / 12 - self.crssUBshortage[i][t]
                             return self.crssInflow[i][t] + self.relatedUser.Contribution / 12
                     else:
+                        # if elevation is higher than, no contribution are required
                         self.UBShortage[i][t] = - self.crssUBshortage[i][t]
                         return self.crssInflow[i][t]
             else:
                 # self.UBShortage[i][t] = self.relatedUser.Contribution/12 - self.crssUBshortage[i][t]
                 # return self.crssInflow[i][t] + self.relatedUser.Contribution/12
 
-                if self.downReservoir.getinitStorageForEachPeriod(i, t) < self.plc.ADP_triggerS:
-                    # don't have enough water to contribute
+                if self.downReservoir.getinitStorageForEachPeriod(i, t) < self.plc.ADP_triggerS_LOW:
+                    # don't have enough water to contribute, crssUBshortage is negative
                     if self.relatedUser.Contribution / 12 > \
                             (self.relatedUser.DepletionNormal[k][t] + self.crssUBshortage[i][t]):
                         self.UBShortage[i][t] = (self.relatedUser.DepletionNormal[k][t] + self.crssUBshortage[i][t]) \

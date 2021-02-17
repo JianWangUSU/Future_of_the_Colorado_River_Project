@@ -111,6 +111,8 @@ class Reservoir(Node):
     # 1 acre-feet, change to 1,000 acre-feet
     maxError = 10000
 
+    MAFtoAF = 1000000
+
     # PowellMinObjRelData
     PowellMinimumContent = 0
 
