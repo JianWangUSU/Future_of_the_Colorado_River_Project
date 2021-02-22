@@ -42,7 +42,7 @@ LakePowellPolicyListNames = ['CRSS_Powell', 'Equalization', 'ADP', 'FMF', 'FPF']
 # Demand in the Exploratory model = CurrentDemandBelowMead() + Mead.Diversion - Mead.Return Flow
 # This policy can ONLY be used for validation!!!
 #########
-CRSS_Mead = False 
+CRSS_Mead = False
 
 # Adapt demand to inflow policy (it will change Lake Powell inflow and Lake Mead release)
 ADP_DemandtoInflow = True
