@@ -481,7 +481,7 @@ def exportData(reservoir, path):
             sheetArea.write(t+1, i+1, reservoir.area[i][t],decimal_style)
 
     if reservoir.name == "Powell":
-        sheet10 = f.add_sheet(u'UBDepletion', cell_overwrite_ok=True)  # create sheet
+        sheet10 = f.add_sheet(u'UBDepletionSchedule', cell_overwrite_ok=True)  # create sheet
         [inflowTraces, Periods] = reservoir.relatedUser.DepletionNormal.shape  # h is row，l is column
         time = begtime
         for t in range(Periods):
@@ -492,7 +492,7 @@ def exportData(reservoir, path):
                 sheet10.write(t+1, i+1, reservoir.relatedUser.DepletionNormal[i][t],decimal_style)
 
     if reservoir.name == "Mead":
-        sheet11 = f.add_sheet(u'LB&MDepletion', cell_overwrite_ok=True)  # create sheet
+        sheet11 = f.add_sheet(u'LB&MDepletionSchedule', cell_overwrite_ok=True)  # create sheet
         [inflowTraces, Periods] = reservoir.relatedUser.DepletionNormal.shape  # h is row，l is column
         time = begtime
         for t in range(Periods):
@@ -686,15 +686,17 @@ def exportData(reservoir, path):
             formula = "PERCENTILE(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ", 0.9)"
             sheet15.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
 
-        sheet16 = f.add_sheet(u'TotalDelivery', cell_overwrite_ok=True)  # create sheet
+        sheet16 = f.add_sheet(u'TotalDepletion', cell_overwrite_ok=True)  # create sheet
         [inflowTraces, Periods] = reservoir.release.shape  # h is row，l is column
-        totalDelivery = np.zeros([inflowTraces, Periods])
+        totalDepletion = np.zeros([inflowTraces, Periods])
 
         for i in range(inflowTraces):
             for t in range(Periods):
                 # total delivery = UB demand - shortages + Mead release
-                totalDelivery[i][t] = reservoir.relatedUser.DepletionNormal[0][t] - reservoir.UBShortage[i][t] \
-                                      + reservoir.downReservoir.release[i][t]
+                totalDepletion[i][t] = reservoir.relatedUser.DepletionNormal[0][t] \
+                                       - reservoir.UBShortage[i][t] \
+                                       + reservoir.downReservoir.relatedUser.DepletionNormal[0][t] \
+                                       - reservoir.downReservoir.LBMShortage[i][t]
 
         time = begtime
         for t in range(Periods):
@@ -702,9 +704,28 @@ def exportData(reservoir, path):
             time = time + relativedelta(months=+1)
             for i in range(inflowTraces):
                 sheet16.write(0, i+1, "Run " +str(i))
-                sheet16.write(t+1, i+1, totalDelivery[i][t],decimal_style)
+                sheet16.write(t+1, i+1, totalDepletion[i][t], decimal_style)
 
-        sheet17 = f.add_sheet(u'TotalStorage', cell_overwrite_ok=True)  # create sheet
+        sheet17 = f.add_sheet(u'TotalDelivery', cell_overwrite_ok=True)  # create sheet
+        [inflowTraces, Periods] = reservoir.release.shape  # h is row，l is column
+        totalDepletion = np.zeros([inflowTraces, Periods])
+
+        for i in range(inflowTraces):
+            for t in range(Periods):
+                # total delivery = UB demand - shortages + Mead release
+                totalDepletion[i][t] = reservoir.relatedUser.DepletionNormal[0][t] \
+                                       - reservoir.UBShortage[i][t] \
+                                       + reservoir.downReservoir.outflow[i][t]
+
+        time = begtime
+        for t in range(Periods):
+            sheet17.write(t+1, 0, str(time.strftime("%b %Y")))
+            time = time + relativedelta(months=+1)
+            for i in range(inflowTraces):
+                sheet17.write(0, i+1, "Run " +str(i))
+                sheet17.write(t+1, i+1, totalDepletion[i][t], decimal_style)
+
+        sheet18 = f.add_sheet(u'TotalStorage', cell_overwrite_ok=True)  # create sheet
         [inflowTraces, Periods] = reservoir.release.shape  # h is row，l is column
         totalStorage = np.zeros([inflowTraces, Periods])
 
@@ -714,11 +735,11 @@ def exportData(reservoir, path):
                 totalStorage[i][t] = reservoir.storage[i][t] + reservoir.downReservoir.storage[i][t]
         time = begtime
         for t in range(Periods):
-            sheet17.write(t + 1, 0, str(time.strftime("%b %Y")))
+            sheet18.write(t + 1, 0, str(time.strftime("%b %Y")))
             time = time + relativedelta(months=+1)
             for i in range(inflowTraces):
-                sheet17.write(0, i + 1, "Run " + str(i))
-                sheet17.write(t + 1, i + 1, totalStorage[i][t], decimal_style)
+                sheet18.write(0, i + 1, "Run " + str(i))
+                sheet18.write(t + 1, i + 1, totalStorage[i][t], decimal_style)
 
     elif reservoir.name == "Mead":
         sheet12 = f.add_sheet(u'LB&MShortage_M', cell_overwrite_ok=True)  # create sheet
