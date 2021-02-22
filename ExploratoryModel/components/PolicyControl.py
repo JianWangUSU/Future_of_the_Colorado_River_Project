@@ -14,10 +14,10 @@
 # because the Exploratory model don't have a way to calculate them.
 # This policy can ONLY be used for validation!!!
 #########
-CRSS_Powell = False
+CRSS_Powell = True
 
 # Equalization rule, it is a simple policy developed by JIAN, not policy used in CRSS
-EQUAL = True
+EQUAL = False
 
 # ADP: adaptive policy, only consider Pearce Ferry Rapid signpost, will add more.
 ADP = False
@@ -42,10 +42,10 @@ LakePowellPolicyListNames = ['CRSS_Powell', 'Equalization', 'ADP', 'FMF', 'FPF']
 # Demand in the Exploratory model = CurrentDemandBelowMead() + Mead.Diversion - Mead.Return Flow
 # This policy can ONLY be used for validation!!!
 #########
-CRSS_Mead = False
+CRSS_Mead = True
 
 # Adapt demand to inflow policy (it will change Lake Powell inflow and Lake Mead release)
-ADP_DemandtoInflow = True
+ADP_DemandtoInflow = False
 # trigger ADP policy only when reservoir storage is < self.plc.ADP_triggerS, 10857008 af respond to 1090 feet
 # ADP_triggerS_LOW = 10857008
 # 1025 feet
