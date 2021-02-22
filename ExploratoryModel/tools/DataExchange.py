@@ -551,7 +551,10 @@ def exportData(reservoir, path):
             time = time + relativedelta(years=+1)
             for i in range(inflowTraces):
                 sheet12_1.write(0, i+1, "Run " +str(i))
-                sheet12_1.write(t+1, i+1, sum(reservoir.UBShortage[i][t*12:t*12+12]),decimal_style)
+                temp = sum(reservoir.UBShortage[i][t*12:t*12+12])
+                if temp < 0:
+                    temp = 0
+                sheet12_1.write(t+1, i+1, temp, decimal_style)
 
             colindex = 1
             sheet12_1.write(0, inflowTraces + colindex, "Min")
@@ -683,6 +686,40 @@ def exportData(reservoir, path):
             formula = "PERCENTILE(" + StarCell + str(t + 2) + ":" + EndCell + str(t + 2) + ", 0.9)"
             sheet15.write(t + 1, inflowTraces + colindex, xlwt.Formula(formula), decimal_style)
 
+        sheet16 = f.add_sheet(u'TotalDelivery', cell_overwrite_ok=True)  # create sheet
+        [inflowTraces, Periods] = reservoir.release.shape  # h is row，l is column
+        totalDelivery = np.zeros([inflowTraces, Periods])
+
+        for i in range(inflowTraces):
+            for t in range(Periods):
+                # total delivery = UB demand - shortages + Mead release
+                totalDelivery[i][t] = reservoir.relatedUser.DepletionNormal[0][t] - reservoir.UBShortage[i][t] \
+                                      + reservoir.downReservoir.release[i][t]
+
+        time = begtime
+        for t in range(Periods):
+            sheet16.write(t+1, 0, str(time.strftime("%b %Y")))
+            time = time + relativedelta(months=+1)
+            for i in range(inflowTraces):
+                sheet16.write(0, i+1, "Run " +str(i))
+                sheet16.write(t+1, i+1, totalDelivery[i][t],decimal_style)
+
+        sheet17 = f.add_sheet(u'TotalStorage', cell_overwrite_ok=True)  # create sheet
+        [inflowTraces, Periods] = reservoir.release.shape  # h is row，l is column
+        totalStorage = np.zeros([inflowTraces, Periods])
+
+        for i in range(inflowTraces):
+            for t in range(Periods):
+                # crss shortages are negative values
+                totalStorage[i][t] = reservoir.storage[i][t] + reservoir.downReservoir.storage[i][t]
+        time = begtime
+        for t in range(Periods):
+            sheet17.write(t + 1, 0, str(time.strftime("%b %Y")))
+            time = time + relativedelta(months=+1)
+            for i in range(inflowTraces):
+                sheet17.write(0, i + 1, "Run " + str(i))
+                sheet17.write(t + 1, i + 1, totalStorage[i][t], decimal_style)
+
     elif reservoir.name == "Mead":
         sheet12 = f.add_sheet(u'LB&MShortage_M', cell_overwrite_ok=True)  # create sheet
         [inflowTraces, Periods] = reservoir.LBMShortage.shape  # h is row，l is column
@@ -732,7 +769,10 @@ def exportData(reservoir, path):
             time = time + relativedelta(years=+1)
             for i in range(inflowTraces):
                 sheet12_1.write(0, i+1, "Run " +str(i))
-                sheet12_1.write(t+1, i+1, sum(reservoir.LBMShortage[i][t*12:t*12+12]),decimal_style)
+                temp = sum(reservoir.LBMShortage[i][t*12:t*12+12])
+                if temp < 0:
+                    temp = 0
+                sheet12_1.write(t+1, i+1, temp, decimal_style)
 
             colindex = 1
             sheet12_1.write(0, inflowTraces + colindex, "Min")

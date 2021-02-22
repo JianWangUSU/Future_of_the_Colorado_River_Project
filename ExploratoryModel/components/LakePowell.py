@@ -108,10 +108,12 @@ class LakePowell(Reservoir):
 
         # if choosing CRSS policy, then use CRSS inflow to Lake Powell
         if self.plc.CRSS_Powell == True:
+            # if CRSS policy is utilized, then UB shortage equals to CRSS UB shortages
             self.UBShortage[i][t] = -self.crssUBshortage[i][t]
-            # CRSS INFLOW data for validation purpose
+            # CRSS inflow data for validation purpose
             return self.crssInflow[i][t]
 
+        # if selecting adapting demand to inflow policy.
         elif self.plc.ADP_DemandtoInflow == True:
             # Step 1: know the inflow to the system
             #        total inflow = inflow to Powell and intervening inflow to Mead
@@ -134,6 +136,13 @@ class LakePowell(Reservoir):
             # start adapt demand to inflow since JAN, 2026, triggered once a year
             # 2021 - 0, 2022 - 1, 2023 - 2, 2024 - 3, 2025 - 4, 2026 - 5
             pastYears = 5
+
+            # if before 2026, same to CRSS policy
+            if year < pastYears:
+                self.UBShortage[i][t] = -self.crssUBshortage[i][t]
+                return self.crssInflow[i][t]
+
+            # if in or after 2026, calculate contribution on every Jannuary.
             if month == self.para.JAN and year >= pastYears:
                 # reset UB LB MEXICO contributions
                 self.relatedUser.Contribution = 0
@@ -185,7 +194,7 @@ class LakePowell(Reservoir):
                         gap = 1.5 * self.MAFtoAF
 
                     # Strategy 1. Arranged by UB and LBM contributions proportionally
-                    if True:
+                    if False:
                         # UB contribution
                         self.relatedUser.Contribution = UBdemandThisYear/ totalDemandThisYear * gap
                         # LB and Mexico contribution
@@ -212,43 +221,25 @@ class LakePowell(Reservoir):
                         self.downReservoir.relatedUser.Contribution = gap * 0.25
 
                     # Strategy 6. 25% by UB and 75% by LBM
-                    # if True:
-                    #     self.relatedUser.Contribution = gap * 0.25
-                    #     self.downReservoir.relatedUser.Contribution = gap * 0.75
+                    if True:
+                        self.relatedUser.Contribution = gap * 0.25
+                        self.downReservoir.relatedUser.Contribution = gap * 0.75
 
-                    # if Lake Mead elevation is smaller than 1090 feet:
-                    if self.downReservoir.getinitStorageForEachPeriod(i,t) < self.plc.ADP_triggerS_LOW:
-                        # don't have enough water to contribute, crssUBshortage are negative values
-                        if self.relatedUser.Contribution / 12 > \
-                                (self.relatedUser.DepletionNormal[k][t] + self.crssUBshortage[i][t]):
-                            self.UBShortage[i][t] = (self.relatedUser.DepletionNormal[k][t] + self.crssUBshortage[i][t])\
-                                                    - self.crssUBshortage[i][t]
-                            # crssinflow considers the unresolved shortages by UB.
-                            return self.crssInflow[i][t] + self.relatedUser.DepletionNormal[k][t] + self.crssUBshortage[i][t]
-                        else:
-                            self.UBShortage[i][t] = self.relatedUser.Contribution / 12 - self.crssUBshortage[i][t]
-                            return self.crssInflow[i][t] + self.relatedUser.Contribution / 12
-                    else:
-                        # if elevation is higher than, no contribution are required
-                        self.UBShortage[i][t] = - self.crssUBshortage[i][t]
-                        return self.crssInflow[i][t]
-            else:
-                # self.UBShortage[i][t] = self.relatedUser.Contribution/12 - self.crssUBshortage[i][t]
-                # return self.crssInflow[i][t] + self.relatedUser.Contribution/12
+            # determine monthly Powell inflow including January
+            if self.downReservoir.getinitStorageForEachPeriod(i, t) < self.plc.ADP_triggerS_LOW:
+                # crssUBshortage is negative value in CRSS (represent hydrologic shortages)
+                avaialbleWaterToContribute = self.relatedUser.DepletionNormal[k][t] + self.crssUBshortage[i][t]
 
-                if self.downReservoir.getinitStorageForEachPeriod(i, t) < self.plc.ADP_triggerS_LOW:
-                    # don't have enough water to contribute, crssUBshortage is negative
-                    if self.relatedUser.Contribution / 12 > \
-                            (self.relatedUser.DepletionNormal[k][t] + self.crssUBshortage[i][t]):
-                        self.UBShortage[i][t] = (self.relatedUser.DepletionNormal[k][t] + self.crssUBshortage[i][t]) \
-                                                - self.crssUBshortage[i][t]
-                        return self.crssInflow[i][t] + self.relatedUser.DepletionNormal[k][t]
-                    else:
-                        self.UBShortage[i][t] = self.relatedUser.Contribution / 12 - self.crssUBshortage[i][t]
-                        return self.crssInflow[i][t] + self.relatedUser.Contribution / 12
+                # If don't have enough water to contribute, then max contribution is the entire UB depletion normal
+                if self.relatedUser.Contribution / 12 > avaialbleWaterToContribute:
+                    self.UBShortage[i][t] = self.relatedUser.DepletionNormal[k][t]
+                    return self.crssInflow[i][t] + avaialbleWaterToContribute
                 else:
-                    self.UBShortage[i][t] = - self.crssUBshortage[i][t]
-                    return self.crssInflow[i][t]
+                    self.UBShortage[i][t] = self.relatedUser.Contribution / 12 - self.crssUBshortage[i][t]
+                    return self.crssInflow[i][t] + self.relatedUser.Contribution / 12
+            else:
+                self.UBShortage[i][t] = - self.crssUBshortage[i][t]
+                return self.crssInflow[i][t]
 
         else:
             # todo, other policies
@@ -282,8 +273,8 @@ class LakePowell(Reservoir):
 
             ### calculate UB shortage for the current time period
             self.UBShortage[i][t] = self.relatedUser.DepletionNormal[k][t] - (self.inflow[i][t] - inflowthismonth)
-            if self.UBShortage[i][t] < 0:
-                self.UBShortage[i][t] = 0
+            # if self.UBShortage[i][t] < 0:
+            #     self.UBShortage[i][t] = 0
 
             return inflowthismonth
 

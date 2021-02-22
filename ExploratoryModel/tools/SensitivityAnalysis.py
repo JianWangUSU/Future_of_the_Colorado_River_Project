@@ -16,7 +16,8 @@ import plotly.express as px
 import math
 from tools import DataExchange
 
-resultPathAndName = "../results/LakeMeadDSResults.pdf"
+# resultPathAndName = "../results/LakeMeadDSResults.pdf"
+resultPathAndName = "../tools/results/LakeMeadSensitivityAnalysisPlot.pdf"
 
 totalN = 40  # PLANNING HORIZON, 100 years, no need to be 100 years, maybe 40 years.
 storageM = np.zeros([totalN*12])  # reservoir storage in MAF
@@ -82,15 +83,20 @@ def SA_EmptyAndFull(reservoir, filePath):
     ### Mead storage start at 6 maf, end at 0;
     # else:
     ### Mead storage start at 10 maf, end at storage(1025 ft)
-    ToEmpty = False
+    ToEmpty = True
     if ToEmpty:
-        # initStorage = 10 * MAFtoAF
-        initStorage = 6 * MAFtoAF
-        # initStorage = 3 * MAFtoAF
+        # https://www.usbr.gov/lc/region/g4000/hourly/mead-elv.html
+        # Lake Mead End of Month elevation DEC 2020 is 1083.72 feet, which equals to 10321613 acre-feet
+        # initStorage = 10.32 * MAFtoAF
+        # initStorage = 8 * MAFtoAF
+        # initStorage = 6 * MAFtoAF
+        initStorage = 4 * MAFtoAF
     else:
-        # initStorage = 10 * MAFtoAF
-        initStorage = 13 * MAFtoAF
+        # Lake Mead January 1, 2021 elevation (1083.72 feet), the corresponding storage is 10.32 maf.
+        initStorage = 10.32 * MAFtoAF
+        # initStorage = 13 * MAFtoAF
         # initStorage = 16 * MAFtoAF
+        # initStorage = 8 * MAFtoAF
 
     releaseLength = len(releaseRange)
     inflowLength = len(inflowRange)
@@ -160,19 +166,24 @@ def SA_EmptyAndFull(reservoir, filePath):
         ax.clabel(CS, inline=1, fmt='%1.0f', fontsize=8)
         CS.collections[0].set_label("Years to 1025 ft (Unit: years)")
 
-
     if ToEmpty:
+        # 1.375 LB and Mexico cutback value
         ax.hlines(y=7 + 1, xmin=3, xmax=9.6, linewidth=1, color='grey', linestyles='dashed')
-        ax.vlines(x=9.6 - 1.4, ymin=3, ymax=7 + 1, linewidth=1, color='grey', linestyles='dashed')
+        ax.vlines(x=9.6 - 1.375, ymin=3, ymax=7 + 1, linewidth=1, color='grey', linestyles='dashed')
         ax.vlines(x=9.6, ymin=3, ymax=7 + 1, linewidth=1, color='grey', linestyles='dashed')
 
-        ax.hlines(y=5.7 + 1, xmin=3, xmax=7.5, linewidth=1, color='r', linestyles='dotted')
-        ax.vlines(x=7.5, ymin=3, ymax=5.7 + 1, linewidth=1, color='r', linestyles='dotted')
-        ax.vlines(x=6.4, ymin=3, ymax=5.7 + 1, linewidth=1, color='r', linestyles='dotted')
+        ax.hlines(y=7, xmin=3, xmax=9.6 - 1.375, linewidth=1, color='r', linestyles='dotted')
+        ax.vlines(x=9.6 - 1.375*2, ymin=3, ymax=7, linewidth=1, color='r', linestyles='dotted')
+
+        # ax.hlines(y=5.7 + 1, xmin=3, xmax=7.5, linewidth=1, color='r', linestyles='dotted')
+        # ax.vlines(x=7.5, ymin=3, ymax=5.7 + 1, linewidth=1, color='r', linestyles='dotted')
+        # ax.vlines(x=6.4, ymin=3, ymax=5.7 + 1, linewidth=1, color='r', linestyles='dotted')
     else:
-        ax.hlines(y=9.3, xmin=3, xmax=9.6, linewidth=1, color='grey', linestyles='dashed')
-        ax.vlines(x=9.6 - 0.66, ymin=3, ymax=9.3, linewidth=1, color='grey', linestyles='dashed')
-        ax.vlines(x=9.6, ymin=3, ymax=9.3, linewidth=1, color='grey', linestyles='dashed')
+        ax.hlines(y=8.23+1, xmin=3, xmax=9.6, linewidth=1, color='grey', linestyles='dashed')
+        ax.hlines(y=7+1, xmin=3, xmax=9.6, linewidth=1, color='grey', linestyles='dashed')
+        # ax.vlines(x=9.6 - 0.66, ymin=3, ymax=8.23+1, linewidth=1, color='grey', linestyles='dashed')
+        ax.vlines(x=9.6 - 1.375, ymin=3, ymax=8.23+1, linewidth=1, color='grey', linestyles='dashed')
+        ax.vlines(x=9.6, ymin=3, ymax=8.23+1, linewidth=1, color='grey', linestyles='dashed')
 
     plt.legend(loc='upper left')
 

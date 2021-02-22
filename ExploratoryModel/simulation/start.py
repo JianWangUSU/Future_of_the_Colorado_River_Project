@@ -151,31 +151,21 @@ DataExchange.readCRSSubShortage(Powell, filePath + fileName)
 profile_path = "../data/depth_temperature.csv"
 DataExchange.readDepthProfileForTemp(profile_path)
 
-### 4. run decision scaling
+### 4. run sensitivity analysis
 if False:
     filePath = "../tools/results/SensitivityAnalysis.xls"
 
     starttime = datetime.datetime.now()
     # 2 dimensional plot for Lake Mead, require higher resolution, small steps values
     ### Lake Mead inflow and release
-    # SensitivityAnalysis.SA_EmptyAndFull(Mead, filePath)
+    SensitivityAnalysis.SA_EmptyAndFull(Mead, filePath)
 
     # 2 dimensional plot for Lake Powell and Lake Mead, require higher resolution, small steps values
     ### Lake Powell inflow and Lake Mead release
-    SensitivityAnalysis.SA_EmptyAndFullPowellMead(Powell, Mead, filePath)
+    # SensitivityAnalysis.SA_EmptyAndFullPowellMead(Powell, Mead, filePath)
 
     endtime = datetime.datetime.now()
     print(" time:" + str(endtime - starttime))
-
-    # 2 dimensional plot
-    # DecisionScaling.DS_EmptyAndFullPowellMead2(Powell, Mead)
-    # SensitivityAnalysis.DS_EmptyAndFullPowellMead(Powell, Mead)
-
-    # 5 dimensional plot
-    # DecisionScaling.MultiUncertaintiesAnalysis(Powell, Mead)
-
-    # 3 dimensional plot
-    # DecisionScaling.MultiUncertaintiesAnalysis_3d(Powell, Mead)
 
 ### 5. run the model
 if True:

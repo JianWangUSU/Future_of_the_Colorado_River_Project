@@ -5,32 +5,56 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/LakeMead.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/LakeMead.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/LakePowell.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/LakePowell.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/PolicyControl.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/PolicyControl.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/Reservoir.py" beforeDir="false" afterPath="$PROJECT_DIR$/components/Reservoir.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/0126Results/Comparison.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/0126Results/Mead - CRSS.xls" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/0126Results/Mead-ADP.xls" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/0126Results/Powell - CRSS.xls" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/0126Results/Powell-ADP.xls" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/0128Results/1090-trigger-contribution made proportionally.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/0128Results/CompactFlows_KGW.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/0128Results/Comparison0128.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/0128Results/Mead - CRSS.xls" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/0128Results/Mead-ADP-1090TRIGGER.xls" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/0128Results/Powell - CRSS.xls" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/0128Results/Powell-ADP-1090TRIGGER.xls" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/0129Results/Comparison0129.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/0129Results/Mead-ADP.xls" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/0129Results/Mead-CRSS.xls" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/0129Results/Powell-ADP.xls" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/0129Results/Powell-CRSS.xls" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/0130Results/Comparison0130.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/results/0130Results/Comparison0130.xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/0130Results/Mead-ADP-strategy 1.xls" beforeDir="false" afterPath="$PROJECT_DIR$/results/0130Results/Mead-ADP-strategy 1.xls" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/0130Results/Powell-ADP-strategy 1.xls" beforeDir="false" afterPath="$PROJECT_DIR$/results/0130Results/Powell-ADP-strategy 1.xls" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/0130Results/Powell-CRSS.xls" beforeDir="false" afterPath="$PROJECT_DIR$/results/0130Results/Powell-CRSS.xls" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/Mead.xls" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/Powell.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/depletion - Copy (2).csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/xlsx file/SumCurrentInflowBelowMead-HOWTOCALCULATE.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/data/xlsx file/SumCurrentInflowBelowMead-HOWTOCALCULATE.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/0130Results/Comparison0130.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/0130Results/Mead-ADP-s2.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/0130Results/Mead-ADP-s3.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/0130Results/Mead-ADP-s4.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/0130Results/Mead-ADP-s5.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/0130Results/Mead-ADP-s6.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/0130Results/Mead-ADP-strategy 1.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/0130Results/Mead-CRSS.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/0130Results/Powell-ADP-s2.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/0130Results/Powell-ADP-s3.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/0130Results/Powell-ADP-s4.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/0130Results/Powell-ADP-s5.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/0130Results/Powell-ADP-s6.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/0130Results/Powell-ADP-strategy 1.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/0130Results/Powell-CRSS.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/0216Results/Comparison0216.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/results/0216Results/Comparison0216.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/0216Results/Mead-ADP-strategy 1.xls" beforeDir="false" afterPath="$PROJECT_DIR$/results/0216Results/Mead-ADP-strategy 1.xls" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/0216Results/Powell-ADP-strategy 1.xls" beforeDir="false" afterPath="$PROJECT_DIR$/results/0216Results/Powell-ADP-strategy 1.xls" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/LakeMeadDSResults.pdf" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/simulation/start.py" beforeDir="false" afterPath="$PROJECT_DIR$/simulation/start.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/DataExchange.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/DataExchange.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/SensitivityAnalysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/SensitivityAnalysis.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/02-12-2021/SensitivityAnalysis-CombinedStorage-DeadPool-12MAF.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/02-12-2021/SensitivityAnalysis-CombinedStorage-DeadPool-20MAF.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/02-12-2021/SensitivityAnalysis-CombinedStorage-DeadPool-6MAF.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/02-12-2021/SensitivityAnalysis-CombinedStorage-to12MAF-20MAF.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/02-12-2021/SensitivityAnalysis-CombinedStorage-to12MAF-30MAF.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/02-12-2021/SensitivityAnalysis-CombinedStorage-to12MAF-40MAF.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/IntegerYears/SensitivityAnalysis-Combined12maf.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/IntegerYears/SensitivityAnalysis-CombinedDeadPool.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/IntegerYears/SensitivityAnalysis-Mead1025-12.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/IntegerYears/SensitivityAnalysis-Mead1025-14.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/IntegerYears/SensitivityAnalysis-Mead1025.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/IntegerYears/SensitivityAnalysis-MeadDeadPool.xls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/parallelplotdata/parallel - Copy.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/parallelplotdata/parallel-to12-3Y.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/parallelplotdata/parallel-to12-5Y.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/parallelplotdata/parallel-to12.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/parallelplotdata/parallel-toEmpty-3Y.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/parallelplotdata/parallel-toEmpty-5Y.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/parallelplotdata/parallel-toEmpty-6Y.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/parallelplotdata/parallel-toEmpty.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/parallelplotdata/parallel.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/parallelplotdata/parallel1.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/parallelplotdata/parallel2.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/parallelplotdata/parallel_empty - Copy.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/parallelplotdata/parallel_empty.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/parallelplotdata/parallel_empty8.csv" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -308,7 +332,8 @@
       <workItem from="1612799397767" duration="22731000" />
       <workItem from="1612882608258" duration="55552000" />
       <workItem from="1613168663688" duration="7840000" />
-      <workItem from="1613489048292" duration="14064000" />
+      <workItem from="1613489048292" duration="14128000" />
+      <workItem from="1613535540018" duration="37414000" />
     </task>
     <servers />
   </component>
@@ -320,30 +345,30 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="550" y="171" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1612817960834" />
-    <state width="1493" height="192" key="GridCell.Tab.0.bottom" timestamp="1613531408580">
+    <state width="1493" height="192" key="GridCell.Tab.0.bottom" timestamp="1613950302413">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="192" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1613531408580" />
-    <state width="1493" height="192" key="GridCell.Tab.0.center" timestamp="1613531408579">
+    <state width="1493" height="192" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1613950302413" />
+    <state width="1493" height="192" key="GridCell.Tab.0.center" timestamp="1613950302413">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="192" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1613531408579" />
-    <state width="1493" height="192" key="GridCell.Tab.0.left" timestamp="1613531408579">
+    <state width="1493" height="192" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1613950302413" />
+    <state width="1493" height="192" key="GridCell.Tab.0.left" timestamp="1613950302413">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="192" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1613531408579" />
-    <state width="1493" height="192" key="GridCell.Tab.0.right" timestamp="1613531408579">
+    <state width="1493" height="192" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1613950302413" />
+    <state width="1493" height="192" key="GridCell.Tab.0.right" timestamp="1613950302413">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="192" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1613531408579" />
+    <state width="1493" height="192" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1613950302413" />
     <state x="50" y="0" width="975" height="774" key="SettingsEditor" timestamp="1609621814083">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="50" y="0" width="975" height="774" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1609621814083" />
-    <state x="479" y="241" key="com.intellij.ide.util.TipDialog" timestamp="1613489579039">
+    <state x="479" y="241" key="com.intellij.ide.util.TipDialog" timestamp="1613535544660">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="479" y="241" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1613489579039" />
+    <state x="479" y="241" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1613535544660" />
     <state x="431" y="145" width="672" height="678" key="search.everywhere.popup" timestamp="1611610528377">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
@@ -354,7 +379,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/tools/DataExchange.py</url>
-          <line>807</line>
+          <line>847</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -367,7 +392,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/ScopingModel$DStools.coverage" NAME="DStools Coverage Results" MODIFIED="1597854927162" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/decisionScaling" />
-    <SUITE FILE_PATH="coverage/ExploratoryModel$start.coverage" NAME="start Coverage Results" MODIFIED="1613531408570" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/simulation" />
+    <SUITE FILE_PATH="coverage/ExploratoryModel$start.coverage" NAME="start Coverage Results" MODIFIED="1613950230426" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/simulation" />
     <SUITE FILE_PATH="coverage/ExploratoryModel$test.coverage" NAME="test Coverage Results" MODIFIED="1607661940255" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/simulation" />
     <SUITE FILE_PATH="coverage/SimplifiedColoradoRiverSimulationModel$start.coverage" NAME="start Coverage Results" MODIFIED="1595515609557" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/simulation" />
     <SUITE FILE_PATH="coverage/SimplifiedColoradoRiverSimulationModel$testSimulation__1_.coverage" NAME="testSimulation (1) Coverage Results" MODIFIED="1594335042066" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/components" />

@@ -90,8 +90,8 @@ class LakeMead(Reservoir):
        # 4. calculate shortage for current period
         self.LBMShortage[i][t] = self.relatedUser.DepletionNormal[k][t] \
                                  - self.outflow[i][t] - self.relatedUser.GainLoss/12
-        if self.LBMShortage[i][t] < 0:
-            self.LBMShortage[i][t] = 0
+        # if self.LBMShortage[i][t] < 0:
+        #     self.LBMShortage[i][t] = 0
 
     def getinitStorageForEachPeriod(self, i, t):
         if t == 0:

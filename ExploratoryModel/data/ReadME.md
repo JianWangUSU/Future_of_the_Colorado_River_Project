@@ -1,0 +1,1 @@
+This folder stores all require data for simulation, more detailed exploration for each file is given in DATA-DESCRIPTION.xlsx
