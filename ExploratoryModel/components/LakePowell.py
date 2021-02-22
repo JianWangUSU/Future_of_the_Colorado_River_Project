@@ -139,20 +139,22 @@ class LakePowell(Reservoir):
 
             # if before 2026, same to CRSS policy
             if year < pastYears:
+                # Shortages in exploratory model is a positive nunber, in CRSS is a negative number
                 self.UBShortage[i][t] = -self.crssUBshortage[i][t]
                 return self.crssInflow[i][t]
 
             # if in or after 2026, calculate contribution on every Jannuary.
             if month == self.para.JAN and year >= pastYears:
-                # reset UB LB MEXICO contributions
+                # reset UB, LB and MEXICO contributions
                 self.relatedUser.Contribution = 0
                 self.downReservoir.relatedUser.Contribution = 0
 
                 # Step 1:
                 # Calculate 5 past year total inflow to the system: inflow to Powell + intervening inflow to Mead
-                # sum works in this way [ , ) instead of [ , ]
-                # total inflow to the system = water consumed before going to Lake Powell
-                #                              + inflow to Lake Powell + intervening inflow to Lake Mead
+                # python tip: sum() in python works in this way [ , ) instead of [ , ]
+                # total inflow to the system = water consumed before going to Lake Powell (1st and 2nd lines below)
+                #                              + inflow to Lake Powell (3rd line)
+                #                              + intervening inflow to Lake Mead (4th and 5th lines)
                 totalInflow5Y = sum(self.relatedUser.DepletionNormal[k][t-pastYears*12:t]) \
                                 + sum(self.crssUBshortage[i][t-pastYears*12:t]) \
                                 + sum(self.crssInflow[i][t-pastYears*12:t]) \
@@ -160,7 +162,8 @@ class LakePowell(Reservoir):
                                 - sum(self.crssOutflow[i][t-pastYears*12:t])
 
                 # Powell and Mead evaporation
-                totalEvaporation5Y = sum(self.evaporation[i][t-pastYears*12:t]) + sum(self.downReservoir.evaporation[i][t-pastYears*12:t])
+                totalEvaporation5Y = sum(self.evaporation[i][t-pastYears*12:t]) \
+                                     + sum(self.downReservoir.evaporation[i][t-pastYears*12:t])
 
                 # Step 2:
                 # adapt total release this year to total inflow - evaporation in the past 5 years
@@ -174,10 +177,7 @@ class LakePowell(Reservoir):
                 totalDemandThisYear = UBdemandThisYear + LBMdemandThisYear
 
                 if totalReleaseThisYear >= totalDemandThisYear:
-                    # PowellInflow = self.crssInflow[i][t]
-                    # MeadRelease = LBMdemandThisYear
-
-                    # next year contribution = 0
+                    # next year contribution equals to 0
                     self.relatedUser.Contribution = 0
                     self.downReservoir.relatedUser.Contribution = 0
 
@@ -189,55 +189,59 @@ class LakePowell(Reservoir):
 
                     gap = totalDemandThisYear - totalReleaseThisYear
 
-                    # Maximum contribution cap
+                    # Maximum contribution cap, 1.5 maf/yr
                     if gap > 1.5 * self.MAFtoAF:
                         gap = 1.5 * self.MAFtoAF
 
-                    # Strategy 1. Arranged by UB and LBM contributions proportionally
-                    if False:
+                    # index of strategies to allocate total cutback to individual ones
+                    strategyIndex = 1
+                    if strategyIndex == 1:
+                    # Strategy 1. Allocate UB and LBM contributions proportionally
                         # UB contribution
                         self.relatedUser.Contribution = UBdemandThisYear/ totalDemandThisYear * gap
                         # LB and Mexico contribution
                         self.downReservoir.relatedUser.Contribution = LBMdemandThisYear/ totalDemandThisYear * gap
-
+                    elif strategyIndex == 2:
                     # Strategy 2. All contribution made by UB 
-                    if False:
                         self.relatedUser.Contribution = gap
                         self.downReservoir.relatedUser.Contribution = 0
-
+                    elif strategyIndex == 3:
                     # Strategy 3. All contribution made by LBM
-                    if False:
                         self.relatedUser.Contribution = 0
                         self.downReservoir.relatedUser.Contribution = gap
-
+                    elif strategyIndex == 4:
                     # Strategy 4. Equally arranged by UB and LBM
-                    if False:
                         self.relatedUser.Contribution = gap/2.0
                         self.downReservoir.relatedUser.Contribution = gap/2.0
-
+                    elif strategyIndex == 5:
                     # Strategy 5. 75% by UB and 25% by LBM
-                    if False:
                         self.relatedUser.Contribution = gap * 0.75
                         self.downReservoir.relatedUser.Contribution = gap * 0.25
-
+                    elif strategyIndex == 6:
                     # Strategy 6. 25% by UB and 75% by LBM
-                    if True:
                         self.relatedUser.Contribution = gap * 0.25
                         self.downReservoir.relatedUser.Contribution = gap * 0.75
+                    else:
+                    # when strategyIndex is out of bound, use strategy 1 by defualt
+                        # Strategy 1. Arranged by UB and LBM contributions proportionally
+                        self.relatedUser.Contribution = UBdemandThisYear / totalDemandThisYear * gap
+                        self.downReservoir.relatedUser.Contribution = LBMdemandThisYear / totalDemandThisYear * gap
 
             # determine monthly Powell inflow including January
             if self.downReservoir.getinitStorageForEachPeriod(i, t) < self.plc.ADP_triggerS_LOW:
-                # crssUBshortage is negative value in CRSS (represent hydrologic shortages)
+                # crssUBshortage is negative value in CRSS (hydrologic shortages)
                 avaialbleWaterToContribute = self.relatedUser.DepletionNormal[k][t] + self.crssUBshortage[i][t]
 
-                # If don't have enough water to contribute, then max contribution is the entire UB depletion normal
+                # If UB doesn't have enough water to contribute, then max contribution is the entire UB depletion normal
                 if self.relatedUser.Contribution / 12 > avaialbleWaterToContribute:
                     self.UBShortage[i][t] = self.relatedUser.DepletionNormal[k][t]
                     return self.crssInflow[i][t] + avaialbleWaterToContribute
                 else:
+                    # monthly contribution + existing hydrologic shortages (CRSS shortages are negative values)
                     self.UBShortage[i][t] = self.relatedUser.Contribution / 12 - self.crssUBshortage[i][t]
                     return self.crssInflow[i][t] + self.relatedUser.Contribution / 12
             else:
+                # if ADP policy doesn't trigger, use CRSS inflow
                 self.UBShortage[i][t] = - self.crssUBshortage[i][t]
                 return self.crssInflow[i][t]
 
@@ -387,8 +391,10 @@ class LakePowell(Reservoir):
     def releasePolicy(self, startStorage, k, i, t):
         # Major CRSS Lake Powell policies
         if self.plc.CRSS_Powell == True:
-            return self.crssPolicy(i, t)
-         # strategy FPF
+            # return self.crssPolicy(i, t)
+            return RelFun.crssPolicy(self, i, t)
+
+        # strategy FPF
         if self.plc.FPF == True:
             return RelFun.FPF(self, startStorage, t)
         # strategy re-drill Lake Powell (FMF)
@@ -423,47 +429,47 @@ class LakePowell(Reservoir):
         # strategy adaptive policy (only consider Pearce Ferry Rapid now)
         # if self.plc.ADP == True:
         #     return RelFun.adaptivePolicy(k, i, t)
-
-    def crssPolicy(self, i, t):
-        month = self.para.determineMonth(t)
-
-        # CRSS policy 28
-        self.release[i][t] = RelFun.PowellOperationsRule(self, i, t)
-
-        # CRSS policy 24
-        self.release[i][t] = RelFun.MeetPowellMinObjectiveRelease(self, i, t)
-
-        # strategy: CRSS release for validation, use CRSS release data
-        # self.release[i][j] = self.crssOutflow[i][j]
-
-        # CRSS policy 23
-        temp = RelFun.LowerElevationBalancingTier(self, i, t)
-        if temp != None and temp > 0:
-            self.release[i][t] = temp
-
-        # CRSS policy 22
-        temp = RelFun.MidElevationReleaseTier(self, i, t)
-        if temp != None and temp > 0:
-            self.release[i][t] = temp
-
-        # CRSS policy 21
-        if month >= self.APR or month <= self.SEP:
-            temp = RelFun.UpperElevationBalancingTierAprilthruSept(self, i, t)
-            if temp != None and temp > 0:
-                self.release[i][t] = temp
-
-        # CRSS policy 20
-        if month <= self.MAR:
-            temp = RelFun.UpperElevationBalancingTierJanthruMarch(self, i, t)
-            if temp != None and temp > 0:
-                self.release[i][t] = temp
-
-        # CRSS policy 19
-        temp = RelFun.EqualizationTier(self, i, t)
-        if temp != None and temp > 0:
-            self.release[i][t] = temp
-
-        return self.release[i][t]
+    #
+    # def crssPolicy(self, i, t):
+    #     month = self.para.determineMonth(t)
+    #
+    #     # CRSS policy 28
+    #     self.release[i][t] = RelFun.PowellOperationsRule(self, i, t)
+    #
+    #     # CRSS policy 24
+    #     self.release[i][t] = RelFun.MeetPowellMinObjectiveRelease(self, i, t)
+    #
+    #     # strategy: CRSS release for validation, use CRSS release data
+    #     # self.release[i][j] = self.crssOutflow[i][j]
+    #
+    #     # CRSS policy 23
+    #     temp = RelFun.LowerElevationBalancingTier(self, i, t)
+    #     if temp != None and temp > 0:
+    #         self.release[i][t] = temp
+    #
+    #     # CRSS policy 22
+    #     temp = RelFun.MidElevationReleaseTier(self, i, t)
+    #     if temp != None and temp > 0:
+    #         self.release[i][t] = temp
+    #
+    #     # CRSS policy 21
+    #     if month >= self.APR or month <= self.SEP:
+    #         temp = RelFun.UpperElevationBalancingTierAprilthruSept(self, i, t)
+    #         if temp != None and temp > 0:
+    #             self.release[i][t] = temp
+    #
+    #     # CRSS policy 20
+    #     if month <= self.MAR:
+    #         temp = RelFun.UpperElevationBalancingTierJanthruMarch(self, i, t)
+    #         if temp != None and temp > 0:
+    #             self.release[i][t] = temp
+    #
+    #     # CRSS policy 19
+    #     temp = RelFun.EqualizationTier(self, i, t)
+    #     if temp != None and temp > 0:
+    #         self.release[i][t] = temp
+    #
+    #     return self.release[i][t]
 
     # Periodic Net Evaporation, set middle values in this functions
     def calculateEvaporation(self, area, startS, endS, i, t):

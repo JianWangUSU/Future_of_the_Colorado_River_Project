@@ -8,6 +8,51 @@ import math
 
 
 # ----------------------------------------- CRSS functions begins-----------------------------------
+
+# reproduce CRSS lake Powell equalization policies
+# LakePowell: Lake Powell reservoir itself; i: inflow trace index; t: time period index
+def crssPolicy(LakePowell, i, t):
+    month = LakePowell.para.determineMonth(t)
+
+    # CRSS policy 28
+    LakePowell.release[i][t] = PowellOperationsRule(LakePowell, i, t)
+
+    # CRSS policy 24
+    LakePowell.release[i][t] = MeetPowellMinObjectiveRelease(LakePowell, i, t)
+
+    # strategy: CRSS release for validation, use CRSS release data
+    # self.release[i][j] = self.crssOutflow[i][j]
+
+    # CRSS policy 23
+    temp = LowerElevationBalancingTier(LakePowell, i, t)
+    if temp != None and temp > 0:
+        LakePowell.release[i][t] = temp
+
+    # CRSS policy 22
+    temp = MidElevationReleaseTier(LakePowell, i, t)
+    if temp != None and temp > 0:
+        LakePowell.release[i][t] = temp
+
+    # CRSS policy 21
+    if month >= LakePowell.APR or month <= LakePowell.SEP:
+        temp = UpperElevationBalancingTierAprilthruSept(LakePowell, i, t)
+        if temp != None and temp > 0:
+            LakePowell.release[i][t] = temp
+
+    # CRSS policy 20
+    if month <= LakePowell.MAR:
+        temp = UpperElevationBalancingTierJanthruMarch(LakePowell, i, t)
+        if temp != None and temp > 0:
+            LakePowell.release[i][t] = temp
+
+    # CRSS policy 19
+    temp = EqualizationTier(LakePowell, i, t)
+    if temp != None and temp > 0:
+        LakePowell.release[i][t] = temp
+
+    return LakePowell.release[i][t]
+
+
 # CRSS rule 28
 def PowellOperationsRule(reservoir, i, t):
     currentMonth = reservoir.para.determineMonth(t)
