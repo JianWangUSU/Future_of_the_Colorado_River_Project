@@ -25,3 +25,13 @@ In ../components/LakePowell.py or ../components/LakeMead.py , under "def release
 
 Step 4: 
 In  ../components/PolicyControl.py, add your policy and make it active by setting "True" to it, at the same time set other polilcies by "False"
+
+**Folders**
+../comonents stores reservoirs, users and policies
+../data stores input data
+../results stores simulation results
+../simulation main start of this model
+../tools stores other tools such as sensitivity analysis, data exchange methods and a reservoir release temeprature model
+
+
+
