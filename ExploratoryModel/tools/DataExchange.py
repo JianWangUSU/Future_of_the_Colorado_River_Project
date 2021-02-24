@@ -699,12 +699,12 @@ def exportData(reservoir, path):
                                        - reservoir.downReservoir.LBMShortage[i][t]
 
         time = begtime
-        for t in range(Periods):
+        for t in range(int(Periods/12)):
             sheet16.write(t+1, 0, str(time.strftime("%b %Y")))
-            time = time + relativedelta(months=+1)
+            time = time + relativedelta(years=+1)
             for i in range(inflowTraces):
                 sheet16.write(0, i+1, "Run " +str(i))
-                sheet16.write(t+1, i+1, totalDepletion[i][t], decimal_style)
+                sheet16.write(t+1, i+1, sum(totalDepletion[i][t*12:(t+1)*12]), decimal_style)
 
         sheet17 = f.add_sheet(u'TotalDelivery', cell_overwrite_ok=True)  # create sheet
         [inflowTraces, Periods] = reservoir.release.shape  # h is row，l is column
@@ -718,12 +718,12 @@ def exportData(reservoir, path):
                                        + reservoir.downReservoir.outflow[i][t]
 
         time = begtime
-        for t in range(Periods):
+        for t in range(int(Periods/12)):
             sheet17.write(t+1, 0, str(time.strftime("%b %Y")))
-            time = time + relativedelta(months=+1)
+            time = time + relativedelta(years=+1)
             for i in range(inflowTraces):
                 sheet17.write(0, i+1, "Run " +str(i))
-                sheet17.write(t+1, i+1, totalDepletion[i][t], decimal_style)
+                sheet17.write(t+1, i+1, sum(totalDepletion[i][t*12:(t+1)*12]), decimal_style)
 
         sheet18 = f.add_sheet(u'TotalStorage', cell_overwrite_ok=True)  # create sheet
         [inflowTraces, Periods] = reservoir.release.shape  # h is row，l is column
@@ -733,13 +733,14 @@ def exportData(reservoir, path):
             for t in range(Periods):
                 # crss shortages are negative values
                 totalStorage[i][t] = reservoir.storage[i][t] + reservoir.downReservoir.storage[i][t]
+
         time = begtime
-        for t in range(Periods):
-            sheet18.write(t + 1, 0, str(time.strftime("%b %Y")))
-            time = time + relativedelta(months=+1)
+        for t in range(int(Periods/12)):
+            sheet18.write(t + 1, 0, str(time.strftime("%Y")))
+            time = time + relativedelta(years=+1)
             for i in range(inflowTraces):
                 sheet18.write(0, i + 1, "Run " + str(i))
-                sheet18.write(t + 1, i + 1, totalStorage[i][t], decimal_style)
+                sheet18.write(t + 1, i + 1, totalStorage[i][(t+1)*12-1], decimal_style)
 
     elif reservoir.name == "Mead":
         sheet12 = f.add_sheet(u'LB&MShortage_M', cell_overwrite_ok=True)  # create sheet

@@ -194,7 +194,7 @@ class LakePowell(Reservoir):
                         gap = 1.5 * self.MAFtoAF
 
                     # index of strategies to allocate total cutback to individual ones
-                    strategyIndex = 1
+                    strategyIndex = 6
                     if strategyIndex == 1:
                     # Strategy 1. Allocate UB and LBM contributions proportionally
                         # UB contribution
