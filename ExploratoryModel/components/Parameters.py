@@ -27,11 +27,19 @@ maxPutEachYear = 500000
 
 # DCP elevations and contributions
 MeadDCPElevations = [1090, 1075, 1050, 1045, 1040, 1035, 1030, 1025]
-MeadDCPcutbacks = [0, 200000+41000, 533000+30000, 617000+34000, 867000+76000, 917000+84000, 967000+92000, 1017000+101000, 1100000+150000]
+MeadDCPcutbacks = [0, 200000+41000, 533000+80000, 617000+104000, 867000+146000,
+                   917000+154000, 967000+162000, 1017000+171000, 1100000+275000]
 
 # Interim guidelines elevations and contributions
 MeadIGSElevations = [1075, 1050, 1025]
 MeadIGScutbacks = [0, 333000, 417000, 500000]
+
+MAFTOAF = 1000000
+
+# Past system inflow (in maf) based on regulated inflow to Powell, side inflow to Lake Mead from 24 month study
+# and UB consumptive uses and losses. Since UB CU&L only has data to 2018, we assume 2019, 2020 CU&L is the same as 2018 data
+PastInflow = [21.2363, 10.6611, 10.6665, 14.1998, 13.871, 14.7438, 17.2176, 10.6932, 18.0022, 11.4772]
+PastEvapration = [1.081, 1.069, 0.948, 0.914, 0.906, 0.913, 0.964, 0.902, 0.915, 0.916]
 
 # Define months
 JAN = 0
@@ -125,6 +133,11 @@ GlenToHoover = [685799.999999927, 608999.999999643, 527400.000000355, 441499.999
     , 336400.000000011, 264599.99999994, 160000.000000322, 73400.0000000097, 0, 0, 0]
 
 # --------------------- Mead para end ----------------------
+
+# policies trigger year
+defaultTriggerYear = 2021
+# defaultTriggerYear = 2026
+
 
 
 # determine month based on period

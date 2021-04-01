@@ -15,6 +15,20 @@ import numpy as np
 # print(a)
 # print(b)
 
+# print(1%12)
+
+# A= [[1, 2, 5,],  [7, 8, 2]]
+# print(len(A))
+#
+# E2045 = np.zeros([2, 113])
+# print(len(E2045))
+
+a = [1,2]
+print(sum(a[1:1]))
+
+# releaseRange = [9.6]
+# print(len(releaseRange))
+# print(releaseRange[0])
 
 # For developers, test purpose
 
@@ -126,14 +140,14 @@ import plotly.graph_objects as go
 
 import math
 # print(math.floor(11/12))
-print(11/12)
+# print(11/12)
 
 # df = pd.read_csv('../tools/parallel.csv')
 # df = pd.read_csv('../tools/parallel1.csv')
 # df = pd.read_csv('../tools/parallel2.csv')
 # df = pd.read_csv('../tools/parallel3.csv')
 
-df = pd.read_csv('../tools/parallel-toEmpty.csv')
+# df = pd.read_csv('../tools/parallel-toEmpty.csv')
 # df = pd.read_csv('../tools/parallel-toEmpty-3Y.csv')
 # df = pd.read_csv('../tools/parallel-toEmpty-5Y.csv')
 # df = pd.read_csv('../tools/parallel-to12.csv')
@@ -183,11 +197,11 @@ df = pd.read_csv('../tools/parallel-toEmpty.csv')
 #                               dimensions=['InitStorage(Powell&Mead)', 'Inflow_Powell', 'Release_Mead', 'YearsTo12MAF'],
 #                               color_continuous_scale='reds_r', color_continuous_midpoint=20)
 
-fig = px.parallel_coordinates(df, color="YearsToEmpty",
-                              dimensions=['InitStorage(Powell&Mead)', 'Inflow_Powell', 'Release_Mead', 'YearsToEmpty'],
-                              color_continuous_scale='reds_r', color_continuous_midpoint=20)
-
-fig.show()
+# fig = px.parallel_coordinates(df, color="YearsToEmpty",
+#                               dimensions=['InitStorage(Powell&Mead)', 'Inflow_Powell', 'Release_Mead', 'YearsToEmpty'],
+#                               color_continuous_scale='reds_r', color_continuous_midpoint=20)
+#
+# fig.show()
 
 # compression_opts = dict(method='zip',archive_name='out.csv')
 # df.to_csv('out.zip', index=False,compression=compression_opts)

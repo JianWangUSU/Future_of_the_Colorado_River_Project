@@ -15,6 +15,8 @@ import pandas as pd
 import plotly.express as px
 import math
 from tools import DataExchange
+import components.ReleaseFunction as RelFun
+from tools import ReleaseTemperature
 
 # resultPathAndName = "../results/LakeMeadDSResults.pdf"
 resultPathAndName = "../tools/results/LakeMeadSensitivityAnalysisPlot.pdf"
@@ -207,6 +209,343 @@ def SA_EmptyAndFull(reservoir, filePath):
     else:
         tabName = 'YearsTo1025ft'
     DataExchange.exportMSAresults(filePath, y, x, z1, z2, z3, tabName)
+
+# This function can only be used by Lake Mead
+def SA_YearsTo1025_DCP(reservoir, filePath):
+    print("Multi-dimensional sensitivity analysis start!")
+
+    # set up data
+    releaseRange = [9.6]
+    # releaseRange = np.arange(minRelease2, maxRelease2, steps)
+    inflowRange = np.arange(minInflow2, maxInflow2, steps)
+
+    # have to do this, otherwise, number will be something like 3.00000000000001
+    releaseRange = np.round(releaseRange, 1)
+    inflowRange = np.round(inflowRange, 1)
+
+    ToEmpty = False
+    if ToEmpty:
+        # https://www.usbr.gov/lc/region/g4000/hourly/mead-elv.html
+        # Lake Mead End of Month elevation DEC 2020 is 1083.72 feet, which equals to 10321613 acre-feet
+        # initStorage = 10.32 * MAFtoAF
+        # initStorage = 8 * MAFtoAF
+        # initStorage = 6 * MAFtoAF
+        initStorage = 4 * MAFtoAF
+    else:
+        # Lake Mead January 1, 2021 elevation (1083.72 feet), the corresponding storage is 10.32 maf.
+        initStorage = 10.32 * MAFtoAF
+        # initStorage = 13 * MAFtoAF
+        # initStorage = 16 * MAFtoAF
+        # initStorage = 8 * MAFtoAF
+
+    releaseLength = len(releaseRange)
+    inflowLength = len(inflowRange)
+
+    x = np.asarray(releaseRange)
+    y = np.asarray(inflowRange)
+    z1 = np.zeros([releaseLength, inflowLength])
+    z2 = np.zeros([releaseLength, inflowLength])
+    z3 = np.zeros([releaseLength, inflowLength])
+
+    for i in range(0, releaseLength):
+        print(str(format(i / releaseLength * 100, '.0f')) + '%' + " finish!")
+        for j in range(0, inflowLength):
+            deduction = 0
+            for t in range(0,totalN*12):
+                if t == 0:
+                    startStorage = initStorage
+                else:
+                    startStorage = storageM[t-1]
+
+                if t%12 == 0:
+                    startElevation = reservoir.volume_to_elevation(startStorage)
+                    deduction = RelFun.cutbackFromDCP(startElevation)
+                    # print(startStorage)
+                    # print(startElevation)
+                    # print(deduction)
+                    # print("===================")
+
+                inflow = inflowRange[j]/12*MAFtoAF
+                release = releaseRange[i]/12*MAFtoAF - deduction/12
+
+                storageM[t] = reservoir.simulationSinglePeriodGeneral(startStorage, inflow, release, t)[0]
+
+                if inflowRange[j] == 9.2:
+                    print(storageM[t])
+
+            if ToEmpty:
+                z1[i][j] = findYearsToEmpty(reservoir, storageM)
+                z2[i][j] = findYearsToFull(reservoir, storageM)
+                z3[i][j] = findEndStorageBetweenEmptyandFull(reservoir, storageM)
+            else:
+                z1[i][j] = findYearsTo1025ft(reservoir, storageM)
+                z2[i][j] = findYearsToFull(reservoir, storageM)
+                z3[i][j] = findEndStorageBetween1025ftandFull(reservoir, storageM)
+
+
+    print("Multi-dimensional sensitivity analysis finished!")
+
+    x = np.round(x, 1)
+    y = np.round(y, 1)
+    z1 = np.round(z1, 1)
+    z2 = np.round(z2, 1)
+    z3 = np.round(z3, 1)
+
+    if ToEmpty:
+        tabName = 'YearsToDeadPool'
+    else:
+        tabName = 'YearsTo1025ft'
+    DataExchange.exportMSAresults(filePath, y, x, z1, z2, z3, tabName)
+
+# This function can only be used by Lake Powell
+def SA_YearsTo3525(reservoir, filePath):
+    print("Multi-dimensional sensitivity analysis start!")
+
+    # set up data
+    releaseRange = [8.23]
+    # releaseRange = np.arange(minRelease2, maxRelease2, steps)
+    inflowRange = np.arange(minInflow2, maxInflow2, steps)
+
+    # have to do this, otherwise, number will be something like 3.00000000000001
+    releaseRange = np.round(releaseRange, 1)
+    inflowRange = np.round(inflowRange, 1)
+
+    ToEmpty = False
+    if ToEmpty:
+        # https://www.usbr.gov/lc/region/g4000/hourly/mead-elv.html
+        # Lake Mead End of Month elevation DEC 2020 is 1083.72 feet, which equals to 10321613 acre-feet
+        # initStorage = 10.32 * MAFtoAF
+        # initStorage = 8 * MAFtoAF
+        # initStorage = 6 * MAFtoAF
+        initStorage = 4 * MAFtoAF
+    else:
+        # Lake Mead January 1, 2021 elevation (1083.72 feet), the corresponding storage is 10.32 maf.
+        initStorage = 10.13 * MAFtoAF
+        # initStorage = 13 * MAFtoAF
+        # initStorage = 16 * MAFtoAF
+        # initStorage = 8 * MAFtoAF
+
+    releaseLength = len(releaseRange)
+    inflowLength = len(inflowRange)
+
+    x = np.asarray(releaseRange)
+    y = np.asarray(inflowRange)
+    z1 = np.zeros([releaseLength, inflowLength])
+    z2 = np.zeros([releaseLength, inflowLength])
+    z3 = np.zeros([releaseLength, inflowLength])
+
+    for i in range(0, releaseLength):
+        print(str(format(i / releaseLength * 100, '.0f')) + '%' + " finish!")
+        for j in range(0, inflowLength):
+            deduction = 0
+            for t in range(0,totalN*12):
+                if t == 0:
+                    startStorage = initStorage
+                else:
+                    startStorage = storageM[t-1]
+
+                inflow = inflowRange[j]/12*MAFtoAF
+                release = releaseRange[i]/12*MAFtoAF
+
+                storageM[t] = reservoir.simulationSinglePeriodGeneral(startStorage, inflow, release, t)[0]
+
+                if inflowRange[j] == 8.5:
+                    print(storageM[t])
+
+            if ToEmpty:
+                z1[i][j] = findYearsToEmpty(reservoir, storageM)
+                z2[i][j] = findYearsToFull(reservoir, storageM)
+                z3[i][j] = findEndStorageBetweenEmptyandFull(reservoir, storageM)
+            else:
+                z1[i][j] = findYearsTo1025ft(reservoir, storageM)
+                z2[i][j] = findYearsToFull(reservoir, storageM)
+                z3[i][j] = findEndStorageBetween1025ftandFull(reservoir, storageM)
+
+
+    print("Multi-dimensional sensitivity analysis finished!")
+
+    x = np.round(x, 1)
+    y = np.round(y, 1)
+    z1 = np.round(z1, 1)
+    z2 = np.round(z2, 1)
+    z3 = np.round(z3, 1)
+
+    if ToEmpty:
+        tabName = 'YearsToDeadPool'
+    else:
+        tabName = 'YearsTo3525ft'
+    DataExchange.exportMSAresults(filePath, y, x, z1, z2, z3, tabName)
+
+# calculate reservoir storage based on different inflows and release policies
+# x: Natural inflow Y: years to 12 maf; X: time, Y: Delivery
+def SensitivityAnalysisPowellMead_12MAF_Delivery(reservoir1, reservoir2, filePath):
+    print("Multi-dimensional sensitivity for Lake Powell and Lake Mead analysis start!")
+
+    # policy index, 0-DCP, 1-Other cutbacks, 2-ADP
+    policyIndex = 2
+    # additional cut value for DCP+
+    additionalCut = 0.4
+
+    # set up data
+    minLeesFerryNatural = 5
+    maxLeesFerryNatural = 14
+    steps = 0.2
+    inflowRange1 = np.arange(minLeesFerryNatural, maxLeesFerryNatural, steps)
+    i1_length = len(inflowRange1)
+
+    YearsTo12maf = np.zeros([i1_length])
+    TotalDelivery = np.zeros([i1_length, totalN * 12])
+    PowellReleaseTempMAX = np.zeros([i1_length, totalN * 12])
+    PowellReleaseTempMIN = np.zeros([i1_length, totalN * 12])
+
+    # Lake Powell JAN 1, 2021 elevation: 3582.2 feet, 10.1 maf:
+    # Lake Mead JAN 1, 2021 elevation: 1083.72 feet, 10.3 maf
+    PowellInitS = 10.1 * MAFtoAF
+    MeadInitS = 10.3 * MAFtoAF
+    totalInitS = PowellInitS + MeadInitS
+
+    # first year evaporation, 2020
+    PowellInitE = 0.36 * MAFtoAF
+    MeadInitE = 0.55 * MAFtoAF
+
+    # intervening inflow (intervening inflow + Virgin river) in maf/yr
+    # Wang and Schmidt. (2020) Stream flow and Losses of the Colorado River in the Southern Colorado Plateau
+    # 2007-2018 average is 0.927 amf (including Virgin river, excluding seepage from Lake Powell);
+    interveningInflow = 0.9 * MAFtoAF
+
+    # UCRC 2007 schedule B. http://www.ucrcommission.com/RepDoc/DepSchedules/Dep_Schedules_2007.pdf
+    # UBdemand = 5.35 * MAFtoAF
+    # UBdemand = 5 * MAFtoAF
+    UBdemand = 4.5 * MAFtoAF
+    # UBdemand = 4 * MAFtoAF
+    # UBdemand = 3.5 * MAFtoAF
+    # UBdemand = 3 * MAFtoAF
+
+    # Lower Basin and Mexico demand. In my understanding, it also includes inflows below Lake Mead
+    # http://www.inkstain.net/fleck/2020/01/how-big-was-lake-meads-structural-deficit-in-2019/
+    LBMdemand = 9.6 * MAFtoAF
+
+    # look 10 years backward
+    pastYears = 10
+
+    evaprationPowell = np.zeros([totalN * 12])  # evaporation for reservoir 1, Lake Powell, monthly results
+    evaprationMead = np.zeros([totalN * 12])  # evaporation for reservoir 2, Lake Mead, monthly results
+    CombinedStoragePM = np.zeros([i1_length ,totalN * 12])
+
+    # for different natural inflow at Lees Ferry
+    for i1 in range(0, i1_length):
+        print(str(format(i1 / i1_length * 100, '.0f')) + '%' + " finish!")
+        # reset these values when inflow changes
+        UBshortage = 0
+        LBshortage = 0
+        annualLBMshort = 0
+        annualMeadRelease = 0
+
+        # for different time series
+        for t in range(0, totalN*12):
+            # get initial monthly storage
+            if t == 0:
+                startStorage1 = PowellInitS
+                startStorage2 = MeadInitS
+            else:
+                # storageM means monthly storage
+                startStorage1 = storageM1[t - 1]
+                startStorage2 = storageM2[t - 1]
+
+            # calculate inflow to Lake Powell
+            if policyIndex == 2:
+                # January and smaller than trigger
+                if t%12 == 0 and startStorage2 < reservoir2.plc.ADP_triggerS_LOW:
+
+                    if t == 0:
+                        totalEvap = PowellInitE + MeadInitE
+                    else:
+                        if t/12 >=pastYears:
+                            totalEvap = sum(evaprationPowell[t - pastYears * 12:t])/pastYears \
+                                        + sum(evaprationMead[t - pastYears * 12:t])/pastYears
+                        else:
+                            totalEvap = sum(evaprationPowell[0:t])/int(t/12) \
+                                        + sum(evaprationMead[0:t])/int(t/12)
+
+                    # in acre-feet
+                    totalInflow = inflowRange1[i1] * MAFtoAF + interveningInflow - totalEvap
+                    totalDemand = UBdemand + LBMdemand
+                    totalShortage = max(totalDemand - totalInflow, 0)
+
+                    UBshortage = totalShortage * UBdemand/totalDemand
+                    LBshortage = totalShortage * LBMdemand/totalDemand
+            else:
+                UBshortage = 0
+
+            inflow1 = max((inflowRange1[i1] * MAFtoAF - UBdemand + UBshortage)/12, 0)
+
+            # determined by policies
+            # (1) equalization + DCP
+            # (2) equalization + other DCPs
+            # (3) equalization + ADP
+
+            # release2 = Lake Mead release, determined by different policies
+            if t % 12 == 0:
+                # annual cutbacks are calculated in January
+                if policyIndex == 0:
+                    # DCP
+                    annualLBMshort = RelFun.cutbackFromDCP_storage(reservoir2, startStorage2)
+                elif policyIndex == 1:
+                    # DCP2
+                    annualLBMshort = RelFun.cutbackFromDCPplus_storage(reservoir2, startStorage2, additionalCut)
+                elif policyIndex == 2:
+                    # ADP
+                    if startStorage2 < reservoir2.plc.ADP_triggerS_LOW:
+                        annualLBMshort = LBshortage
+                    else:
+                        annualLBMshort = 0
+
+                annualMeadRelease = LBMdemand - annualLBMshort
+
+            release2 = annualMeadRelease/12
+
+            # endStorage1 = startStorage1 + inflow1 - release1
+            # inflow2 = release1 + interveningInflow / 12
+            # endStorage2 = startStorage2 + inflow2 - release2
+            # release1 = Lake Powell release, determined by equalization policy (simple version here, no evap and bank change)
+            # use previous equations can solve Lake Powell release
+            release1 = (startStorage1 + inflow1 - startStorage2 + release2 - interveningInflow / 12) / 2.0
+
+            results = reservoir1.simulationSinglePeriodGeneral(startStorage1, inflow1, release1, t)
+            storageM1[t] = results[0]
+            outflow1 = results[1]
+            evaprationPowell[t] = results[3]
+
+            inflow2 = outflow1 + interveningInflow / 12
+            results = reservoir2.simulationSinglePeriodGeneral(startStorage2, inflow2, release2, t)
+            storageM2[t] = results[0]
+            outflow2 = results[1]
+            evaprationMead[t] = results[3]
+
+            CombinedStoragePM[i1][t] = storageM1[t] + storageM2[t]
+
+            # totaldelivery equals to UB + LBM
+            TotalDelivery[i1][t] = UBdemand/12 - UBshortage/12 + outflow2
+
+            # calcualte release temprature
+            month = reservoir1.para.determineMonth(t)
+            ave_elevation = \
+                (reservoir1.volume_to_elevation(storageM1[t]) + reservoir1.volume_to_elevation(startStorage1)) / 2
+            PowellReleaseTempMAX[i1][t] = \
+                ReleaseTemperature.getReleaseTempDeltaD(month, ave_elevation)
+            PowellReleaseTempMIN[i1][t] = \
+                ReleaseTemperature.getMinReleaseTempDeltaD(month, ave_elevation)
+
+            # if round(inflowRange1[i1],1) == 12:
+                # print(str(t)+" "+str(storageM1[t])+" "+str(storageM2[t]))
+                # print(CombinedStorage[t])
+
+        YearsTo12maf[i1] = findYearsTo12maf(CombinedStoragePM[i1])
+
+    print("Multi-dimensional sensitivity analysis for Lake Powell and Lake Mead finished!")
+
+    DataExchange.exportMSAresults2(filePath, inflowRange1, YearsTo12maf, TotalDelivery,
+                                   CombinedStoragePM, PowellReleaseTempMAX, PowellReleaseTempMIN)
 
 def SA_EmptyAndFullPowellMead(reservoir1, reservoir2, filePath):
     print("Multi-dimensional sensitivity for Lake Powell and Lake Mead analysis start!")
@@ -527,28 +866,7 @@ def cutbackFromDCPgivenStorageAndInflow(reservoir, storage, inflow):
         else:
             return 1.1
 
-# policy: cutback from Drought contingency plan for Lake Mead for decision scaling
-def cutbackFromDCP(reservoir, storage):
-    elevation = reservoir.volume_to_elevation(storage)
 
-    if elevation > 1090:
-        return 0
-    elif elevation > 1075:
-        return 0.2
-    elif elevation >= 1050:
-        return 0.533
-    elif elevation > 1045:
-        return 0.617
-    elif elevation > 1040:
-        return 0.867
-    elif elevation > 1035:
-        return 0.917
-    elif elevation > 1030:
-        return 0.967
-    elif elevation >= 1025:
-        return 1.017
-    else:
-        return 1.1
 
 # double cutbacks
 def cutbackFromDCP2(reservoir, storage):

@@ -346,6 +346,35 @@ def getReleaseTempDeltaD(month, elevation):
     if month == DEC:
         return getDecReleaseTempDeltaD(elevation)
 
+def getMinReleaseTempDeltaD(month, elevation):
+
+    depth = elevation - 3370 + deltaD
+
+    if month == JAN:
+        return np.interp(depth, D, P_JAN)
+    if month == FEB:
+        return np.interp(depth, D, P_FEB)
+    if month == MAR:
+        return np.interp(depth, D, P_MAR)
+    if month == APR:
+        return np.interp(depth, D, P_APR)
+    if month == MAY:
+        return np.interp(depth, D, P_MAY)
+    if month == JUN:
+        return np.interp(depth, D, P_JUN)
+    if month == JUL:
+        return np.interp(depth, D, P_JUL)
+    if month == AUG:
+        return np.interp(depth, D, P_AUG)
+    if month == SEP:
+        return np.interp(depth, D, P_SEP)
+    if month == OCT:
+        return np.interp(depth, D, P_OCT)
+    if month == NOV:
+        return np.interp(depth, D, P_NOV)
+    if month == DEC:
+        return np.interp(depth, D, P_DEC)
+
 def getJanReleaseTemp(elevation):
     if elevation > 3490:
         return 5.36+(3.815525648*math.exp(-(-0.004664035)*((elevation/3.28084)-1127.76)))

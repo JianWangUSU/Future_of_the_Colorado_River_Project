@@ -32,6 +32,8 @@ class User(Node):
 
 # Lower Basin and Mexico
 class LBMexico(User):
+    OtherDepletion = None
+
     # AZ:520460.7 NV:462154 CA:1168799 MX:191362
     initialBlance = 2342775.7
     bankBalance = None

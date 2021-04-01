@@ -31,16 +31,18 @@ class Network(Component):
 
     base_type = 'network'
     _node_map = {}
+    _link_map = {}
+
     nodes = []
+    links = []
     components = []
 
     def __init__(self, name):
         self.name = name
 
     def add_node(self, node):
-        """
-            Add a single node to the network
-        """
+
+        # Add a single node to the network
         self.nodes.append(node)
         self.components.append(node)
 
@@ -50,6 +52,19 @@ class Network(Component):
         self._node_map[node.name] = node
 
         node.network = self
+
+    def add_link(self, link):
+
+        # Add a single node to the network
+        self.links.append(link)
+        self.components.append(link)
+
+        if link.name in self._node_map:
+            raise Exception("An node with the name %s is already defined. Link names must be unique." % link.name)
+
+        self._link_map[link.name] = link
+
+        link.network = self
 
     def setupPeriods(self, periods, inflowTraces, depletionTraces):
         self.periods = periods

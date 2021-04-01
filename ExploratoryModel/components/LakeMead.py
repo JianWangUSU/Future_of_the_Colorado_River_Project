@@ -1,6 +1,8 @@
 from components.Reservoir import Reservoir
 import components.ReleaseFunction as RelFun
 
+
+# comments overwrite function, document code
 class LakeMead(Reservoir):
     # PearceFerryRapid signpost look up table
     Mead_Storage = None # storage for Mead
@@ -54,9 +56,10 @@ class LakeMead(Reservoir):
         self.BaseRuleCurves = self.para.BaseRuleCurves
         # self.MeadBankInitialBalance = self.para.MeadBankInitialBalance
 
+    # simulate a single period of time, overwrite simulationSinglePeriod defined in class Reservoir
     def simulationSinglePeriod(self, k, i, t):
 
-       # 1. get initial values for reservoir storage
+        # 1. get initial values for reservoir storage
         startStorage = self.getinitStorageForEachPeriod(i,t)
 
         # 2. determine inflow for current month
@@ -88,7 +91,7 @@ class LakeMead(Reservoir):
         # self.sovleStorageGivenOutflow(startStorage, inflowthismonth, month, i, j)
 
        # 4. calculate shortage for current period
-        self.LBMShortage[i][t] = self.relatedUser.DepletionNormal[k][t] \
+        self.LBMShortage[i][t] = self.relatedUser.DepletionNormal[k][t] + self.relatedUser.OtherDepletion[t]\
                                  - self.outflow[i][t] - self.relatedUser.GainLoss/12
         # if self.LBMShortage[i][t] < 0:
         #     self.LBMShortage[i][t] = 0
@@ -104,6 +107,7 @@ class LakeMead(Reservoir):
         if self.plc.CRSS_Mead == True:
             return self.crssInflow[i][t] - self.upReservoir.crssOutflow[i][t]
         elif self.plc.ADP_DemandtoInflow == True:
+            # intervening inflow to Lake Mead is assumed equal to
             return self.crssInflow[i][t] - self.upReservoir.crssOutflow[i][t]
         else:
             # todo, use CRSS results for the time being
@@ -124,31 +128,40 @@ class LakeMead(Reservoir):
 
     def getOneYearRlease(self, k, i, t):
         if self.plc.ADP_DemandtoInflow == True:
-            startStorage = self.getinitStorageForEachPeriod(i,t)
-            results = 0
-            for tt in range(12):
-                results = results + self.releasePolicy(startStorage, k, i, t)
+            # startStorage = self.getinitStorageForEachPeriod(i,t)
+            # results = 0
+            # for tt in range(12):
+            #     results = results + self.releasePolicy(startStorage, k, i, t)
+            #
+            # return results
+
+            results = sum(self.relatedUser.DepletionNormal[k][t:t + 12]) \
+            + sum(self.relatedUser.OtherDepletion[t:t + 12]) \
+            - self.relatedUser.GainLoss - self.relatedUser.Contribution
 
             return results
 
-    # Lake Mead release policy,
+    # Lake Mead release policy, this function overwrite releasePolicy in Reservoir
     #   self: Lake Mead itself,
     #   startStorage: start of month storage,
     #   k: depletionTrace,
     #   i: inflowTrace,
     #   t: period
+    #   return Lake Mead release in time period t, given demand trace k, inflow trace i and startStorage
     def releasePolicy(self, startStorage, k, i, t):
-        if self.plc.LB_demand == True:
-            return self.relatedUser.DepletionNormal[k][t]
+        year = self.para.getCurrentYear(t)
+        month = self.para.determineMonth(t)
 
-        if self.plc.DCP == True:
-            month = self.para.determineMonth(t)
-            # determine cutbacks for drought conditions
-            if month == self.JAN:
-                self.MeadDeduction = RelFun.cutbackFromDCP(self.volume_to_elevation(startStorage)) / 12
+        # print(year + self.begtime.year)
+        # if before 2026, inflow to Lake Powell is the same as those in CRSS
+        if year + self.begtime.year < self.para.defaultTriggerYear:
+            # year < 2026, use CRSS Lake Mead releases
+            # Use CRSS demand below Mead
+            self.release[i][t] = self.crssDemandBelowMead[i][t]
+            # outflow > minimum outflow requirement
+            self.release[i][t] = max(self.release[i][t], RelFun.MinReleaseFun(self, t))
 
-            return self.relatedUser.DepletionNormal[k][t] - self.MeadDeduction
-            # self.release[i][t] = self.relatedUser.DepletionNormal[k][t] - self.MeadDeduction - self.relatedUser.CRSSbankPutTake[i][t]
+            return self.release[i][t]
 
         if self.plc.CRSS_Mead == True:
             # Use CRSS demand below Mead
@@ -158,15 +171,54 @@ class LakeMead(Reservoir):
 
             return self.release[i][t]
 
-        # adapt release to inflow
+        if self.plc.LB_demand == True:
+            return self.relatedUser.DepletionNormal[k][t]
+
+        if self.plc.DCP == True:
+            # determine cutbacks for drought conditions
+            if month == self.JAN:
+                self.MeadDeduction = RelFun.cutbackFromDCP(self.volume_to_elevation(startStorage)) / 12
+
+            return self.relatedUser.DepletionNormal[k][t] - self.MeadDeduction
+            # self.release[i][t] = self.relatedUser.DepletionNormal[k][t] - self.MeadDeduction - self.relatedUser.CRSSbankPutTake[i][t]
+
+        # adapt depletion to inflow policy
+        # Step 1: determine total basin depletion
+        # Step 2: determine total shortages
+        # Step 3: allocation shortages to different users, shortages also mean contributions users need to make
+        # Step 4: calculate Mead release based on contributions calculated in step 3.
         if self.plc.ADP_DemandtoInflow == True:
-            if startStorage < self.plc.ADP_triggerS_LOW:
-                # release = normal demand - gains (inflow below - Mohave and Havasu loss) - LB AND MEXICO contribution.
-                # release must be a positive number.
-                result = max(self.relatedUser.DepletionNormal[k][t] - self.relatedUser.GainLoss/12 - self.relatedUser.Contribution/12, 0)
-                return result
-            else:
-                return self.relatedUser.DepletionNormal[k][t] - self.relatedUser.GainLoss / 12
+            # this policy only triggered on January each year, and after the starting year trigger
+            if month == self.para.JAN and year + self.begtime.year >= self.para.defaultTriggerYear:
+                startElevation = self.volume_to_elevation(startStorage)
+
+                # if Mead elevation is higher than trigger elevation, then LBM cutbacks determined by DCP
+                if startElevation > self.volume_to_elevation(self.plc.ADP_triggerS_LOW):
+                    # DCP contribution here is determined based on JAN elevation
+                    self.relatedUser.Contribution = RelFun.cutbackFromDCPAbove1025(startElevation)
+                else:
+                    # LB and Mexico contributions will be determined by ADP policy,
+                    # which is invoked before calculating Lake Powell inflow (where self.relatedUser.Contribution be assigned)
+                    pass
+
+            # this will calculate Lake Mead release based on LB and Mexico contribution at each month
+            result = max(self.relatedUser.DepletionNormal[k][t] + self.relatedUser.OtherDepletion[t]
+                         - self.relatedUser.GainLoss / 12 - self.relatedUser.Contribution / 12, 0)
+
+            return result
+
+            # if startStorage < self.plc.ADP_triggerS_LOW:
+            #     # release = normal demand - gains (inflow below - Mohave and Havasu loss) - LB AND MEXICO contribution.
+            #     # release must be a positive number.
+            #     # result = max(self.relatedUser.DepletionNormal[k][t] - self.relatedUser.GainLoss/12 - self.relatedUser.Contribution/12, 0)
+            #     result = max(self.relatedUser.DepletionNormal[k][t] + self.relatedUser.OtherDepletion[t]
+            #                  - self.relatedUser.GainLoss/12 - self.relatedUser.Contribution/12, 0)
+            #     return result
+            # else:
+            #     # return self.relatedUser.DepletionNormal[k][t] - self.relatedUser.GainLoss / 12
+            #     result = self.relatedUser.DepletionNormal[k][t] + self.relatedUser.OtherDepletion[t] \
+            #              - self.relatedUser.GainLoss / 12 - self.relatedUser.Contribution/12
+            #     return result
 
     def simulationSinglePeriodGeneral(self, startStorage, inflowthismonth, release, t):
         # determine which month are we in

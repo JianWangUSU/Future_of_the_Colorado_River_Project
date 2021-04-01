@@ -39,12 +39,23 @@ n.add_node(UB)
 # initialize User variables
 UB.setupPeriodsandTraces()
 
+# create rivers and add them to the network
+RiverAbvPowell = River.River("RiverAbvPowell", UB, Powell)
+n.add_link(RiverAbvPowell)
+RiverbetweenPowellMead = River.River("RiverbetweenPowellMead", Powell, Mead)
+n.add_link(RiverbetweenPowellMead)
+RiverbelowMead = River.River("RiverbelowMead", Mead, LBM)
+n.add_link(RiverbelowMead)
+
+
 # create a combined upper basin (UB) and lower basin (LB) user.
 # UBLB = User.User("UBLB")
 # add User to network
 # n.add_node(UBLB)
 # initialize User variables
 # UBLB.setupPeriodsandTraces()
+
+# DataExchange.readElevationResults(Powell, Mead)
 
 ############ 2. load data
 # relative folder path
@@ -116,6 +127,11 @@ DataExchange.readCRSSMohaveHavasu(Mead, filePath + fileName)
 fileName = "depletion.csv"
 # read data from depletion.csv to User object
 DataExchange.readDepletion(UB, LBM, filePath + fileName)
+# Read Lower Basin Phreatophytes, NativeVegetation,
+# PhreatophytesImperialToNIB, OverDeliveryToMexico, YumaOperations.WelltonMohawkBypassFlows
+fileName = "LBM_OtherDemand.csv"
+DataExchange.readOtherDepletion(LBM, filePath + fileName)
+
 
 # set up depletion data, copy depletion data to Lake Powell and Lake Mead
 # Powell.setupDepletion(UBLB)
@@ -151,24 +167,31 @@ DataExchange.readCRSSubShortage(Powell, filePath + fileName)
 profile_path = "../data/depth_temperature.csv"
 DataExchange.readDepthProfileForTemp(profile_path)
 
+# read and plot results (post-processing)
+DataExchange.readSimulationResultsAndPlot()
+# DataExchange.readSAResultsAndPlot()
+
 ### 4. run sensitivity analysis
-if False:
+if True:
     filePath = "../tools/results/SensitivityAnalysis.xls"
 
     starttime = datetime.datetime.now()
     # 2 dimensional plot for Lake Mead, require higher resolution, small steps values
     ### Lake Mead inflow and release
-    SensitivityAnalysis.SA_EmptyAndFull(Mead, filePath)
+    # SensitivityAnalysis.SA_EmptyAndFull(Mead, filePath)
+    # SensitivityAnalysis.SA_YearsTo1025_DCP(Mead, filePath)
+    # SensitivityAnalysis.SA_YearsTo3525(Powell, filePath)
 
     # 2 dimensional plot for Lake Powell and Lake Mead, require higher resolution, small steps values
     ### Lake Powell inflow and Lake Mead release
     # SensitivityAnalysis.SA_EmptyAndFullPowellMead(Powell, Mead, filePath)
+    SensitivityAnalysis.SensitivityAnalysisPowellMead_12MAF_Delivery(Powell, Mead, filePath)
 
     endtime = datetime.datetime.now()
     print(" time:" + str(endtime - starttime))
 
 ### 5. run the model
-if True:
+if False:
     # Policy check
     count = 0
     index = 0

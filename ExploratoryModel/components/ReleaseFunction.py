@@ -6,6 +6,146 @@ import math
 
 # Release function defined in here. Go to here to add new release function.
 
+# this function is invoked in Lake Powell. It will calculate UB and LB&Mexico contributions
+def calculateContributions(Powell, k, i, t):
+    # Step 1: know the inflow to the system
+    #        total inflow = inflow to Powell and intervening inflow to Mead - evaporation loss
+    #        total demand = UB + LB (including Mohave/Havasu and inflow below Mead) + Mexico normal demand
+    # Step 2: adapt depletion to inflow: change inflow to Powell and change release from Mead !
+    #        total depletion = average total inflow for the past 5 or ? years
+    #        calculate gap (demand - depletion) and divide it for UB and LB.
+    #        calculate inflow to Powell and calculate release from Mead
+    # Step 3: calculate shortages based on the change of inflow and release
+    #        LB+MEXICO: demand - outflow from Mead
+    #        UB: incremental of inflow + base shortages from CRSS
+
+    year = Powell.para.getCurrentYear(t)
+    month = Powell.para.determineMonth(t)
+
+    #reset UB, LB and MEXICO contributions on each Jan
+    if month == Powell.para.JAN :
+        Powell.relatedUser.Contribution = 0
+        Powell.downReservoir.relatedUser.Contribution = 0
+
+    # start adapt demand to inflow since JAN, 2026, triggered once a year
+    # 2021 - 0, 2022 - 1, 2023 - 2, 2024 - 3, 2025 - 4, 2026 - 5, ...,  2031 - 10
+    pastYears = 10
+    # calculate contribution on every January,
+    # current year should meet trigger year requirement,
+    # Lake Mead elevation should below trigger storage
+    if month == Powell.para.JAN and year + Powell.begtime.year >= Powell.para.defaultTriggerYear \
+            and Powell.downReservoir.getinitStorageForEachPeriod(i, t) < Powell.plc.ADP_triggerS_LOW:
+
+        # Step 1:
+        # Calculate 5 past year total inflow to the system: inflow to Powell + intervening inflow to Mead
+        # python tip: sum() in python works in this way [ , ) instead of [ , ]
+        # total inflow to the system = water consumed before going to Lake Powell (1st and 2nd lines below)
+        #                              + inflow to Lake Powell (3rd line)
+        #                              + intervening inflow to Lake Mead (4th and 5th lines)
+
+        # if current simulated year is smaller pastyears we look backward, historical records are required.
+        if year < pastYears:
+            inflowlen = len(para.PastInflow)
+            # total inflow 1 means inflow before the start of planning horizon
+            totalInflow1 = sum(para.PastInflow[year:inflowlen]) * para.MAFTOAF
+            totalEvaporation1 = sum(para.PastEvapration[year:inflowlen]) * para.MAFTOAF
+
+            # inflow 2 means start year to current year
+            totalInflow2 = sum(Powell.relatedUser.DepletionNormal[k][0:year*12]) \
+                            - sum(Powell.UBShortage[i][0:year*12]) \
+                            + sum(Powell.totalinflow[i][0:year*12]) \
+                            + sum(Powell.downReservoir.crssInflow[i][0:year*12]) \
+                            - sum(Powell.crssOutflow[i][0:year*12])
+
+            # Powell and Mead evaporation
+            totalEvaporation2 = sum(Powell.evaporation[i][0:year*12]) \
+                                 + sum(Powell.downReservoir.evaporation[i][0:year*12])
+
+            totalInflow = totalInflow1 + totalInflow2
+            totalEvaporation = totalEvaporation1 + totalEvaporation2
+        else:
+            # total natural flow = UB depeltion + inflow to powell + intervening inflow to Mead
+            totalInflow = sum(Powell.relatedUser.DepletionNormal[k][t - pastYears * 12:t]) \
+                            - sum(Powell.UBShortage[i][t - pastYears * 12:t]) \
+                            + sum(Powell.totalinflow[i][t - pastYears * 12:t]) \
+                            + sum(Powell.downReservoir.crssInflow[i][t - pastYears * 12:t]) \
+                            - sum(Powell.crssOutflow[i][t - pastYears * 12:t])
+
+            # Powell and Mead evaporation
+            totalEvaporation = sum(Powell.evaporation[i][t - pastYears * 12:t]) \
+                                 + sum(Powell.downReservoir.evaporation[i][t - pastYears * 12:t])
+
+        # Step 2:
+        # adapt total depletion this year to average past inflow - evaporation
+        totalSupplyThisYear = totalInflow / pastYears - totalEvaporation / pastYears
+
+        # calculate total demand this year
+        UBdemandThisYear = sum(Powell.relatedUser.DepletionNormal[k][t:t + 12])
+        # LBM needs to consider Mohave, Havasu and inflow below,
+        # and others depletion (Phreatophytes/vegetation) as well as gain and losses below Mead
+        LBMdemandThisYear = sum(Powell.downReservoir.relatedUser.DepletionNormal[k][t:t + 12]) \
+                            + sum(Powell.downReservoir.relatedUser.OtherDepletion[t:t + 12]) \
+                            - Powell.downReservoir.relatedUser.GainLoss
+        totalDemandThisYear = UBdemandThisYear + LBMdemandThisYear
+
+        # if i == 25 and self.para.getCurrentYear(t) + self.begtime.year == 2045:
+        #     print(totalInflow5Y)
+        #     print(totalEvaporation5Y)
+        #     print(totalReleaseThisYear)
+        #     print(totalDemandThisYear)
+
+        if totalSupplyThisYear >= totalDemandThisYear:
+            # next year contribution equals to 0
+            Powell.relatedUser.Contribution = 0
+            Powell.downReservoir.relatedUser.Contribution = 0
+
+            # change from negtive to positive
+            Powell.UBShortage[i][t] = -Powell.crssUBshortage[i][t]
+            return Powell.crssInflow[i][t]
+        else:
+            # release = totalReleaseThisYear
+            gap = totalDemandThisYear - totalSupplyThisYear
+
+            # Maximum contribution cap, 1.5 maf/yr
+            if gap > 1.5 * Powell.MAFtoAF:
+                gap = 1.5 * Powell.MAFtoAF
+
+            # index of strategies to allocate total cutback to individual ones
+            strategyIndex = 6
+
+            if strategyIndex == 1:
+                # Strategy 1. Allocate UB and LBM contributions proportionally
+                # UB contribution
+                Powell.relatedUser.Contribution = UBdemandThisYear / totalDemandThisYear * gap
+                # LB and Mexico contribution
+                Powell.downReservoir.relatedUser.Contribution = LBMdemandThisYear / totalDemandThisYear * gap
+            elif strategyIndex == 2:
+                # Strategy 2. All contribution made by UB 
+                Powell.relatedUser.Contribution = gap
+                Powell.downReservoir.relatedUser.Contribution = 0
+            elif strategyIndex == 3:
+                # Strategy 3. All contribution made by LBM
+                Powell.relatedUser.Contribution = 0
+                Powell.downReservoir.relatedUser.Contribution = gap
+            elif strategyIndex == 4:
+                # Strategy 4. Equally arranged by UB and LBM
+                Powell.relatedUser.Contribution = gap / 2.0
+                Powell.downReservoir.relatedUser.Contribution = gap / 2.0
+            elif strategyIndex == 5:
+                # Strategy 5. 75% by UB and 25% by LBM
+                Powell.relatedUser.Contribution = gap * 0.75
+                Powell.downReservoir.relatedUser.Contribution = gap * 0.25
+            elif strategyIndex == 6:
+                # Strategy 6. 25% by UB and 75% by LBM
+                Powell.relatedUser.Contribution = gap * 0.25
+                Powell.downReservoir.relatedUser.Contribution = gap * 0.75
+            else:
+                # when strategyIndex is out of bound, use strategy 1 by defualt
+                # Strategy 1. Arranged by UB and LBM contributions proportionally
+                Powell.relatedUser.Contribution = UBdemandThisYear / totalDemandThisYear * gap
+                Powell.downReservoir.relatedUser.Contribution = LBMdemandThisYear / totalDemandThisYear * gap
+
+
 
 # ----------------------------------------- CRSS functions begins-----------------------------------
 
@@ -1198,6 +1338,7 @@ def cutbackfromGuidelines(elevation):
 
 
 # Drought contingency plan (combined volume) for Lake Mead, acre-feet
+# cutback includes both LB states (CA, NV, AZ) and Mexico
 # Coding in a general way, USE table, seperate code from data, properties and methods.
 def cutbackFromDCP(elevation):
     length = len(para.MeadDCPElevations)
@@ -1208,3 +1349,80 @@ def cutbackFromDCP(elevation):
 
         if i == length - 1:
             return para.MeadDCPcutbacks[length]
+
+# only get contributions above 1025 feet
+def cutbackFromDCPAbove1025(elevation):
+    length = len(para.MeadDCPElevations)
+
+    for i in range(length):
+        if elevation > para.MeadDCPElevations[i]:
+            return para.MeadDCPcutbacks[i]
+
+# cutback from Drought contingency plan for Lake Mead for sensitivity analysis
+# reservoir must be Lake Mead, cutback includes LB states (AZ, NV, CA) and Mexico
+# unit is in acre feet
+MAFtoAF = 1000000
+
+def cutbackFromDCP_storage(reservoir, storage):
+    elevation = reservoir.volume_to_elevation(storage)
+
+    if elevation > 1090:
+        return 0 * MAFtoAF
+    elif elevation > 1075:
+        return 0.241 * MAFtoAF
+    elif elevation >= 1050:
+        return 0.613 * MAFtoAF
+    elif elevation > 1045:
+        return 0.721 * MAFtoAF
+    elif elevation > 1040:
+        return 1.013 * MAFtoAF
+    elif elevation > 1035:
+        return 1.071 * MAFtoAF
+    elif elevation > 1030:
+        return 1.129 * MAFtoAF
+    elif elevation >= 1025:
+        return 1.188 * MAFtoAF
+    else:
+        return 1.375 * MAFtoAF
+
+def cutbackFromDCPplus(elevation, additionalCut):
+    if elevation > 1090:
+        return 0 * MAFtoAF
+    elif elevation > 1075:
+        return (0.241 + additionalCut) * MAFtoAF
+    elif elevation >= 1050:
+        return (0.613 + additionalCut) * MAFtoAF
+    elif elevation > 1045:
+        return (0.721 + additionalCut) * MAFtoAF
+    elif elevation > 1040:
+        return (1.013 + additionalCut) * MAFtoAF
+    elif elevation > 1035:
+        return (1.071 + additionalCut) * MAFtoAF
+    elif elevation > 1030:
+        return (1.129 + additionalCut) * MAFtoAF
+    elif elevation >= 1025:
+        return (1.188 + additionalCut) * MAFtoAF
+    else:
+        return (1.375 + additionalCut) * MAFtoAF
+
+def cutbackFromDCPplus_storage(reservoir, storage, additionalCut):
+    elevation = reservoir.volume_to_elevation(storage)
+
+    if elevation > 1090:
+        return 0 * MAFtoAF
+    elif elevation > 1075:
+        return (0.241 + additionalCut) * MAFtoAF
+    elif elevation >= 1050:
+        return (0.613 + additionalCut) * MAFtoAF
+    elif elevation > 1045:
+        return (0.721 + additionalCut) * MAFtoAF
+    elif elevation > 1040:
+        return (1.013 + additionalCut) * MAFtoAF
+    elif elevation > 1035:
+        return (1.071 + additionalCut) * MAFtoAF
+    elif elevation > 1030:
+        return (1.129 + additionalCut) * MAFtoAF
+    elif elevation >= 1025:
+        return (1.188 + additionalCut) * MAFtoAF
+    else:
+        return (1.375 + additionalCut) * MAFtoAF

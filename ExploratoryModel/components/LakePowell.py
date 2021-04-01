@@ -105,7 +105,15 @@ class LakePowell(Reservoir):
 
     # calculate inflow to Lake Powell, this value changed based on UB contribution
     def inflowToPowell(self, k, i, t):
+        year = self.para.getCurrentYear(t)
+        # print(year + self.begtime.year)
+        # if before 2026, inflow to Lake Powell is the same as those in CRSS
+        if year + self.begtime.year < self.para.defaultTriggerYear:
+            # year < 2026, use CRSS policies
+            self.UBShortage[i][t] = -self.crssUBshortage[i][t]
+            return self.crssInflow[i][t]
 
+        # the following policies will not be invoked after 2026
         # if choosing CRSS policy, then use CRSS inflow to Lake Powell
         if self.plc.CRSS_Powell == True:
             # if CRSS policy is utilized, then UB shortage equals to CRSS UB shortages
@@ -115,135 +123,37 @@ class LakePowell(Reservoir):
 
         # if selecting adapting demand to inflow policy.
         elif self.plc.ADP_DemandtoInflow == True:
-            # Step 1: know the inflow to the system
-            #        total inflow = inflow to Powell and intervening inflow to Mead
-            #        total demand = UB + LB (including Mohave/Havasu and inflow below Mead) + Mexico normal demand
-            # Step 2: adapt depletion to inflow: change inflow to Powell and change release from Mead !
-            #        total depletion = average total inflow for the past 5 or ? years
-            #        calculate gap (demand - depletion) and divide it for UB and LB.
-            #        calculate inflow to Powell and calculate release from Mead
-            # Step 3: calculate shortages based on the change of inflow and release
-            #        LB+MEXICO: demand - outflow from Mead
-            #        UB: incremental of inflow + base shortages from CRSS
+            # calculate UB LB Mexico adaptive contributions
+            RelFun.calculateContributions(self, k, i, t)
 
-            # to avoid using contribution data calculated in previous inflow traces.
-            if t == 0:
-                self.relatedUser.Contribution = 0
-                self.downReservoir.relatedUser.Contribution = 0
-
-            month = self.para.determineMonth(t)
-            year = self.para.getCurrentYear(t)
-            # start adapt demand to inflow since JAN, 2026, triggered once a year
-            # 2021 - 0, 2022 - 1, 2023 - 2, 2024 - 3, 2025 - 4, 2026 - 5
-            pastYears = 5
-
-            # if before 2026, same to CRSS policy
-            if year < pastYears:
-                # Shortages in exploratory model is a positive nunber, in CRSS is a negative number
-                self.UBShortage[i][t] = -self.crssUBshortage[i][t]
-                return self.crssInflow[i][t]
-
-            # if in or after 2026, calculate contribution on every Jannuary.
-            if month == self.para.JAN and year >= pastYears:
-                # reset UB, LB and MEXICO contributions
-                self.relatedUser.Contribution = 0
-                self.downReservoir.relatedUser.Contribution = 0
-
-                # Step 1:
-                # Calculate 5 past year total inflow to the system: inflow to Powell + intervening inflow to Mead
-                # python tip: sum() in python works in this way [ , ) instead of [ , ]
-                # total inflow to the system = water consumed before going to Lake Powell (1st and 2nd lines below)
-                #                              + inflow to Lake Powell (3rd line)
-                #                              + intervening inflow to Lake Mead (4th and 5th lines)
-                totalInflow5Y = sum(self.relatedUser.DepletionNormal[k][t-pastYears*12:t]) \
-                                + sum(self.crssUBshortage[i][t-pastYears*12:t]) \
-                                + sum(self.crssInflow[i][t-pastYears*12:t]) \
-                                + sum(self.downReservoir.crssInflow[i][t-pastYears*12:t])\
-                                - sum(self.crssOutflow[i][t-pastYears*12:t])
-
-                # Powell and Mead evaporation
-                totalEvaporation5Y = sum(self.evaporation[i][t-pastYears*12:t]) \
-                                     + sum(self.downReservoir.evaporation[i][t-pastYears*12:t])
-
-                # Step 2:
-                # adapt total release this year to total inflow - evaporation in the past 5 years
-                totalReleaseThisYear = totalInflow5Y/pastYears - totalEvaporation5Y/pastYears
-
-                # calculate total demand this year
-                UBdemandThisYear = sum(self.relatedUser.DepletionNormal[k][t:t + 12])
-                # LBM needs to consider Mohave, Havasu and inflow below
-                LBMdemandThisYear = sum(self.downReservoir.relatedUser.DepletionNormal[k][t:t + 12]) \
-                                    - self.downReservoir.relatedUser.GainLoss
-                totalDemandThisYear = UBdemandThisYear + LBMdemandThisYear
-
-                if totalReleaseThisYear >= totalDemandThisYear:
-                    # next year contribution equals to 0
-                    self.relatedUser.Contribution = 0
-                    self.downReservoir.relatedUser.Contribution = 0
-
-                    # change from negtive to positive
-                    self.UBShortage[i][t] = -self.crssUBshortage[i][t]
-                    return self.crssInflow[i][t]
-                else:
-                    # release = totalReleaseThisYear
-
-                    gap = totalDemandThisYear - totalReleaseThisYear
-
-                    # Maximum contribution cap, 1.5 maf/yr
-                    if gap > 1.5 * self.MAFtoAF:
-                        gap = 1.5 * self.MAFtoAF
-
-                    # index of strategies to allocate total cutback to individual ones
-                    strategyIndex = 6
-                    if strategyIndex == 1:
-                    # Strategy 1. Allocate UB and LBM contributions proportionally
-                        # UB contribution
-                        self.relatedUser.Contribution = UBdemandThisYear/ totalDemandThisYear * gap
-                        # LB and Mexico contribution
-                        self.downReservoir.relatedUser.Contribution = LBMdemandThisYear/ totalDemandThisYear * gap
-                    elif strategyIndex == 2:
-                    # Strategy 2. All contribution made by UB 
-                        self.relatedUser.Contribution = gap
-                        self.downReservoir.relatedUser.Contribution = 0
-                    elif strategyIndex == 3:
-                    # Strategy 3. All contribution made by LBM
-                        self.relatedUser.Contribution = 0
-                        self.downReservoir.relatedUser.Contribution = gap
-                    elif strategyIndex == 4:
-                    # Strategy 4. Equally arranged by UB and LBM
-                        self.relatedUser.Contribution = gap/2.0
-                        self.downReservoir.relatedUser.Contribution = gap/2.0
-                    elif strategyIndex == 5:
-                    # Strategy 5. 75% by UB and 25% by LBM
-                        self.relatedUser.Contribution = gap * 0.75
-                        self.downReservoir.relatedUser.Contribution = gap * 0.25
-                    elif strategyIndex == 6:
-                    # Strategy 6. 25% by UB and 75% by LBM
-                        self.relatedUser.Contribution = gap * 0.25
-                        self.downReservoir.relatedUser.Contribution = gap * 0.75
-                    else:
-                    # when strategyIndex is out of bound, use strategy 1 by defualt
-                        # Strategy 1. Arranged by UB and LBM contributions proportionally
-                        self.relatedUser.Contribution = UBdemandThisYear / totalDemandThisYear * gap
-                        self.downReservoir.relatedUser.Contribution = LBMdemandThisYear / totalDemandThisYear * gap
+            # crssUBshortage is negative value in CRSS (hydrologic shortages)
+            avaialbleWaterToContribute = self.relatedUser.DepletionNormal[k][t] + self.crssUBshortage[i][t]
+            # If UB doesn't have enough water to contribute, then max contribution is the entire UB depletion normal
+            if self.relatedUser.Contribution / 12 > avaialbleWaterToContribute:
+                self.UBShortage[i][t] = self.relatedUser.DepletionNormal[k][t]
+                return self.crssInflow[i][t] + avaialbleWaterToContribute
+            else:
+                # existing hydrologic shortages (CRSS shortages are negative values) + monthly contribution
+                self.UBShortage[i][t] = - self.crssUBshortage[i][t] + self.relatedUser.Contribution / 12
+                return self.crssInflow[i][t] + self.relatedUser.Contribution / 12
 
             # determine monthly Powell inflow including January
-            if self.downReservoir.getinitStorageForEachPeriod(i, t) < self.plc.ADP_triggerS_LOW:
-                # crssUBshortage is negative value in CRSS (hydrologic shortages)
-                avaialbleWaterToContribute = self.relatedUser.DepletionNormal[k][t] + self.crssUBshortage[i][t]
-
-                # If UB doesn't have enough water to contribute, then max contribution is the entire UB depletion normal
-                if self.relatedUser.Contribution / 12 > avaialbleWaterToContribute:
-                    self.UBShortage[i][t] = self.relatedUser.DepletionNormal[k][t]
-                    return self.crssInflow[i][t] + avaialbleWaterToContribute
-                else:
-                    # monthly contribution + existing hydrologic shortages (CRSS shortages are negative values)
-                    self.UBShortage[i][t] = self.relatedUser.Contribution / 12 - self.crssUBshortage[i][t]
-                    return self.crssInflow[i][t] + self.relatedUser.Contribution / 12
-            else:
-                # if ADP policy doesn't trigger, use CRSS inflow
-                self.UBShortage[i][t] = - self.crssUBshortage[i][t]
-                return self.crssInflow[i][t]
+            # if self.downReservoir.getinitStorageForEachPeriod(i, t) < self.plc.ADP_triggerS_LOW:
+            #     # crssUBshortage is negative value in CRSS (hydrologic shortages)
+            #     avaialbleWaterToContribute = self.relatedUser.DepletionNormal[k][t] + self.crssUBshortage[i][t]
+            #
+            #     # If UB doesn't have enough water to contribute, then max contribution is the entire UB depletion normal
+            #     if self.relatedUser.Contribution / 12 > avaialbleWaterToContribute:
+            #         self.UBShortage[i][t] = self.relatedUser.DepletionNormal[k][t]
+            #         return self.crssInflow[i][t] + avaialbleWaterToContribute
+            #     else:
+            #         # existing hydrologic shortages (CRSS shortages are negative values) + monthly contribution
+            #         self.UBShortage[i][t] = - self.crssUBshortage[i][t] + self.relatedUser.Contribution / 12
+            #         return self.crssInflow[i][t] + self.relatedUser.Contribution / 12
+            # else:
+            #     # if ADP policy doesn't trigger, use CRSS inflow to Lake Powell
+            #     self.UBShortage[i][t] = - self.crssUBshortage[i][t]
+            #     return self.crssInflow[i][t]
 
         else:
             # todo, other policies
@@ -328,7 +238,7 @@ class LakePowell(Reservoir):
     # calcualte water balance for each period, used in decision scaling tool
     #   self: Lake Powell itself,
     #   startStorage: start month storage,
-    #   inflowthismonth: inflow to Powell in the current month,
+    #   inflowthismonth: inflow to Powell in the current monthf,
     #   release: outflow from Powell
     #   t: period
     def simulationSinglePeriodGeneral(self, startStorage, inflowthismonth, release, t):
@@ -389,11 +299,16 @@ class LakePowell(Reservoir):
     #   i: inflowTrace,
     #   t: period
     def releasePolicy(self, startStorage, k, i, t):
-        # Major CRSS Lake Powell policies
-        if self.plc.CRSS_Powell == True:
-            # return self.crssPolicy(i, t)
+        year = self.para.getCurrentYear(t)
+        # print(year + self.begtime.year)
+        # if before 2026, inflow to Lake Powell is the same as those in CRSS
+        if year + self.begtime.year < self.para.defaultTriggerYear:
+            # year < 2026, use CRSS policies
             return RelFun.crssPolicy(self, i, t)
 
+        # Major CRSS Lake Powell policies
+        if self.plc.CRSS_Powell == True:
+            return RelFun.crssPolicy(self, i, t)
         # strategy FPF
         if self.plc.FPF == True:
             return RelFun.FPF(self, startStorage, t)

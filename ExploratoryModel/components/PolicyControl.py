@@ -48,8 +48,11 @@ CRSS_Mead = False
 ADP_DemandtoInflow = True
 # trigger ADP policy only when reservoir storage is < self.plc.ADP_triggerS, 10857008 af respond to 1090 feet
 # ADP_triggerS_LOW = 10857008
-# 1025 feet
-ADP_triggerS_LOW = 5981122
+# 1025 feet, 5981122 acre-feet;
+# 1050 feet, 7682878 acre-feet;
+# 1060 feet, 8423088 acre-feet
+# ADP_triggerS_LOW = 7682878
+ADP_triggerS_LOW = 8423088
 
 
 # Protect Pearce Ferry Rapid

@@ -1,8 +1,16 @@
-from components.component import Node
+from components.component import Link
 
-class River(Node):
+class River(Link):
     inflow = None
     outflow = None
 
-    upstreamReservoir = None
-    downstreamReservoir = None
+    upstream = None
+    # upstreamUser = None
+
+    downstream = None
+    # downstreamUser = None
+
+    def __init__(self, name, upStream, downStream):
+        self.name = name
+        self.upstream = upStream
+        self.downstream = downStream

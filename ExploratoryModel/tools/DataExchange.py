@@ -234,6 +234,79 @@ def readDepletion(user1, user2, filePath):
     user1.DepletionNormal[5] = user1.basicData.TotalUpper5.values #in feet
     user2.DepletionNormal[5] = user1.basicData.TotalLowerMexico5.values #in acre-feet
 
+# It's for LB and Mexico only
+def readOtherDepletion(user, filePath):
+    user.basicDataFile = filePath
+    pwd = os.getcwd()
+    os.chdir(os.path.dirname(user.basicDataFile))
+    user.basicData = pd.read_csv(os.path.basename(user.basicDataFile))
+    os.chdir(pwd)
+
+    user.OtherDepletion = np.zeros([user.periods])
+    user.OtherDepletion = user.basicData.LBMOtherDemand.values #in acre-feet
+
+# read results to generate box-whisker plot
+def readElevationResults(Powell, Mead):
+    filePath = "../results/BoxWhiskerData.xls"
+
+    df1 = pd.read_excel(filePath, sheet_name='PowellCRSS', header=None)
+    df2 = pd.read_excel(filePath, sheet_name='PowellADP', header=None)
+    df3 = pd.read_excel(filePath, sheet_name='MeadCRSS', header=None)
+    df4 = pd.read_excel(filePath, sheet_name='MeadADP', header=None)
+
+    # print(df1.T)
+    # print(df2.T)
+    # print(df1.iat[0, 1])
+
+    plots.box_whisker(Powell, df1, df2)
+    plots.box_whisker(Mead, df3, df4)
+
+# read sensitivity results
+def readSAResultsAndPlot():
+    # filePath = "../tools/results/SensitivityAnalysisTo12maf_5.35.xls"
+    filePath = "../tools/results/SensitivityAnalysisTo12maf_4.5.xls"
+
+    DCP = pd.read_excel(filePath, sheet_name='DCP', header=None, skiprows=1)
+    DCPplus12 = pd.read_excel(filePath, sheet_name='DCPplus12', header=None, skiprows=1)
+    DCPplus8 = pd.read_excel(filePath, sheet_name='DCPplus8', header=None, skiprows=1)
+    DCPplus4 = pd.read_excel(filePath, sheet_name='DCPplus4', header=None, skiprows=1)
+    ADP = pd.read_excel(filePath, sheet_name='ADP', header=None, skiprows=1)
+    Paleo = pd.read_excel(filePath, sheet_name='Paleo', header=None, skiprows=1)
+    Depletion = pd.read_excel(filePath, sheet_name='Depletion', header=None, skiprows=2)
+    TemperatureMIN = pd.read_excel(filePath, sheet_name='MinTemp', header=None, skiprows=2)
+    TemperatureMAX = pd.read_excel(filePath, sheet_name='MaxTemp', header=None, skiprows=2)
+    DepletionStorage = pd.read_excel(filePath, sheet_name='DepletionStorage', header=None, skiprows=1)
+
+    # print(df1.T)
+    # print(df2.T)
+    # print(df1.iat[0, 1])
+
+    plots.plotYearsto12maf(DCP, DCPplus12, DCPplus8, DCPplus4, ADP, Paleo,
+                           Depletion, TemperatureMIN, TemperatureMAX, DepletionStorage)
+
+# for section 4.3
+def readSimulationResultsAndPlot():
+    filePath = "../results/Comparison0325.xls"
+
+    # Run 47 (Mid-20th century drought)
+    PowellElevations47 = pd.read_excel(filePath, sheet_name='RUN47', header=None, usecols=[1,2,3,6], skiprows=3, nrows=312)
+    MeadElevations47 = pd.read_excel(filePath, sheet_name='RUN47', header=None, usecols=[1,4,5,7], skiprows=3, nrows=312)
+    TotalShortages47 = pd.read_excel(filePath, sheet_name='RUN47', header=None, usecols=[18,25,26], skiprows=3, nrows=26)
+    DepletionTradeOff47 = pd.read_excel(filePath, sheet_name='Trade-offs-47', header=None, usecols=[23,24], skiprows=3, nrows=8)
+
+    # Run 94 (Millinium drought)
+    PowellElevations94 = pd.read_excel(filePath, sheet_name='RUN94', header=None, usecols=[1,2,3,6], skiprows=3, nrows=243)
+    MeadElevations94 = pd.read_excel(filePath, sheet_name='RUN94', header=None, usecols=[1,4,5,7], skiprows=3, nrows=243)
+    TotalShortages94 = pd.read_excel(filePath, sheet_name='RUN94', header=None, usecols=[18,25,26], skiprows=3, nrows=20)
+    DepletionTradeOff94 = pd.read_excel(filePath, sheet_name='Trade-offs-94', header=None, usecols=[23,24], skiprows=3, nrows=8)
+
+    # print(df1.T)
+    # print(df2.T)
+    # print(df1.iat[0, 1])
+
+    plots.ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, DepletionTradeOff47,
+                             PowellElevations94, MeadElevations94, TotalShortages94, DepletionTradeOff94)
+
 # export data to xls
 def exportData(reservoir, path):
     # begining time
@@ -1138,6 +1211,81 @@ def exportMSAresults(path, Inflows, Releases, YearstToEmpty, YearsToFull, EOPHSt
 
     f.save(path)
 
+# multi dimensional sensitivity analysis
+def exportMSAresults2(path, inflowRange1, YearsTo12maf, TotalDelivery,
+                      CombinedStorage, PowellReleaseTempMAX, PowellReleaseTempMIN):
+    begtime = datetime.datetime(2021, 1, 1)
+    f = xlwt.Workbook(encoding='utf-8')
+    decimal_style = xlwt.XFStyle()
+    decimal_style.num_format_str = '0'
+
+    sheet1 = f.add_sheet(u'totaldelivery', cell_overwrite_ok=True)  # create sheet
+    [inflowTraces, Periods] = TotalDelivery.shape  # h is row，l is column
+    time = begtime
+    for t in range(Periods):
+        sheet1.write(t+1, 0, str(time.strftime("%m"+"/"+"%Y")))
+        time = time + relativedelta(months=+1)
+        for i in range(inflowTraces):
+            sheet1.write(0, i+1, round(inflowRange1[i],2))
+            sheet1.write(t+1, i+1, TotalDelivery[i][t], decimal_style)
+
+    sheet2 = f.add_sheet(u'YearsTo12MAF', cell_overwrite_ok=True)  # create sheet
+    [inflowTraces] = YearsTo12maf.shape
+    for i in range(inflowTraces):
+        sheet2.write(0, i+1, round(inflowRange1[i],2))
+        sheet2.write(1, i+1, YearsTo12maf[i], decimal_style)
+
+    sheet3 = f.add_sheet(u'combinedStorage', cell_overwrite_ok=True)  # create sheet
+    [inflowTraces, Periods] = CombinedStorage.shape  # h is row，l is column
+    time = begtime
+    for t in range(Periods):
+        sheet3.write(t+1, 0, str(time.strftime("%m"+"/"+"%Y")))
+        time = time + relativedelta(months=+1)
+        for i in range(inflowTraces):
+            sheet3.write(0, i+1, round(inflowRange1[i],2))
+            sheet3.write(t+1, i+1, CombinedStorage[i][t], decimal_style)
+
+    sheet4 = f.add_sheet(u'SummerReleaseTemperatureMAX', cell_overwrite_ok=True)  # create sheet
+    [inflowTraces, Periods] = PowellReleaseTempMAX.shape  # h is row，l is column
+    time = begtime
+    years = int(Periods/12)
+
+    summerTempMAX = np.zeros([inflowTraces, years])
+    for i in range(inflowTraces):
+        for t in range(int(Periods/12)):
+            # Jun Jul Aug Sep
+            summerTempMAX[i][t] \
+                = sum(PowellReleaseTempMAX[i][t * 12 + 5:t * 12 + 9]) \
+                  / len(PowellReleaseTempMAX[i][t * 12 + 5:t * 12 + 9])
+
+    for t in range(years):
+        sheet4.write(t+1, 0, str(time.strftime("%m"+"/"+"%Y")))
+        time = time + relativedelta(months=+12)
+        for i in range(inflowTraces):
+            sheet4.write(0, i+1, round(inflowRange1[i],2))
+            sheet4.write(t+1, i+1, summerTempMAX[i][t], decimal_style)
+
+    sheet5 = f.add_sheet(u'SummerReleaseTemperatureMIN', cell_overwrite_ok=True)  # create sheet
+    [inflowTraces, Periods] = PowellReleaseTempMIN.shape  # h is row，l is column
+    time = begtime
+    years = int(Periods/12)
+
+    summerTempMIN = np.zeros([inflowTraces, years])
+    for i in range(inflowTraces):
+        for t in range(int(Periods/12)):
+            # Jun Jul Aug Sep
+            summerTempMIN[i][t] \
+                = sum(PowellReleaseTempMIN[i][t * 12 + 5:t * 12 + 9]) \
+                  / len(PowellReleaseTempMIN[i][t * 12 + 5:t * 12 + 9])
+
+    for t in range(years):
+        sheet5.write(t+1, 0, str(time.strftime("%m"+"/"+"%Y")))
+        time = time + relativedelta(months=+12)
+        for i in range(inflowTraces):
+            sheet5.write(0, i+1, round(inflowRange1[i],2))
+            sheet5.write(t+1, i+1, summerTempMIN[i][t], decimal_style)
+
+    f.save(path)
 
 def readOutsideElevationForTemp(reservoir, filePath):
     reservoir.basicDataFile = filePath
