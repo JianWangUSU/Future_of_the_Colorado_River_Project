@@ -9,7 +9,7 @@ An open-source exploratory model is developed to assist in Colorado River long t
 
 
 **Set up and run code**
-https://docs.google.com/document/d/1zyWFzGX18yz7uoINqlHjOPNHuC0LQI2z5Zcy2AjvP3U/edit
+https://docs.google.com/document/d/1CiLCVjKVlsMwBFGEdcgh2De7mpDaCbPX5xmpI-rrANY/edit
 
 
 **How to write your own release policy?**
