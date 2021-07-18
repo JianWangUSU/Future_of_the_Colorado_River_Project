@@ -263,8 +263,8 @@ def readElevationResults(Powell, Mead):
 
 # read sensitivity results
 def readSAResultsAndPlot():
-    # filePath = "../tools/results/SensitivityAnalysisTo12maf_5.35.xls"
-    filePath = "../tools/results/SensitivityAnalysisTo12maf_4.5.xls"
+    filePath = "../tools/results/SensitivityAnalysisTo12maf_5.35.xls"
+    # filePath = "../tools/results/SensitivityAnalysisTo12maf_4.5.xls"
 
     DCP = pd.read_excel(filePath, sheet_name='DCP', header=None, skiprows=1)
     DCPplus12 = pd.read_excel(filePath, sheet_name='DCPplus12', header=None, skiprows=1)

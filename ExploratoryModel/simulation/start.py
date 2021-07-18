@@ -132,7 +132,6 @@ DataExchange.readDepletion(UB, LBM, filePath + fileName)
 fileName = "LBM_OtherDemand.csv"
 DataExchange.readOtherDepletion(LBM, filePath + fileName)
 
-
 # set up depletion data, copy depletion data to Lake Powell and Lake Mead
 # Powell.setupDepletion(UBLB)
 # Mead.setupDepletion(UBLB)
@@ -168,11 +167,11 @@ profile_path = "../data/depth_temperature.csv"
 DataExchange.readDepthProfileForTemp(profile_path)
 
 # read and plot results (post-processing)
-DataExchange.readSimulationResultsAndPlot()
-# DataExchange.readSAResultsAndPlot()
+# DataExchange.readSimulationResultsAndPlot()
+DataExchange.readSAResultsAndPlot()
 
 ### 4. run sensitivity analysis
-if True:
+if False:
     filePath = "../tools/results/SensitivityAnalysis.xls"
 
     starttime = datetime.datetime.now()
