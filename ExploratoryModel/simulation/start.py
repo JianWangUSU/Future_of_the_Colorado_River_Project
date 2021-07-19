@@ -5,7 +5,6 @@ import pandas as pd
 from tools import ReleaseTemperature, SensitivityAnalysis
 import datetime
 
-
 ############ 1. create a network
 n = Network(name="Exploratory Colorado River Network")
 # setup planning horizon, inflow traces and demand traces
@@ -46,7 +45,6 @@ RiverbetweenPowellMead = River.River("RiverbetweenPowellMead", Powell, Mead)
 n.add_link(RiverbetweenPowellMead)
 RiverbelowMead = River.River("RiverbelowMead", Mead, LBM)
 n.add_link(RiverbelowMead)
-
 
 # create a combined upper basin (UB) and lower basin (LB) user.
 # UBLB = User.User("UBLB")
@@ -166,10 +164,6 @@ DataExchange.readCRSSubShortage(Powell, filePath + fileName)
 profile_path = "../data/depth_temperature.csv"
 DataExchange.readDepthProfileForTemp(profile_path)
 
-# read and plot results (post-processing)
-# DataExchange.readSimulationResultsAndPlot()
-DataExchange.readSAResultsAndPlot()
-
 ### 4. run sensitivity analysis
 if False:
     filePath = "../tools/results/SensitivityAnalysis.xls"
@@ -190,7 +184,7 @@ if False:
     print(" time:" + str(endtime - starttime))
 
 ### 5. run the model
-if False:
+if True:
     # Policy check
     count = 0
     index = 0
@@ -243,7 +237,7 @@ if False:
     # exports results to ExploratoryModel --> results folder.
     DataExchange.exportData(Mead, filePath + name)
 
-### 7. plot CRSS validation results
+### 7. Figure 4.1 and A.1
 if plc.CRSS_Powell == True and plc.CRSS_Mead == True:
     date_series = pd.date_range(start= n.begtime, periods=n.periods, freq="M")
     # plotsIndex = [0,40,80,100]
@@ -263,7 +257,13 @@ if plc.CRSS_Powell == True and plc.CRSS_Mead == True:
         # title = "Equalization (Run" + str(i) +")"
         # plots.Equalization(date_series,Powell.crssStorage[i]/Powell.maxStorage-Mead.crssStorage[i]/Mead.maxStorage,Powell.storage[i]/Powell.maxStorage- Mead.storage[i]/Mead.maxStorage,title)
 
-# 8. Generate results for AMP white paper
+# 8. Read and plot results (post-processing)
+# Figure 4.2, 4.3, 4.4, A.2, A.3 and A.4
+DataExchange.readSAResultsAndPlot()
+# Figures 4.5, 4.6, A.5, and A.6
+DataExchange.readSimulationResultsAndPlot()
+
+# 9. Generate results for AMP white paper
 if False:
     filePath = "../results/"
 

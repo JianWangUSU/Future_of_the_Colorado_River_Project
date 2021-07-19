@@ -36,7 +36,7 @@ def plot_Elevations_Flows_CRSS_Exploratory_Powell(x, y1crss, y2crss, y3crss, y4c
     StrRange = [0, 30000000]
 
     plot_Elevations_Flows_CRSS_Exploratory(x, y1crss, y2crss, y3crss, y1, y2, y3, title, StrRange)
-    plot_Elevations_CRSS_Exploratory(x, y4crss, y1crss, y4, y1, title, EleRange, StrRange)
+    # plot_Elevations_CRSS_Exploratory(x, y4crss, y1crss, y4, y1, title, EleRange, StrRange)
     # plot_Elevations_CRSS_Exploratory_Gap(x, y1crss-y1, title)
     # title = "inflow"
     # plot_Flow_CRSS_Exploratory_Gap(x, y2crss-y2, title)
@@ -47,7 +47,7 @@ def plot_Elevations_Flows_CRSS_Exploratory_Mead(x, y1crss, y2crss, y3crss, y4crs
     EleRange = [895, 1250]
     StrRange = [0, 30000000]
     plot_Elevations_Flows_CRSS_Exploratory(x, y1crss, y2crss, y3crss, y1, y2, y3, title, StrRange)
-    plot_Elevations_CRSS_Exploratory(x, y4crss, y1crss, y4, y1, title, EleRange, StrRange)
+    # plot_Elevations_CRSS_Exploratory(x, y4crss, y1crss, y4, y1, title, EleRange, StrRange)
     # plot_Elevations_CRSS_Exploratory_Gap(x, y1crss-y1, title)
     # title = "inflow"
     # plot_Flow_CRSS_Exploratory_Gap(x, y2crss-y2, title)
