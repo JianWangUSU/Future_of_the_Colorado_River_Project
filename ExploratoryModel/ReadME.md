@@ -1,6 +1,6 @@
 **Colorado River Futures - Code Projects**
 
-**Living within our Means: Adapting Colorado River Basin depletions to the available water **
+**Living within our Means: Adapting Colorado River Basin depletions to the available water**
 
 **Author:** Jian Wang, Utah State University, jian.wang@usu.edu
 
