@@ -632,7 +632,7 @@ def ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, D
     # Lake Powell
     fig, ax1 = plt.subplots(figsize=(8, 4.8))
 
-    ax1.set_title("Lake Powell Elevation")
+    ax1.set_title("(a) Lake Powell Elevation")
 
     ax2 = ax1.twinx()
     ax1.plot(PowellElevations47.iloc[:,2], color = '#ed7d31', label= 'ADP', linewidth=2.0)
@@ -660,7 +660,7 @@ def ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, D
     # Lake Mead
     fig, ax1 = plt.subplots(figsize=(8, 4.8))
 
-    ax1.set_title("Lake Mead Elevation")
+    ax1.set_title("(b) Lake Mead Elevation")
 
     ax2 = ax1.twinx()
     ax1.plot(MeadElevations47.iloc[:,2], color = '#ed7d31', label= 'ADP', linewidth=2.0)
@@ -691,7 +691,7 @@ def ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, D
     # Total shortages
     fig, ax1 = plt.subplots(figsize=(8, 4.8))
 
-    ax1.set_title("Total Annual Shortages")
+    ax1.set_title("(c) Total Annual Shortages")
 
     ax1.plot(TotalShortages47.iloc[:,2], color = '#ed7d31', label= 'ADP', linewidth=2.0)
     ax1.plot(TotalShortages47.iloc[:,1], linestyle='dashed', color = 'black', linewidth=1.5, label= 'DCP')
@@ -711,7 +711,7 @@ def ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, D
     # Bar graph
     fig, ax1 = plt.subplots(figsize=(8, 4.8))
 
-    ax1.set_title("Additional Cutback by ADP")
+    ax1.set_title("(d) Additional Cutback by ADP")
     labels = np.arange(2020, 2046)
     ax1.bar(labels, TotalShortages47.iloc[:,2] - TotalShortages47.iloc[:,1], color = '#ed7d31', label= 'ADP', linewidth=2.0)
     ax1.axhline(0, color='grey', linewidth=0.8)
@@ -739,7 +739,7 @@ def ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, D
     ax1.hlines(DepletionTradeOff47.iat[7, 1], x0, DepletionTradeOff47.iat[7, 0], color='grey', linestyle='dashed', alpha=0.5)
     ax1.vlines(DepletionTradeOff47.iat[7, 0], y0, DepletionTradeOff47.iat[7, 1], color='grey', linestyle='dashed', alpha=0.5)
 
-    ADPlabel = [' UB, LB&M propotionally',' UB 100%',' UB 0%',' UB 50%',' UB 75%',' UB 25%']
+    ADPlabel = [' UB, LB&M propotionally','  All by UB','  All by LB&M','  50% by UB ','  75% by UB','  75% by LB&M']
     for i in range(len(ADPlabel)):
         if i == 0:
             ax1.text(DepletionTradeOff47.iat[i, 0]-11, DepletionTradeOff47.iat[i, 1]-2, ADPlabel[i])
@@ -759,7 +759,7 @@ def ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, D
     # Lake Powell
     fig, ax1 = plt.subplots(figsize=(8, 4.8))
 
-    ax1.set_title("Lake Powell Elevation")
+    ax1.set_title("(a) Lake Powell Elevation")
 
     ax2 = ax1.twinx()
     ax1.plot(PowellElevations94.iloc[:, 2], color='#ed7d31', label='ADP', linewidth=2.0)
@@ -787,7 +787,7 @@ def ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, D
     # Lake Mead
     fig, ax1 = plt.subplots(figsize=(8, 4.8))
 
-    ax1.set_title("Lake Mead Elevation")
+    ax1.set_title("(b) Lake Mead Elevation")
 
     ax2 = ax1.twinx()
     ax1.plot(MeadElevations94.iloc[:,2], color = '#ed7d31', label= 'ADP', linewidth=2.0)
@@ -819,7 +819,7 @@ def ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, D
     # Total shortages
     fig, ax1 = plt.subplots(figsize=(8, 4.8))
 
-    ax1.set_title("Total Annual Shortages")
+    ax1.set_title("(c) Total Annual Shortages")
 
     ax1.plot(TotalShortages94.iloc[:,2], color = '#ed7d31', label= 'ADP', linewidth=2.0)
     ax1.plot(TotalShortages94.iloc[:,1], linestyle='dashed', color = 'black', linewidth=1.5, label= 'DCP')
@@ -839,7 +839,7 @@ def ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, D
     # Bar graph
     fig, ax1 = plt.subplots(figsize=(8, 4.8))
 
-    ax1.set_title("Additional Cutback by ADP")
+    ax1.set_title("(d) Additional Cutback by ADP")
     labels = np.arange(2020, 2040)
     ax1.bar(labels, TotalShortages94.iloc[:,2] - TotalShortages94.iloc[:,1], color = '#ed7d31', label= 'ADP', linewidth=2.0)
     ax1.axhline(0, color='grey', linewidth=0.8)
@@ -872,10 +872,13 @@ def ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, D
     ax1.hlines(DepletionTradeOff94.iat[7, 1], x0, DepletionTradeOff94.iat[7, 0], color='grey', linestyle='dashed', alpha=0.5)
     ax1.vlines(DepletionTradeOff94.iat[7, 0], y0, DepletionTradeOff94.iat[7, 1], color='grey', linestyle='dashed', alpha=0.5)
 
-    ADPlabel = [' UB, LB&M propotionally',' UB 100%',' UB 0%',' UB 50%',' UB 75%',' UB 25%']
+    ADPlabel = [' UB, LB&M propotionally','  All by UB','  All by LB&M','  50% by UB ','  75% by UB','  75% by LB&M']
+
     for i in range(len(ADPlabel)):
         if i == 0:
             ax1.text(DepletionTradeOff94.iat[i, 0]-11, DepletionTradeOff94.iat[i, 1]-2, ADPlabel[i])
+        elif i == 5:
+            ax1.text(DepletionTradeOff94.iat[i, 0] , DepletionTradeOff94.iat[i, 1]-2, ADPlabel[i])
         else:
             ax1.text(DepletionTradeOff94.iat[i, 0], DepletionTradeOff94.iat[i, 1], ADPlabel[i])
 
