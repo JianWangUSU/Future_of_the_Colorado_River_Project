@@ -18,11 +18,12 @@ https://docs.google.com/document/d/1CiLCVjKVlsMwBFGEdcgh2De7mpDaCbPX5xmpI-rrANY/
 
 ../data stores input data
 
-../results stores simulation results
+../results stores rule based simulation results
 
 ../simulation main start of this model
 
 ../tools stores other tools such as sensitivity analysis, data exchange methods and a reservoir release temeprature model
 
+../tools/results stores sensitivity analysis results
 
 
