@@ -261,9 +261,561 @@ def readElevationResults(Powell, Mead):
     plots.box_whisker(Powell, df1, df2)
     plots.box_whisker(Mead, df3, df4)
 
+# extract rule based simulation results
+def extractSimulationInforamtion(filePathComparison, filePath_Powell_CRSS, filePath_Mead_CRSS,
+                                 filePath_Powell_s1, filePath_Mead_s1, filePath_Powell_s2, filePath_Mead_s2,
+                                 filePath_Powell_s3, filePath_Mead_s3, filePath_Powell_s4, filePath_Mead_s4,
+                                 filePath_Powell_s5, filePath_Mead_s5, filePath_Powell_s6, filePath_Mead_s6):
+
+    print("Extracting Data from simulation results...")
+
+    MAFtoAF = 1000000
+
+    # =====Extract data=====
+    cols = [48,95]
+    PowellElevation_CRSS = pd.read_excel(filePath_Powell_CRSS, sheet_name='elevation', header=None, usecols=cols, skiprows=1)
+    MeadElevation_CRSS = pd.read_excel(filePath_Mead_CRSS, sheet_name='elevation', header=None, usecols=cols, skiprows=1)
+    UBAnnualShortages_CRSS  = pd.read_excel(filePath_Powell_CRSS, sheet_name='UBShortage_Y', header=None, usecols=cols, skiprows=1)
+    LBMAnnualShortages_CRSS  = pd.read_excel(filePath_Mead_CRSS, sheet_name='LB&MShortage_Y', header=None, usecols=cols, skiprows=1)
+
+    PowellElevation_ADP_s1 = pd.read_excel(filePath_Powell_s1, sheet_name='elevation', header=None, usecols=cols, skiprows=1)
+    MeadElevation_ADP_s1 = pd.read_excel(filePath_Mead_s1, sheet_name='elevation', header=None, usecols=cols, skiprows=1)
+    UBAnnualShortages_ADP_s1  = pd.read_excel(filePath_Powell_s1, sheet_name='UBShortage_Y', header=None, usecols=cols, skiprows=1)
+    LBMAnnualShortages_ADP_s1 = pd.read_excel(filePath_Mead_s1, sheet_name='LB&MShortage_Y', header=None, usecols=cols, skiprows=1)
+
+    UBAnnualShortages_ADP_s2  = pd.read_excel(filePath_Powell_s2, sheet_name='UBShortage_Y', header=None, usecols=cols, skiprows=1)
+    LBMAnnualShortages_ADP_s2 = pd.read_excel(filePath_Mead_s2, sheet_name='LB&MShortage_Y', header=None, usecols=cols, skiprows=1)
+
+    UBAnnualShortages_ADP_s3  = pd.read_excel(filePath_Powell_s3, sheet_name='UBShortage_Y', header=None, usecols=cols, skiprows=1)
+    LBMAnnualShortages_ADP_s3 = pd.read_excel(filePath_Mead_s3, sheet_name='LB&MShortage_Y', header=None, usecols=cols, skiprows=1)
+
+    UBAnnualShortages_ADP_s4  = pd.read_excel(filePath_Powell_s4, sheet_name='UBShortage_Y', header=None, usecols=cols, skiprows=1)
+    LBMAnnualShortages_ADP_s4 = pd.read_excel(filePath_Mead_s4, sheet_name='LB&MShortage_Y', header=None, usecols=cols, skiprows=1)
+
+    UBAnnualShortages_ADP_s5  = pd.read_excel(filePath_Powell_s5, sheet_name='UBShortage_Y', header=None, usecols=cols, skiprows=1)
+    LBMAnnualShortages_ADP_s5 = pd.read_excel(filePath_Mead_s5, sheet_name='LB&MShortage_Y', header=None, usecols=cols, skiprows=1)
+
+    UBAnnualShortages_ADP_s6  = pd.read_excel(filePath_Powell_s6, sheet_name='UBShortage_Y', header=None, usecols=cols, skiprows=1)
+    LBMAnnualShortages_ADP_s6 = pd.read_excel(filePath_Mead_s6, sheet_name='LB&MShortage_Y', header=None, usecols=cols, skiprows=1)
+
+    # sum of 25years average shortage, 25 years of total demand - total shortage, convert from af to maf
+    UB_Demand_25Y = 133608597.38
+    LBM_Demand_25Y = 225043156.39
+
+    Strategy1_Run47_UB = (UB_Demand_25Y - UBAnnualShortages_ADP_s1.loc[0:24, 48].sum())/MAFtoAF
+    Strategy1_Run47_LBM = (LBM_Demand_25Y - LBMAnnualShortages_ADP_s1.loc[0:24, 48].sum())/MAFtoAF
+    Strategy2_Run47_UB = (UB_Demand_25Y - UBAnnualShortages_ADP_s2.loc[0:24, 48].sum())/MAFtoAF
+    Strategy2_Run47_LBM = (LBM_Demand_25Y - LBMAnnualShortages_ADP_s2.loc[0:24, 48].sum())/MAFtoAF
+    Strategy3_Run47_UB = (UB_Demand_25Y - UBAnnualShortages_ADP_s3.loc[0:24, 48].sum())/MAFtoAF
+    Strategy3_Run47_LBM = (LBM_Demand_25Y - LBMAnnualShortages_ADP_s3.loc[0:24, 48].sum())/MAFtoAF
+    Strategy4_Run47_UB = (UB_Demand_25Y - UBAnnualShortages_ADP_s4.loc[0:24, 48].sum())/MAFtoAF
+    Strategy4_Run47_LBM = (LBM_Demand_25Y - LBMAnnualShortages_ADP_s4.loc[0:24, 48].sum())/MAFtoAF
+    Strategy5_Run47_UB = (UB_Demand_25Y - UBAnnualShortages_ADP_s5.loc[0:24, 48].sum())/MAFtoAF
+    Strategy5_Run47_LBM = (LBM_Demand_25Y - LBMAnnualShortages_ADP_s5.loc[0:24, 48].sum())/MAFtoAF
+    Strategy6_Run47_UB = (UB_Demand_25Y - UBAnnualShortages_ADP_s6.loc[0:24, 48].sum())/MAFtoAF
+    Strategy6_Run47_LBM = (LBM_Demand_25Y - LBMAnnualShortages_ADP_s6.loc[0:24, 48].sum())/MAFtoAF
+
+    CRSS_Run47_UB = (UB_Demand_25Y - UBAnnualShortages_CRSS.loc[0:24, 48].sum())/MAFtoAF
+    CRSS_Run47_LBM = (LBM_Demand_25Y - LBMAnnualShortages_CRSS.loc[0:24, 48].sum())/MAFtoAF
+    Ideal_Run47_UB = UB_Demand_25Y/MAFtoAF
+    Ideal_Run47_LBM = LBM_Demand_25Y/MAFtoAF
+
+    # sum of 19years average shortage, 25 years of total demand - total shortage, convert from af to maf
+    UB_Demand_19Y = 100680981.43
+    LBM_Demand_19Y = 170917356
+
+    Strategy1_Run94_UB = (UB_Demand_19Y - UBAnnualShortages_ADP_s1.loc[0:24, 95].sum())/MAFtoAF
+    Strategy1_Run94_LBM = (LBM_Demand_19Y - LBMAnnualShortages_ADP_s1.loc[0:24, 95].sum())/MAFtoAF
+    Strategy2_Run94_UB = (UB_Demand_19Y - UBAnnualShortages_ADP_s2.loc[0:24, 95].sum())/MAFtoAF
+    Strategy2_Run94_LBM = (LBM_Demand_19Y - LBMAnnualShortages_ADP_s2.loc[0:24, 95].sum())/MAFtoAF
+    Strategy3_Run94_UB = (UB_Demand_19Y - UBAnnualShortages_ADP_s3.loc[0:24, 95].sum())/MAFtoAF
+    Strategy3_Run94_LBM = (LBM_Demand_19Y - LBMAnnualShortages_ADP_s3.loc[0:24, 95].sum())/MAFtoAF
+    Strategy4_Run94_UB = (UB_Demand_19Y - UBAnnualShortages_ADP_s4.loc[0:24, 95].sum())/MAFtoAF
+    Strategy4_Run94_LBM = (LBM_Demand_19Y - LBMAnnualShortages_ADP_s4.loc[0:24, 95].sum())/MAFtoAF
+    Strategy5_Run94_UB = (UB_Demand_19Y - UBAnnualShortages_ADP_s5.loc[0:24, 95].sum())/MAFtoAF
+    Strategy5_Run94_LBM = (LBM_Demand_19Y - LBMAnnualShortages_ADP_s5.loc[0:24, 95].sum())/MAFtoAF
+    Strategy6_Run94_UB = (UB_Demand_19Y - UBAnnualShortages_ADP_s6.loc[0:24, 95].sum())/MAFtoAF
+    Strategy6_Run94_LBM = (LBM_Demand_19Y - LBMAnnualShortages_ADP_s6.loc[0:24, 95].sum())/MAFtoAF
+
+    CRSS_Run94_UB = (UB_Demand_19Y - UBAnnualShortages_CRSS.loc[0:24, 95].sum())/MAFtoAF
+    CRSS_Run94_LBM = (LBM_Demand_19Y - LBMAnnualShortages_CRSS.loc[0:24, 95].sum())/MAFtoAF
+    Ideal_Run94_UB = UB_Demand_19Y/MAFtoAF
+    Ideal_Run94_LBM = LBM_Demand_19Y/MAFtoAF
+
+    # create excel
+    f = xlwt.Workbook(encoding='utf-8')
+    decimal_style = xlwt.XFStyle()
+    decimal_style.num_format_str = '0.0'
+
+    # =====sheet 1=====
+    sheet1 = f.add_sheet(u'PowellElevation', cell_overwrite_ok=True)  # create sheet
+    [period, inflows] = PowellElevation_CRSS.shape  # h is row，l is column
+
+    sheet1.write(0, 2, "CRSS_RUN47")
+    sheet1.write(0, 3, "ADP_RUN47")
+    sheet1.write(0, 4, "CRSS_RUN94")
+    sheet1.write(0, 5, "ADP_RUN94")
+    sheet1.write(0, 6, "Min Power Pool")
+
+    # begining time
+    begtime = datetime.datetime(2020, 1, 1)
+    time = begtime
+    for t in range(period + 12):
+        sheet1.write(t+1, 0, str(time.strftime("%m"+"/"+"%Y")))
+        sheet1.write(t+1, 1, str(time.strftime("%Y")))
+        time = time + relativedelta(months=+1)
+        sheet1.write(t+1, 6, 3490, decimal_style)
+
+    for t in range(period):
+        sheet1.write(t + 13, 2, PowellElevation_CRSS.iat[t,0], decimal_style)
+        sheet1.write(t + 13, 3, PowellElevation_ADP_s1.iat[t,0], decimal_style)
+        sheet1.write(t + 13, 4, PowellElevation_CRSS.iat[t,1], decimal_style)
+        sheet1.write(t + 13, 5, PowellElevation_ADP_s1.iat[t,1], decimal_style)
+
+    # =====sheet 2=====
+    sheet2 = f.add_sheet(u'MeadElevation', cell_overwrite_ok=True)  # create sheet
+    [period, inflows] = MeadElevation_CRSS.shape  # h is row，l is column
+
+    sheet2.write(0, 2, "CRSS_RUN47")
+    sheet2.write(0, 3, "ADP_RUN47")
+    sheet2.write(0, 4, "CRSS_RUN94")
+    sheet2.write(0, 5, "ADP_RUN94")
+    sheet2.write(0, 6, "Lowest DCP trigger")
+
+    # begining time
+    begtime = datetime.datetime(2020, 1, 1)
+    time = begtime
+    for t in range(period + 12):
+        sheet2.write(t+1, 0, str(time.strftime("%m"+"/"+"%Y")))
+        sheet2.write(t+1, 1, str(time.strftime("%Y")))
+        time = time + relativedelta(months=+1)
+        sheet2.write(t+1, 6, 1025, decimal_style)
+
+    for t in range(period):
+        sheet2.write(t + 13, 2, MeadElevation_CRSS.iat[t,0], decimal_style)
+        sheet2.write(t + 13, 3, MeadElevation_ADP_s1.iat[t,0], decimal_style)
+        sheet2.write(t + 13, 4, MeadElevation_CRSS.iat[t,1], decimal_style)
+        sheet2.write(t + 13, 5, MeadElevation_ADP_s1.iat[t,1], decimal_style)
+
+    # =====sheet 3=====
+    sheet3 = f.add_sheet(u'TotalShortage', cell_overwrite_ok=True)  # create sheet
+    [period, inflows] = UBAnnualShortages_CRSS.shape  # h is row，l is column
+    # print(UBAnnualShortages_CRSS)
+
+    sheet3.write(0, 2, "CRSS_RUN47")
+    sheet3.write(0, 3, "ADP_RUN47")
+    sheet3.write(0, 4, "CRSS_RUN94")
+    sheet3.write(0, 5, "ADP_RUN94")
+
+    # begining time
+    begtime = datetime.datetime(2020, 1, 1)
+    time = begtime
+    for t in range(period + 1):
+        sheet3.write(t+1, 0, str(time.strftime("%m"+"/"+"%Y")))
+        sheet3.write(t+1, 1, str(time.strftime("%Y")))
+        time = time + relativedelta(months=+12)
+
+    for t in range(period):
+        CRSS47 = (UBAnnualShortages_CRSS.iat[t,0] + LBMAnnualShortages_CRSS.iat[t,0])/MAFtoAF
+        ADP47 = (UBAnnualShortages_ADP_s1.iat[t,0] + LBMAnnualShortages_ADP_s1.iat[t,0])/MAFtoAF
+        CRSS94 = (UBAnnualShortages_CRSS.iat[t,1] + LBMAnnualShortages_CRSS.iat[t,1])/MAFtoAF
+        ADP94 = (UBAnnualShortages_ADP_s1.iat[t,1] + LBMAnnualShortages_ADP_s1.iat[t,1])/MAFtoAF
+
+        sheet3.write(t + 2, 2, CRSS47, decimal_style)
+        sheet3.write(t + 2, 3, ADP47, decimal_style)
+        sheet3.write(t + 2, 4, CRSS94, decimal_style)
+        sheet3.write(t + 2, 5, ADP94, decimal_style)
+
+    # =====sheet 4=====
+    sheet4 = f.add_sheet(u'Tradeoffs', cell_overwrite_ok=True)  # create sheet
+
+    sheet4.write(0, 1, "UB_47")
+    sheet4.write(0, 2, "LBM_47")
+    sheet4.write(0, 3, "UB_94")
+    sheet4.write(0, 4, "LBM_94")
+
+    sheet4.write(1, 0, "ADP_Strtegy1")
+    sheet4.write(2, 0, "ADP_Strtegy2")
+    sheet4.write(3, 0, "ADP_Strtegy3")
+    sheet4.write(4, 0, "ADP_Strtegy4")
+    sheet4.write(5, 0, "ADP_Strtegy5")
+    sheet4.write(6, 0, "ADP_Strtegy6")
+    sheet4.write(7, 0, "CRSS")
+    sheet4.write(8, 0, "IDEAL")
+
+    sheet4.write(1, 1, Strategy1_Run47_UB, decimal_style)
+    sheet4.write(1, 2, Strategy1_Run47_LBM, decimal_style)
+    sheet4.write(2, 1, Strategy2_Run47_UB, decimal_style)
+    sheet4.write(2, 2, Strategy2_Run47_LBM, decimal_style)
+    sheet4.write(3, 1, Strategy3_Run47_UB, decimal_style)
+    sheet4.write(3, 2, Strategy3_Run47_LBM, decimal_style)
+    sheet4.write(4, 1, Strategy4_Run47_UB, decimal_style)
+    sheet4.write(4, 2, Strategy4_Run47_LBM, decimal_style)
+    sheet4.write(5, 1, Strategy5_Run47_UB, decimal_style)
+    sheet4.write(5, 2, Strategy5_Run47_LBM, decimal_style)
+    sheet4.write(6, 1, Strategy6_Run47_UB, decimal_style)
+    sheet4.write(6, 2, Strategy6_Run47_LBM, decimal_style)
+    sheet4.write(7, 1, CRSS_Run47_UB, decimal_style)
+    sheet4.write(7, 2, CRSS_Run47_LBM, decimal_style)
+    sheet4.write(8, 1, Ideal_Run47_UB, decimal_style)
+    sheet4.write(8, 2, Ideal_Run47_LBM, decimal_style)
+
+    sheet4.write(1, 3, Strategy1_Run94_UB, decimal_style)
+    sheet4.write(1, 4, Strategy1_Run94_LBM, decimal_style)
+    sheet4.write(2, 3, Strategy2_Run94_UB, decimal_style)
+    sheet4.write(2, 4, Strategy2_Run94_LBM, decimal_style)
+    sheet4.write(3, 3, Strategy3_Run94_UB, decimal_style)
+    sheet4.write(3, 4, Strategy3_Run94_LBM, decimal_style)
+    sheet4.write(4, 3, Strategy4_Run94_UB, decimal_style)
+    sheet4.write(4, 4, Strategy4_Run94_LBM, decimal_style)
+    sheet4.write(5, 3, Strategy5_Run94_UB, decimal_style)
+    sheet4.write(5, 4, Strategy5_Run94_LBM, decimal_style)
+    sheet4.write(6, 3, Strategy6_Run94_UB, decimal_style)
+    sheet4.write(6, 4, Strategy6_Run94_LBM, decimal_style)
+    sheet4.write(7, 3, CRSS_Run94_UB, decimal_style)
+    sheet4.write(7, 4, CRSS_Run94_LBM, decimal_style)
+    sheet4.write(8, 3, Ideal_Run94_UB, decimal_style)
+    sheet4.write(8, 4, Ideal_Run94_LBM, decimal_style)
+
+    f.save(filePathComparison)
+
+
+
+def extractSensitivityInforamtion(filePath, filePath_ADP, filePath_DCP, filePath_DCP_04, filePath_DCP_08, filePath_DCP_12):
+    filePath_Paleo = "../tools/results/PaleoInput.xls"
+
+    f = xlwt.Workbook(encoding='utf-8')
+    decimal_style = xlwt.XFStyle()
+    decimal_style.num_format_str = '0.0'
+
+    # =====sheet 1=====
+    # ADP_YearsTo12MAF = pd.read_excel(filePath_ADP, sheet_name='YearsTo12MAF', header=None, skiprows=1)
+    DCP_YearsTo12MAF = pd.read_excel(filePath_DCP, sheet_name='YearsTo12MAF', header=None)
+    # print(DCP_YearsTo12MAF)
+
+    sheet1 = f.add_sheet(u'DCP', cell_overwrite_ok=True)  # create sheet
+    [items, inflows] = DCP_YearsTo12MAF.shape  # h is row，l is column
+    sheet1.write(0, 0, "inflow")
+    sheet1.write(0, 1, "yearsto12maf")
+
+    for i in range(inflows):
+        # convert to float 64, otherwise will have export problem.
+        DCP_YearsTo12MAF[i] = DCP_YearsTo12MAF[i].astype(float)
+        sheet1.write(i+1, 0, DCP_YearsTo12MAF[i][0], decimal_style)
+        sheet1.write(i+1, 1, DCP_YearsTo12MAF[i][1], decimal_style)
+
+    # =====sheet 2=====
+    DCP12_YearsTo12MAF = pd.read_excel(filePath_DCP_12, sheet_name='YearsTo12MAF', header=None)
+    # print(DCP12_YearsTo12MAF)
+
+    sheet2 = f.add_sheet(u'DCPplus12', cell_overwrite_ok=True)  # create sheet
+    [items, inflows] = DCP12_YearsTo12MAF.shape  # h is row，l is column
+    sheet2.write(0, 0, "inflow")
+    sheet2.write(0, 1, "yearsto12maf")
+
+    for i in range(inflows):
+        # convert to float 64, otherwise will have export problem.
+        DCP12_YearsTo12MAF[i] = DCP12_YearsTo12MAF[i].astype(float)
+        sheet2.write(i+1, 0, DCP12_YearsTo12MAF[i][0], decimal_style)
+        sheet2.write(i+1, 1, DCP12_YearsTo12MAF[i][1], decimal_style)
+
+    # =====sheet 3=====
+    DCP8_YearsTo12MAF = pd.read_excel(filePath_DCP_08, sheet_name='YearsTo12MAF', header=None)
+
+    sheet3 = f.add_sheet(u'DCPplus8', cell_overwrite_ok=True)  # create sheet
+    [items, inflows] = DCP8_YearsTo12MAF.shape  # h is row，l is column
+    sheet3.write(0, 0, "inflow")
+    sheet3.write(0, 1, "yearsto12maf")
+
+    for i in range(inflows):
+        # convert to float 64, otherwise will have export problem.
+        DCP8_YearsTo12MAF[i] = DCP8_YearsTo12MAF[i].astype(float)
+        sheet3.write(i+1, 0, DCP8_YearsTo12MAF[i][0], decimal_style)
+        sheet3.write(i+1, 1, DCP8_YearsTo12MAF[i][1], decimal_style)
+
+    # =====sheet 4=====
+    DCP4_YearsTo12MAF = pd.read_excel(filePath_DCP_04, sheet_name='YearsTo12MAF', header=None)
+
+    sheet4 = f.add_sheet(u'DCPplus4', cell_overwrite_ok=True)  # create sheet
+    [items, inflows] = DCP4_YearsTo12MAF.shape  # h is row，l is column
+    sheet4.write(0, 0, "inflow")
+    sheet4.write(0, 1, "yearsto12maf")
+
+    for i in range(inflows):
+        # convert to float 64, otherwise will have export problem.
+        DCP4_YearsTo12MAF[i] = DCP4_YearsTo12MAF[i].astype(float)
+        sheet4.write(i+1, 0, DCP4_YearsTo12MAF[i][0], decimal_style)
+        sheet4.write(i+1, 1, DCP4_YearsTo12MAF[i][1], decimal_style)
+
+    # =====sheet 5=====
+    ADP_YearsTo12MAF = pd.read_excel(filePath_ADP, sheet_name='YearsTo12MAF', header=None)
+
+    # ADP needs special post processing, Nan means won't drop down to 12 maf forever
+    # We set it as 30 years in values, which will labeled as ">40 years"
+    sheet5 = f.add_sheet(u'ADP', cell_overwrite_ok=True)  # create sheet
+    [items, inflows] = ADP_YearsTo12MAF.shape  # h is row，l is column
+    [items, inflows_DCP] = DCP_YearsTo12MAF.shape  # h is row，l is column
+    sheet5.write(0, 0, "inflow")
+    sheet5.write(0, 1, "yearsto12maf")
+
+    # ADP
+    for i in range(inflows):
+        # convert to float 64, otherwise will have export problem.
+        ADP_YearsTo12MAF[i] = ADP_YearsTo12MAF[i].astype(float)
+        sheet5.write(i+1, 0, ADP_YearsTo12MAF[i][0], decimal_style)
+        sheet5.write(i+1, 1, ADP_YearsTo12MAF[i][1], decimal_style)
+
+    # fill the NAN
+    for i in range(inflows, inflows_DCP):
+        # convert to float 64, otherwise will have export problem.
+        DCP_YearsTo12MAF[i] = DCP_YearsTo12MAF[i].astype(float)
+        sheet5.write(i+1, 0, DCP_YearsTo12MAF[i][0], decimal_style)
+        sheet5.write(i+1, 1, 30.0, decimal_style)
+
+    # =====sheet 6=====
+    Paleo = pd.read_excel(filePath_Paleo, sheet_name='Paleo', header=None)
+
+    sheet6 = f.add_sheet(u'Paleo', cell_overwrite_ok=True)  # create sheet
+    [items, inflows] = Paleo.shape  # h is row，l is column
+    sheet6.write(0, 0, "min inflow")
+    sheet6.write(0, 1, "years")
+
+    for i in range(inflows):
+        # convert to float 64, otherwise will have export problem.
+        Paleo[i] = Paleo[i].astype(float)
+        sheet6.write(i+1, 0, Paleo[i][0], decimal_style)
+        sheet6.write(i+1, 1, Paleo[i][1], decimal_style)
+
+    # =====sheet 7=====
+    cols = [6, 21, 36]
+    Depletion_DCP = pd.read_excel(filePath_DCP, sheet_name='totaldelivery_annual', header=None, skiprows=1, usecols=cols)
+    Depletion_ADP = pd.read_excel(filePath_ADP, sheet_name='totaldelivery_annual', header=None, skiprows=1, usecols=cols)
+    Depletion_DCP12 = pd.read_excel(filePath_DCP_12, sheet_name='totaldelivery_annual', header=None, skiprows=1, usecols=cols)
+
+    # print(Depletion_DCP)
+    # print(Paleo)
+    # print(Depletion_DCP.shape)
+
+    sheet7 = f.add_sheet(u'Depletion', cell_overwrite_ok=True)  # create sheet
+    sheet7.write(0, 2, "DCP")
+    sheet7.write(0, 5, "ADP")
+    sheet7.write(0, 8, "DCP+1.2")
+    sheet7.write(1, 1, 6)
+    sheet7.write(1, 2, 9)
+    sheet7.write(1, 3, 12)
+    sheet7.write(1, 4, 6)
+    sheet7.write(1, 5, 9)
+    sheet7.write(1, 6, 12)
+    sheet7.write(1, 7, 6)
+    sheet7.write(1, 8, 9)
+    sheet7.write(1, 9, 12)
+
+    [years, inflows] = Depletion_DCP.shape  # h is row，l is column
+    # print(years)
+
+    for t in range(years):
+        sheet7.write(t+2, 0, t+2021)
+
+    for i in cols:
+        # convert to float 64, otherwise will have export problem.
+        Depletion_DCP[i] = Depletion_DCP[i].astype(float)
+        Depletion_ADP[i] = Depletion_ADP[i].astype(float)
+        Depletion_DCP12[i] = Depletion_DCP12[i].astype(float)
+
+        # print(Depletion_DCP[i])
+
+    for t in range(years):
+        sheet7.write(t+2, 1, Depletion_DCP[cols[0]][t], decimal_style)
+        sheet7.write(t+2, 2, Depletion_DCP[cols[1]][t], decimal_style)
+        sheet7.write(t+2, 3, Depletion_DCP[cols[2]][t], decimal_style)
+
+        sheet7.write(t+2, 4, Depletion_ADP[cols[0]][t], decimal_style)
+        sheet7.write(t+2, 5, Depletion_ADP[cols[1]][t], decimal_style)
+        sheet7.write(t+2, 6, Depletion_ADP[cols[2]][t], decimal_style)
+
+        sheet7.write(t+2, 7, Depletion_DCP12[cols[0]][t], decimal_style)
+        sheet7.write(t+2, 8, Depletion_DCP12[cols[1]][t], decimal_style)
+        sheet7.write(t+2, 9, Depletion_DCP12[cols[2]][t], decimal_style)
+
+    # =====sheet 8=====
+    cols = [6, 21, 36]
+    MaxTemp_DCP = pd.read_excel(filePath_DCP, sheet_name='SummerReleaseTemperatureMAX', header=None, skiprows=1, usecols=cols)
+    MaxTemp_ADP = pd.read_excel(filePath_ADP, sheet_name='SummerReleaseTemperatureMAX', header=None, skiprows=1, usecols=cols)
+    MaxTemp_DCP12 = pd.read_excel(filePath_DCP_12, sheet_name='SummerReleaseTemperatureMAX', header=None, skiprows=1, usecols=cols)
+
+    sheet8 = f.add_sheet(u'MaxTemp', cell_overwrite_ok=True)  # create sheet
+    sheet8.write(0, 2, "DCP")
+    sheet8.write(0, 5, "ADP")
+    sheet8.write(0, 8, "DCP+1.2")
+    sheet8.write(1, 1, 6)
+    sheet8.write(1, 2, 9)
+    sheet8.write(1, 3, 12)
+    sheet8.write(1, 4, 6)
+    sheet8.write(1, 5, 9)
+    sheet8.write(1, 6, 12)
+    sheet8.write(1, 7, 6)
+    sheet8.write(1, 8, 9)
+    sheet8.write(1, 9, 12)
+
+    [years, inflows] = MaxTemp_DCP.shape  # h is row，l is column
+    # print(years)
+
+    for t in range(years):
+        sheet8.write(t+2, 0, t+2021)
+
+    for i in cols:
+        # convert to float 64, otherwise will have export problem.
+        MaxTemp_DCP[i] = MaxTemp_DCP[i].astype(float)
+        MaxTemp_ADP[i] = MaxTemp_ADP[i].astype(float)
+        MaxTemp_DCP12[i] = MaxTemp_DCP12[i].astype(float)
+
+        # print(Depletion_DCP[i])
+
+    for t in range(years):
+        sheet8.write(t+2, 1, MaxTemp_DCP[cols[0]][t], decimal_style)
+        sheet8.write(t+2, 2, MaxTemp_DCP[cols[1]][t], decimal_style)
+        sheet8.write(t+2, 3, MaxTemp_DCP[cols[2]][t], decimal_style)
+
+        sheet8.write(t+2, 4, MaxTemp_ADP[cols[0]][t], decimal_style)
+        sheet8.write(t+2, 5, MaxTemp_ADP[cols[1]][t], decimal_style)
+        sheet8.write(t+2, 6, MaxTemp_ADP[cols[2]][t], decimal_style)
+
+        sheet8.write(t+2, 7, MaxTemp_DCP12[cols[0]][t], decimal_style)
+        sheet8.write(t+2, 8, MaxTemp_DCP12[cols[1]][t], decimal_style)
+        sheet8.write(t+2, 9, MaxTemp_DCP12[cols[2]][t], decimal_style)
+
+    # =====sheet 9=====
+    cols = [6, 21, 36]
+    MinTemp_DCP = pd.read_excel(filePath_DCP, sheet_name='SummerReleaseTemperatureMIN', header=None, skiprows=1, usecols=cols)
+    MinTemp_ADP = pd.read_excel(filePath_ADP, sheet_name='SummerReleaseTemperatureMIN', header=None, skiprows=1, usecols=cols)
+    MinTemp_DCP12 = pd.read_excel(filePath_DCP_12, sheet_name='SummerReleaseTemperatureMIN', header=None, skiprows=1, usecols=cols)
+
+    sheet9 = f.add_sheet(u'MinTemp', cell_overwrite_ok=True)  # create sheet
+    sheet9.write(0, 2, "DCP")
+    sheet9.write(0, 5, "ADP")
+    sheet9.write(0, 8, "DCP+1.2")
+    sheet9.write(1, 1, 6)
+    sheet9.write(1, 2, 9)
+    sheet9.write(1, 3, 12)
+    sheet9.write(1, 4, 6)
+    sheet9.write(1, 5, 9)
+    sheet9.write(1, 6, 12)
+    sheet9.write(1, 7, 6)
+    sheet9.write(1, 8, 9)
+    sheet9.write(1, 9, 12)
+
+    [years, inflows] = MaxTemp_DCP.shape  # h is row，l is column
+    # print(years)
+
+    for t in range(years):
+        sheet9.write(t+2, 0, t+2021)
+
+    for i in cols:
+        # convert to float 64, otherwise will have export problem.
+        MinTemp_DCP[i] = MinTemp_DCP[i].astype(float)
+        MinTemp_ADP[i] = MinTemp_ADP[i].astype(float)
+        MinTemp_DCP12[i] = MinTemp_DCP12[i].astype(float)
+
+        # print(Depletion_DCP[i])
+
+    for t in range(years):
+        sheet9.write(t+2, 1, MinTemp_DCP[cols[0]][t], decimal_style)
+        sheet9.write(t+2, 2, MinTemp_DCP[cols[1]][t], decimal_style)
+        sheet9.write(t+2, 3, MinTemp_DCP[cols[2]][t], decimal_style)
+
+        sheet9.write(t+2, 4, MinTemp_ADP[cols[0]][t], decimal_style)
+        sheet9.write(t+2, 5, MinTemp_ADP[cols[1]][t], decimal_style)
+        sheet9.write(t+2, 6, MinTemp_ADP[cols[2]][t], decimal_style)
+
+        sheet9.write(t+2, 7, MinTemp_DCP12[cols[0]][t], decimal_style)
+        sheet9.write(t+2, 8, MinTemp_DCP12[cols[1]][t], decimal_style)
+        sheet9.write(t+2, 9, MinTemp_DCP12[cols[2]][t], decimal_style)
+
+    # =====sheet 10=====
+    cols = [6, 21, 36]
+    SteadyStateDelivery_DCP = pd.read_excel(filePath_DCP, sheet_name='totaldelivery_annual', header=None, skiprows=40, usecols=cols)
+    SteadyStateDelivery_ADP = pd.read_excel(filePath_ADP, sheet_name='totaldelivery_annual', header=None, skiprows=40, usecols=cols)
+    SteadyStateDelivery_DCP12 = pd.read_excel(filePath_DCP_12, sheet_name='totaldelivery_annual', header=None, skiprows=40, usecols=cols)
+    SteadyStateDelivery_DCP08 = pd.read_excel(filePath_DCP_08, sheet_name='totaldelivery_annual', header=None, skiprows=40, usecols=cols)
+    SteadyStateDelivery_DCP04 = pd.read_excel(filePath_DCP_04, sheet_name='totaldelivery_annual', header=None, skiprows=40, usecols=cols)
+
+    EOPHStorage_DCP = pd.read_excel(filePath_DCP, sheet_name='combinedStorage', header=None, skiprows=480, usecols=cols)
+    EOPHStorage__ADP = pd.read_excel(filePath_ADP, sheet_name='combinedStorage', header=None, skiprows=480, usecols=cols)
+    EOPHStorage__DCP12 = pd.read_excel(filePath_DCP_12, sheet_name='combinedStorage', header=None, skiprows=480, usecols=cols)
+    EOPHStorage__DCP08 = pd.read_excel(filePath_DCP_08, sheet_name='combinedStorage', header=None, skiprows=480, usecols=cols)
+    EOPHStorage__DCP04 = pd.read_excel(filePath_DCP_04, sheet_name='combinedStorage', header=None, skiprows=480, usecols=cols)
+
+    colHead = ['EOPH storage','steady state delivery (6 inflow)','EOPH storage',
+               'steady state delivery (9 inflow)','EOPH storage','steady state delivery (12 inflow)']
+
+    rowHead = ['DCP','ADP','DCP+1.2','DCP+0.8','DCP+0.4']
+
+    sheet10 = f.add_sheet(u'DepletionStorage', cell_overwrite_ok=True)  # create sheet
+
+    for j in range(len(colHead)):
+        sheet10.write(0, j+1, colHead[j])
+
+    for i in range(len(rowHead)):
+        sheet10.write(i+1, 0, rowHead[i])
+
+    # for i in range()
+    [EOPH, inflows] = EOPHStorage_DCP.shape  # h is row，l is column
+
+    for i in cols:
+        # convert to float 64, otherwise will have export problem.
+        SteadyStateDelivery_DCP[i] = SteadyStateDelivery_DCP[i].astype(float)
+        SteadyStateDelivery_ADP[i] = SteadyStateDelivery_ADP[i].astype(float)
+        SteadyStateDelivery_DCP12[i] = SteadyStateDelivery_DCP12[i].astype(float)
+        SteadyStateDelivery_DCP08[i] = SteadyStateDelivery_DCP08[i].astype(float)
+        SteadyStateDelivery_DCP04[i] = SteadyStateDelivery_DCP04[i].astype(float)
+
+        EOPHStorage_DCP[i] = EOPHStorage_DCP[i].astype(float)
+        EOPHStorage__ADP[i] = EOPHStorage__ADP[i].astype(float)
+        EOPHStorage__DCP12[i] = EOPHStorage__DCP12[i].astype(float)
+        EOPHStorage__DCP08[i] = EOPHStorage__DCP08[i].astype(float)
+        EOPHStorage__DCP04[i] = EOPHStorage__DCP04[i].astype(float)
+
+    MAFTOAF = 1000000
+    sheet10.write(1, 1, EOPHStorage_DCP[cols[0]][0]/MAFTOAF, decimal_style)
+    sheet10.write(1, 3, EOPHStorage_DCP[cols[1]][0]/MAFTOAF, decimal_style)
+    sheet10.write(1, 5, EOPHStorage_DCP[cols[2]][0]/MAFTOAF, decimal_style)
+    sheet10.write(1, 2, SteadyStateDelivery_DCP[cols[0]][0], decimal_style)
+    sheet10.write(1, 4, SteadyStateDelivery_DCP[cols[1]][0], decimal_style)
+    sheet10.write(1, 6, SteadyStateDelivery_DCP[cols[2]][0], decimal_style)
+
+    sheet10.write(2, 1, EOPHStorage__ADP[cols[0]][0]/MAFTOAF, decimal_style)
+    sheet10.write(2, 3, EOPHStorage__ADP[cols[1]][0]/MAFTOAF, decimal_style)
+    sheet10.write(2, 5, EOPHStorage__ADP[cols[2]][0]/MAFTOAF, decimal_style)
+    sheet10.write(2, 2, SteadyStateDelivery_ADP[cols[0]][0], decimal_style)
+    sheet10.write(2, 4, SteadyStateDelivery_ADP[cols[1]][0], decimal_style)
+    sheet10.write(2, 6, SteadyStateDelivery_ADP[cols[2]][0], decimal_style)
+
+    sheet10.write(3, 1, EOPHStorage__DCP12[cols[0]][0]/MAFTOAF, decimal_style)
+    sheet10.write(3, 3, EOPHStorage__DCP12[cols[1]][0]/MAFTOAF, decimal_style)
+    sheet10.write(3, 5, EOPHStorage__DCP12[cols[2]][0]/MAFTOAF, decimal_style)
+    sheet10.write(3, 2, SteadyStateDelivery_DCP12[cols[0]][0], decimal_style)
+    sheet10.write(3, 4, SteadyStateDelivery_DCP12[cols[1]][0], decimal_style)
+    sheet10.write(3, 6, SteadyStateDelivery_DCP12[cols[2]][0], decimal_style)
+
+    sheet10.write(4, 1, EOPHStorage__DCP08[cols[0]][0]/MAFTOAF, decimal_style)
+    sheet10.write(4, 3, EOPHStorage__DCP08[cols[1]][0]/MAFTOAF, decimal_style)
+    sheet10.write(4, 5, EOPHStorage__DCP08[cols[2]][0]/MAFTOAF, decimal_style)
+    sheet10.write(4, 2, SteadyStateDelivery_DCP08[cols[0]][0], decimal_style)
+    sheet10.write(4, 4, SteadyStateDelivery_DCP08[cols[1]][0], decimal_style)
+    sheet10.write(4, 6, SteadyStateDelivery_DCP08[cols[2]][0], decimal_style)
+
+    sheet10.write(5, 1, EOPHStorage__DCP04[cols[0]][0]/MAFTOAF, decimal_style)
+    sheet10.write(5, 3, EOPHStorage__DCP04[cols[1]][0]/MAFTOAF, decimal_style)
+    sheet10.write(5, 5, EOPHStorage__DCP04[cols[2]][0]/MAFTOAF, decimal_style)
+    sheet10.write(5, 2, SteadyStateDelivery_DCP04[cols[0]][0], decimal_style)
+    sheet10.write(5, 4, SteadyStateDelivery_DCP04[cols[1]][0], decimal_style)
+    sheet10.write(5, 6, SteadyStateDelivery_DCP04[cols[2]][0], decimal_style)
+
+    f.save(filePath)
+
 # read sensitivity results
-def readSAResultsAndPlot():
-    filePath = "../tools/results/SensitivityAnalysisTo12maf_5.35.xls"
+def readSAResultsAndPlot(filePath):
+    # filePath = "../tools/results/SensitivityAnalysisTo12maf_5.35.xls"
     # filePath = "../tools/results/SensitivityAnalysisTo12maf_4.5.xls"
 
     DCP = pd.read_excel(filePath, sheet_name='DCP', header=None, skiprows=1)
@@ -299,6 +851,28 @@ def readSimulationResultsAndPlot():
     MeadElevations94 = pd.read_excel(filePath, sheet_name='RUN94', header=None, usecols=[1,4,5,7], skiprows=3, nrows=243)
     TotalShortages94 = pd.read_excel(filePath, sheet_name='RUN94', header=None, usecols=[18,25,26], skiprows=3, nrows=20)
     DepletionTradeOff94 = pd.read_excel(filePath, sheet_name='Trade-offs-94', header=None, usecols=[23,24], skiprows=3, nrows=8)
+
+    # print(df1.T)
+    # print(df2.T)
+    # print(df1.iat[0, 1])
+
+    plots.ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, DepletionTradeOff47,
+                             PowellElevations94, MeadElevations94, TotalShortages94, DepletionTradeOff94)
+
+def readSimulationResultsAndPlotNew():
+    filePath = "../results/Comparison.xls"
+
+    # Run 47 (Mid-20th century drought)
+    PowellElevations47 = pd.read_excel(filePath, sheet_name='PowellElevation', header=None, usecols=[1,2,3,6], skiprows=1, nrows=312)
+    MeadElevations47 = pd.read_excel(filePath, sheet_name='MeadElevation', header=None, usecols=[1,2,3,6], skiprows=1, nrows=312)
+    TotalShortages47 = pd.read_excel(filePath, sheet_name='TotalShortage', header=None, usecols=[1,2,3], skiprows=1, nrows=26)
+    DepletionTradeOff47 = pd.read_excel(filePath, sheet_name='Tradeoffs', header=None, usecols=[1,2], skiprows=1, nrows=8)
+
+    # Run 94 (Millinium drought)
+    PowellElevations94 = pd.read_excel(filePath, sheet_name='PowellElevation', header=None, usecols=[1,4,5,6], skiprows=1, nrows=243)
+    MeadElevations94 = pd.read_excel(filePath, sheet_name='MeadElevation', header=None, usecols=[1,4,5,6], skiprows=1, nrows=243)
+    TotalShortages94 = pd.read_excel(filePath, sheet_name='TotalShortage', header=None, usecols=[1,4,5], skiprows=1, nrows=20)
+    DepletionTradeOff94 = pd.read_excel(filePath, sheet_name='Tradeoffs', header=None, usecols=[3,4], skiprows=1, nrows=8)
 
     # print(df1.T)
     # print(df2.T)
@@ -1218,6 +1792,8 @@ def exportMSAresults2(path, inflowRange1, YearsTo12maf, TotalDelivery,
     f = xlwt.Workbook(encoding='utf-8')
     decimal_style = xlwt.XFStyle()
     decimal_style.num_format_str = '0'
+    decimal_style1 = xlwt.XFStyle()
+    decimal_style1.num_format_str = '0.0'
 
     sheet1 = f.add_sheet(u'totaldelivery', cell_overwrite_ok=True)  # create sheet
     [inflowTraces, Periods] = TotalDelivery.shape  # h is row，l is column
@@ -1226,14 +1802,33 @@ def exportMSAresults2(path, inflowRange1, YearsTo12maf, TotalDelivery,
         sheet1.write(t+1, 0, str(time.strftime("%m"+"/"+"%Y")))
         time = time + relativedelta(months=+1)
         for i in range(inflowTraces):
-            sheet1.write(0, i+1, round(inflowRange1[i],2))
+            sheet1.write(0, i+1, round(inflowRange1[i],1), decimal_style1)
             sheet1.write(t+1, i+1, TotalDelivery[i][t], decimal_style)
+
+    sheet11 = f.add_sheet(u'totaldelivery_annual', cell_overwrite_ok=True)  # create sheet
+    [inflowTraces, Periods] = TotalDelivery.shape  # h is row，l is column
+    TotalDelivery_annual = np.zeros([inflowTraces, int(Periods/12)])
+    for i in range(inflowTraces):
+        for t in range(int(Periods/12)):
+            # in maf
+            TotalDelivery_annual[i][t] = sum(TotalDelivery[i][t*12:t*12+12])/1000000
+
+    time = begtime
+    for t in range(int(Periods/12)):
+        sheet11.write(t+1, 0, str(time.strftime("%m"+"/"+"%Y")))
+        time = time + relativedelta(months=+12)
+        for i in range(inflowTraces):
+            sheet11.write(0, i+1, round(inflowRange1[i],1), decimal_style1)
+            sheet11.write(t+1, i+1, TotalDelivery_annual[i][t], decimal_style1)
 
     sheet2 = f.add_sheet(u'YearsTo12MAF', cell_overwrite_ok=True)  # create sheet
     [inflowTraces] = YearsTo12maf.shape
     for i in range(inflowTraces):
-        sheet2.write(0, i+1, round(inflowRange1[i],2))
-        sheet2.write(1, i+1, YearsTo12maf[i], decimal_style)
+        if math.isnan(YearsTo12maf[i]):
+            continue
+        else:
+            sheet2.write(0, i, round(inflowRange1[i],1), decimal_style1)
+            sheet2.write(1, i, YearsTo12maf[i], decimal_style1)
 
     sheet3 = f.add_sheet(u'combinedStorage', cell_overwrite_ok=True)  # create sheet
     [inflowTraces, Periods] = CombinedStorage.shape  # h is row，l is column
@@ -1242,8 +1837,9 @@ def exportMSAresults2(path, inflowRange1, YearsTo12maf, TotalDelivery,
         sheet3.write(t+1, 0, str(time.strftime("%m"+"/"+"%Y")))
         time = time + relativedelta(months=+1)
         for i in range(inflowTraces):
-            sheet3.write(0, i+1, round(inflowRange1[i],2))
+            sheet3.write(0, i+1, round(inflowRange1[i],1), decimal_style1)
             sheet3.write(t+1, i+1, CombinedStorage[i][t], decimal_style)
+
 
     sheet4 = f.add_sheet(u'SummerReleaseTemperatureMAX', cell_overwrite_ok=True)  # create sheet
     [inflowTraces, Periods] = PowellReleaseTempMAX.shape  # h is row，l is column
@@ -1262,7 +1858,7 @@ def exportMSAresults2(path, inflowRange1, YearsTo12maf, TotalDelivery,
         sheet4.write(t+1, 0, str(time.strftime("%m"+"/"+"%Y")))
         time = time + relativedelta(months=+12)
         for i in range(inflowTraces):
-            sheet4.write(0, i+1, round(inflowRange1[i],2))
+            sheet4.write(0, i+1, round(inflowRange1[i],1), decimal_style1)
             sheet4.write(t+1, i+1, summerTempMAX[i][t], decimal_style)
 
     sheet5 = f.add_sheet(u'SummerReleaseTemperatureMIN', cell_overwrite_ok=True)  # create sheet
@@ -1282,7 +1878,7 @@ def exportMSAresults2(path, inflowRange1, YearsTo12maf, TotalDelivery,
         sheet5.write(t+1, 0, str(time.strftime("%m"+"/"+"%Y")))
         time = time + relativedelta(months=+12)
         for i in range(inflowTraces):
-            sheet5.write(0, i+1, round(inflowRange1[i],2))
+            sheet5.write(0, i+1, round(inflowRange1[i],1), decimal_style1)
             sheet5.write(t+1, i+1, summerTempMIN[i][t], decimal_style)
 
     f.save(path)

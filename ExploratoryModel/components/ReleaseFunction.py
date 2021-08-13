@@ -6,6 +6,9 @@ import math
 
 # Release function defined in here. Go to here to add new release function.
 
+# index of strategies to allocate total cutback to individual ones
+strategyIndex = 1
+
 # this function is invoked in Lake Powell. It will calculate UB and LB&Mexico contributions
 def calculateContributions(Powell, k, i, t):
     # Step 1: know the inflow to the system
@@ -111,7 +114,7 @@ def calculateContributions(Powell, k, i, t):
                 gap = 1.5 * Powell.MAFtoAF
 
             # index of strategies to allocate total cutback to individual ones
-            strategyIndex = 6
+            # strategyIndex = 6
 
             if strategyIndex == 1:
                 # Strategy 1. Allocate UB and LBM contributions proportionally

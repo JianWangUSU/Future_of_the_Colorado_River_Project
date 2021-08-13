@@ -1,6 +1,8 @@
 from components import Network, Reservoir, User, River, LakePowell, LakeMead
 from tools import DataExchange, plots
 import components.PolicyControl as plc
+import components.ReleaseFunction as rf
+
 import pandas as pd
 from tools import ReleaseTemperature, SensitivityAnalysis
 import datetime
@@ -164,8 +166,8 @@ DataExchange.readCRSSubShortage(Powell, filePath + fileName)
 profile_path = "../data/depth_temperature.csv"
 DataExchange.readDepthProfileForTemp(profile_path)
 
-### 4. run sensitivity analysis
-if False:
+### 3. run sensitivity analysis
+if True:
     filePath = "../tools/results/SensitivityAnalysis.xls"
 
     starttime = datetime.datetime.now()
@@ -174,50 +176,205 @@ if False:
     # SensitivityAnalysis.SA_EmptyAndFull(Mead, filePath)
     # SensitivityAnalysis.SA_YearsTo1025_DCP(Mead, filePath)
     # SensitivityAnalysis.SA_YearsTo3525(Powell, filePath)
+    # SensitivityAnalysis.SA_EmptyAndFullPowellMead(Powell, Mead, filePath)
 
     # 2 dimensional plot for Lake Powell and Lake Mead, require higher resolution, small steps values
     ### Lake Powell inflow and Lake Mead release
-    # SensitivityAnalysis.SA_EmptyAndFullPowellMead(Powell, Mead, filePath)
-    SensitivityAnalysis.SensitivityAnalysisPowellMead_12MAF_Delivery(Powell, Mead, filePath)
+    filePath1 = "../tools/results/5.35 UB demand/SensitivityAnalysis-ADP.xls"
+    filePath2 = "../tools/results/5.35 UB demand/SensitivityAnalysis-DCP.xls"
+    filePath3 = "../tools/results/5.35 UB demand/SensitivityAnalysis-DCP-0.4.xls"
+    filePath4 = "../tools/results/5.35 UB demand/SensitivityAnalysis-DCP-0.8.xls"
+    filePath5 = "../tools/results/5.35 UB demand/SensitivityAnalysis-DCP-1.2.xls"
+    filePath6 = "../tools/results/4.5 UB demand/SensitivityAnalysis-ADP.xls"
+    filePath7 = "../tools/results/4.5 UB demand/SensitivityAnalysis-DCP.xls"
+    filePath8 = "../tools/results/4.5 UB demand/SensitivityAnalysis-DCP-0.4.xls"
+    filePath9 = "../tools/results/4.5 UB demand/SensitivityAnalysis-DCP-0.8.xls"
+    filePath10 = "../tools/results/4.5 UB demand/SensitivityAnalysis-DCP-1.2.xls"
+    MAFtoAF = 1000000
+
+    # Sensitivity analysis
+    SensitivityAnalysis.SensitivityAnalysisPowellMead_12MAF_Delivery(Powell, Mead, filePath1, 2, 0, 5.35 * MAFtoAF)
+    SensitivityAnalysis.SensitivityAnalysisPowellMead_12MAF_Delivery(Powell, Mead, filePath2, 0, 0, 5.35 * MAFtoAF)
+    SensitivityAnalysis.SensitivityAnalysisPowellMead_12MAF_Delivery(Powell, Mead, filePath3, 1, 0.4, 5.35 * MAFtoAF)
+    SensitivityAnalysis.SensitivityAnalysisPowellMead_12MAF_Delivery(Powell, Mead, filePath4, 1, 0.8, 5.35 * MAFtoAF)
+    SensitivityAnalysis.SensitivityAnalysisPowellMead_12MAF_Delivery(Powell, Mead, filePath5, 1, 1.2, 5.35 * MAFtoAF)
+    SensitivityAnalysis.SensitivityAnalysisPowellMead_12MAF_Delivery(Powell, Mead, filePath6, 2, 0, 4.5 * MAFtoAF)
+    SensitivityAnalysis.SensitivityAnalysisPowellMead_12MAF_Delivery(Powell, Mead, filePath7, 0, 0, 4.5 * MAFtoAF)
+    SensitivityAnalysis.SensitivityAnalysisPowellMead_12MAF_Delivery(Powell, Mead, filePath8, 1, 0.4, 4.5 * MAFtoAF)
+    SensitivityAnalysis.SensitivityAnalysisPowellMead_12MAF_Delivery(Powell, Mead, filePath9, 1, 0.8, 4.5 * MAFtoAF)
+    SensitivityAnalysis.SensitivityAnalysisPowellMead_12MAF_Delivery(Powell, Mead, filePath10, 1, 1.2, 4.5 * MAFtoAF)
+
+    # extract information
+    filePath11 = "../tools/results/SensitivityAnalysisTo12maf_5.35.xls"
+    filePath12 = "../tools/results/SensitivityAnalysisTo12maf_4.5.xls"
+    DataExchange.extractSensitivityInforamtion(filePath11, filePath1, filePath2, filePath3, filePath4, filePath5)
+    DataExchange.extractSensitivityInforamtion(filePath12, filePath6, filePath7, filePath8, filePath9, filePath10)
+
+    # plots
+    # Figure 4.2, 4.3, 4.4, A.2, A.3 and A.4
+    DataExchange.readSAResultsAndPlot(filePath11)
+    DataExchange.readSAResultsAndPlot(filePath12)
 
     endtime = datetime.datetime.now()
-    print(" time:" + str(endtime - starttime))
+    print("Sensitivity Analysis time:" + str(endtime - starttime))
 
-### 5. run the model
+### 4. run rule based simulation model and export results
 if True:
     # Policy check
-    count = 0
-    index = 0
-    for p in range(len(plc.LakePowellPolicyList)):
-        if plc.LakePowellPolicyList[p] == True:
-            index = p
-            count = count + 1
-    if count == 0:
-        print('\033[91m' + "Warning: No Policy for Lake Powell is selected, please check PolicyControl.py!" + '\033[0m')
-        exit()
-    elif count > 1:
-        print(
-            '\033[91m' + "Warning: Two or more policies for Lake Powell are selected, please please check PolicyControl.py!" + '\033[0m')
-        exit()
-    else:
-        print(str(plc.LakePowellPolicyListNames[index]) + " for Lake Powell is selected!")
+    # count = 0
+    # index = 0
+    # for p in range(len(plc.LakePowellPolicyList)):
+    #     if plc.LakePowellPolicyList[p] == True:
+    #         index = p
+    #         count = count + 1
+    # if count == 0:
+    #     print('\033[91m' + "Warning: No Policy for Lake Powell is selected, please check PolicyControl.py!" + '\033[0m')
+    #     exit()
+    # elif count > 1:
+    #     print(
+    #         '\033[91m' + "Warning: Two or more policies for Lake Powell are selected, please please check PolicyControl.py!" + '\033[0m')
+    #     exit()
+    # else:
+    #     print(str(plc.LakePowellPolicyListNames[index]) + " for Lake Powell is selected!")
+    #
+    # count = 0
+    # index = 0
+    # for p in range(len(plc.LakeMeadPolicyList)):
+    #     if plc.LakeMeadPolicyList[p] == True:
+    #         index = p
+    #         count = count + 1
+    # if count == 0:
+    #     print('\033[91m' + "Warning: No Policy for Lake Mead is selected, please check PolicyControl.py!" + '\033[0m')
+    #     exit()
+    # elif count > 1:
+    #     print(
+    #         '\033[91m' + "Warning: Two or more policies for Lake Mead are selected, please please check PolicyControl.py!" + '\033[0m')
+    #     exit()
+    # else:
+    #     print(str(plc.LakeMeadPolicyListNames[index]) + " for Lake Mead is selected!")
 
-    count = 0
-    index = 0
-    for p in range(len(plc.LakeMeadPolicyList)):
-        if plc.LakeMeadPolicyList[p] == True:
-            index = p
-            count = count + 1
-    if count == 0:
-        print('\033[91m' + "Warning: No Policy for Lake Mead is selected, please check PolicyControl.py!" + '\033[0m')
-        exit()
-    elif count > 1:
-        print(
-            '\033[91m' + "Warning: Two or more policies for Lake Mead are selected, please please check PolicyControl.py!" + '\033[0m')
-        exit()
-    else:
-        print(str(plc.LakeMeadPolicyListNames[index]) + " for Lake Mead is selected!")
+    filePath_Powell_CRSS = "../results/Powell_CRSS.xls"
+    filePath_Mead_CRSS = "../results/Mead_CRSS.xls"
+    filePath_Powell_s1 = "../results/Powell_s1.xls"
+    filePath_Mead_s1 = "../results/Mead_s1.xls"
+    filePath_Powell_s2 = "../results/Powell_s2.xls"
+    filePath_Mead_s2 = "../results/Mead_s2.xls"
+    filePath_Powell_s3 = "../results/Powell_s3.xls"
+    filePath_Mead_s3 = "../results/Mead_s3.xls"
+    filePath_Powell_s4 = "../results/Powell_s4.xls"
+    filePath_Mead_s4 = "../results/Mead_s4.xls"
+    filePath_Powell_s5 = "../results/Powell_s5.xls"
+    filePath_Mead_s5 = "../results/Mead_s5.xls"
+    filePath_Powell_s6 = "../results/Powell_s6.xls"
+    filePath_Mead_s6 = "../results/Mead_s6.xls"
 
+    for i in range(7):
+        print("=====================================")
+
+        if i == 0:
+            plc.setPowellPolicy("CRSS_Powell")
+            plc.setMeadPolicy("CRSS_Mead")
+
+            print("CRSS simulation (replication) start!")
+        else:
+            plc.setPowellPolicy("Equalization")
+            plc.setMeadPolicy("ADP_DemandtoInflow")
+            rf.strategyIndex = i
+
+            print("ADP simulation, strategy " + str(i) +" start!")
+
+        # run reservoir simulation
+        n.simulation()
+        # run reservoir release model
+        ReleaseTemperature.simulateResTemp(Powell)
+        # post processing about Release at Compact point
+        Powell.CalcualteFlowAtCompactPoint()
+
+        print("Exporting Data...")
+
+        if i == 0:
+            DataExchange.exportData(Powell, filePath_Powell_CRSS)
+            DataExchange.exportData(Mead, filePath_Mead_CRSS)
+
+            print("CRSS simulation (replication) end!")
+
+            ### Figure 4.1 and A.1
+            date_series = pd.date_range(start=n.begtime, periods=n.periods, freq="M")
+            # plotsIndex = [0,40,80,100]
+            plotsIndex = [0, 40, 80]
+            for j in range(len(plotsIndex)):
+                i = plotsIndex[j]
+                title = "Lake Powell (Run" + str(i) + ")"
+                plots.plot_Elevations_Flows_CRSS_Exploratory_Powell(date_series, Powell.crssStorage[i],
+                                                                    Powell.crssInflow[i],
+                                                                    Powell.crssOutflow[i], Powell.crssElevation[i],
+                                                                    Powell.storage[i], Powell.totalinflow[i],
+                                                                    Powell.outflow[i], Powell.elevation[i], title)
+                title = "Lake Mead (Run" + str(i) + ")"
+                plots.plot_Elevations_Flows_CRSS_Exploratory_Mead(date_series, Mead.crssStorage[i], Mead.crssInflow[i],
+                                                                  Mead.crssOutflow[i], Mead.crssElevation[i],
+                                                                  Mead.storage[i], Mead.totalinflow[i],
+                                                                  Mead.outflow[i], Mead.elevation[i], title)
+        elif i == 1:
+            DataExchange.exportData(Powell, filePath_Powell_s1)
+            DataExchange.exportData(Mead, filePath_Mead_s1)
+            print("ADP simulation, strategy " + str(i) + " end!")
+        elif i == 2:
+            DataExchange.exportData(Powell, filePath_Powell_s2)
+            DataExchange.exportData(Mead, filePath_Mead_s2)
+            print("ADP simulation, strategy " + str(i) + " end!")
+        elif i == 3:
+            DataExchange.exportData(Powell, filePath_Powell_s3)
+            DataExchange.exportData(Mead, filePath_Mead_s3)
+            print("ADP simulation, strategy " + str(i) + " end!")
+        elif i == 4:
+            DataExchange.exportData(Powell, filePath_Powell_s4)
+            DataExchange.exportData(Mead, filePath_Mead_s4)
+            print("ADP simulation, strategy " + str(i) + " end!")
+        elif i == 5:
+            DataExchange.exportData(Powell, filePath_Powell_s5)
+            DataExchange.exportData(Mead, filePath_Mead_s5)
+            print("ADP simulation, strategy " + str(i) + " end!")
+        elif i == 6:
+            DataExchange.exportData(Powell, filePath_Powell_s6)
+            DataExchange.exportData(Mead, filePath_Mead_s6)
+            print("ADP simulation, strategy " + str(i) + " end!")
+
+if True:
+    filePath_Powell_CRSS = "../results/Powell_CRSS.xls"
+    filePath_Mead_CRSS = "../results/Mead_CRSS.xls"
+    filePath_Powell_s1 = "../results/Powell_s1.xls"
+    filePath_Mead_s1 = "../results/Mead_s1.xls"
+    filePath_Powell_s2 = "../results/Powell_s2.xls"
+    filePath_Mead_s2 = "../results/Mead_s2.xls"
+    filePath_Powell_s3 = "../results/Powell_s3.xls"
+    filePath_Mead_s3 = "../results/Mead_s3.xls"
+    filePath_Powell_s4 = "../results/Powell_s4.xls"
+    filePath_Mead_s4 = "../results/Mead_s4.xls"
+    filePath_Powell_s5 = "../results/Powell_s5.xls"
+    filePath_Mead_s5 = "../results/Mead_s5.xls"
+    filePath_Powell_s6 = "../results/Powell_s6.xls"
+    filePath_Mead_s6 = "../results/Mead_s6.xls"
+
+    # extract information
+    filePathComparison = "../results/Comparison.xls"
+    DataExchange.extractSimulationInforamtion(filePathComparison, filePath_Powell_CRSS, filePath_Mead_CRSS,
+                                              filePath_Powell_s1, filePath_Mead_s1, filePath_Powell_s2, filePath_Mead_s2,
+                                              filePath_Powell_s3, filePath_Mead_s3, filePath_Powell_s4, filePath_Mead_s4,
+                                              filePath_Powell_s5, filePath_Mead_s5, filePath_Powell_s6, filePath_Mead_s6)
+
+    # Read and plot results (post-processing)
+    # Figures 4.5, 4.6, A.5, and A.6
+    DataExchange.readSimulationResultsAndPlotNew()
+
+    # # run reservoir simulation
+    # n.simulation()
+    # # run reservoir release model
+    # ReleaseTemperature.simulateResTemp(Powell)
+    # # post processing about Release at Compact point
+    # Powell.CalcualteFlowAtCompactPoint()
+
+if False:
     # run reservoir simulation
     n.simulation()
     # run reservoir release model
@@ -225,7 +382,6 @@ if True:
     # post processing about Release at Compact point
     Powell.CalcualteFlowAtCompactPoint()
 
-### 6. export results
     filePath = "../results/"
 
     # Powell.xls will store all Lake Powell results.
@@ -237,33 +393,28 @@ if True:
     # exports results to ExploratoryModel --> results folder.
     DataExchange.exportData(Mead, filePath + name)
 
-### 7. Figure 4.1 and A.1
-if plc.CRSS_Powell == True and plc.CRSS_Mead == True:
-    date_series = pd.date_range(start= n.begtime, periods=n.periods, freq="M")
-    # plotsIndex = [0,40,80,100]
-    plotsIndex = [0, 40, 80]
-    for j in range(len(plotsIndex)):
-        i = plotsIndex[j]
-        title = "Lake Powell (Run" + str(i) +")"
-        plots.plot_Elevations_Flows_CRSS_Exploratory_Powell(date_series, Powell.crssStorage[i], Powell.crssInflow[i],
-                                                            Powell.crssOutflow[i], Powell.crssElevation[i],
-                                                            Powell.storage[i], Powell.totalinflow[i],
-                                                            Powell.outflow[i], Powell.elevation[i], title)
-        title = "Lake Mead (Run" + str(i) +")"
-        plots.plot_Elevations_Flows_CRSS_Exploratory_Mead(date_series, Mead.crssStorage[i], Mead.crssInflow[i],
-                                                          Mead.crssOutflow[i], Mead.crssElevation[i],
-                                                          Mead.storage[i], Mead.totalinflow[i],
-                                                          Mead.outflow[i], Mead.elevation[i], title)
+
+### 5. Figure 4.1 and A.1
+# if plc.CRSS_Powell == True and plc.CRSS_Mead == True:
+#     date_series = pd.date_range(start= n.begtime, periods=n.periods, freq="M")
+#     # plotsIndex = [0,40,80,100]
+#     plotsIndex = [0, 40, 80]
+#     for j in range(len(plotsIndex)):
+#         i = plotsIndex[j]
+#         title = "Lake Powell (Run" + str(i) +")"
+#         plots.plot_Elevations_Flows_CRSS_Exploratory_Powell(date_series, Powell.crssStorage[i], Powell.crssInflow[i],
+#                                                             Powell.crssOutflow[i], Powell.crssElevation[i],
+#                                                             Powell.storage[i], Powell.totalinflow[i],
+#                                                             Powell.outflow[i], Powell.elevation[i], title)
+#         title = "Lake Mead (Run" + str(i) +")"
+#         plots.plot_Elevations_Flows_CRSS_Exploratory_Mead(date_series, Mead.crssStorage[i], Mead.crssInflow[i],
+#                                                           Mead.crssOutflow[i], Mead.crssElevation[i],
+#                                                           Mead.storage[i], Mead.totalinflow[i],
+#                                                           Mead.outflow[i], Mead.elevation[i], title)
         # title = "Equalization (Run" + str(i) +")"
         # plots.Equalization(date_series,Powell.crssStorage[i]/Powell.maxStorage-Mead.crssStorage[i]/Mead.maxStorage,Powell.storage[i]/Powell.maxStorage- Mead.storage[i]/Mead.maxStorage,title)
 
-# 8. Read and plot results (post-processing)
-# Figure 4.2, 4.3, 4.4, A.2, A.3 and A.4
-DataExchange.readSAResultsAndPlot()
-# Figures 4.5, 4.6, A.5, and A.6
-DataExchange.readSimulationResultsAndPlot()
-
-# 9. Generate results for AMP white paper
+# others. Generate results for AMP white paper
 if False:
     filePath = "../results/"
 

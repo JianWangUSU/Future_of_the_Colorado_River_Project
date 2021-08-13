@@ -378,13 +378,13 @@ def SA_YearsTo3525(reservoir, filePath):
 
 # calculate reservoir storage based on different inflows and release policies
 # x: Natural inflow Y: years to 12 maf; X: time, Y: Delivery
-def SensitivityAnalysisPowellMead_12MAF_Delivery(reservoir1, reservoir2, filePath):
+def SensitivityAnalysisPowellMead_12MAF_Delivery(reservoir1, reservoir2, filePath, policyIndex, additionalCut, UBdemand):
     print("Multi-dimensional sensitivity for Lake Powell and Lake Mead analysis start!")
 
-    # policy index, 0-DCP, 1-Other cutbacks, 2-ADP
-    policyIndex = 2
+    # policy index, 0: DCP, 1: DCP+, 2: ADP
+    # policyIndex = 1
     # additional cut value for DCP+
-    additionalCut = 0.4
+    # additionalCut = 0.4
 
     # set up data
     minLeesFerryNatural = 5
@@ -415,8 +415,8 @@ def SensitivityAnalysisPowellMead_12MAF_Delivery(reservoir1, reservoir2, filePat
 
     # UCRC 2007 schedule B. http://www.ucrcommission.com/RepDoc/DepSchedules/Dep_Schedules_2007.pdf
     # UBdemand = 5.35 * MAFtoAF
+    # UBdemand = 4.5 * MAFtoAF
     # UBdemand = 5 * MAFtoAF
-    UBdemand = 4.5 * MAFtoAF
     # UBdemand = 4 * MAFtoAF
     # UBdemand = 3.5 * MAFtoAF
     # UBdemand = 3 * MAFtoAF
@@ -542,7 +542,7 @@ def SensitivityAnalysisPowellMead_12MAF_Delivery(reservoir1, reservoir2, filePat
 
         YearsTo12maf[i1] = findYearsTo12maf(CombinedStoragePM[i1])
 
-    print("Multi-dimensional sensitivity analysis for Lake Powell and Lake Mead finished!")
+    print(filePath + " finished!")
 
     DataExchange.exportMSAresults2(filePath, inflowRange1, YearsTo12maf, TotalDelivery,
                                    CombinedStoragePM, PowellReleaseTempMAX, PowellReleaseTempMIN)

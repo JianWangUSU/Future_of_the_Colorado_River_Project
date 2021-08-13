@@ -14,7 +14,7 @@
 # because the Exploratory model don't have a way to calculate them.
 # This policy can ONLY be used for validation!!!
 #########
-CRSS_Powell = True
+CRSS_Powell = False
 
 # Equalization rule, it is a simple policy developed by JIAN, not policy used in CRSS
 EQUAL = False
@@ -31,6 +31,20 @@ FPF = False
 LakePowellPolicyList = [CRSS_Powell, EQUAL, ADP, FMF, FPF]
 LakePowellPolicyListNames = ['CRSS_Powell', 'Equalization', 'ADP', 'FMF', 'FPF']
 
+# This function is not well written
+def setPowellPolicy(name):
+    global CRSS_Powell
+    global EQUAL
+
+    if name == 'CRSS_Powell':
+        CRSS_Powell = True
+        EQUAL = False
+    elif name == 'Equalization':
+        CRSS_Powell = False
+        EQUAL = True
+    else:
+        CRSS_Powell = True
+        EQUAL = False
 
 # ================================Policy for Lake Mead===================================
 
@@ -42,7 +56,7 @@ LakePowellPolicyListNames = ['CRSS_Powell', 'Equalization', 'ADP', 'FMF', 'FPF']
 # Demand in the Exploratory model = CurrentDemandBelowMead() + Mead.Diversion - Mead.Return Flow
 # This policy can ONLY be used for validation!!!
 #########
-CRSS_Mead = True
+CRSS_Mead = False
 
 # Adapt demand to inflow policy (it will change Lake Powell inflow and Lake Mead release)
 ADP_DemandtoInflow = False
@@ -70,3 +84,25 @@ ICS = False
 
 LakeMeadPolicyList = [CRSS_Mead, ADP_DemandtoInflow, PFR, LB_demand, DCP, ICS]
 LakeMeadPolicyListNames = ['CRSS_Mead', 'ADP_DemandtoInflow', 'PFR', 'LB_demand', 'DCP', 'ICS']
+
+def setMeadPolicy(name):
+    global CRSS_Mead
+    global ADP_DemandtoInflow
+    global DCP
+
+    if name == 'CRSS_Mead':
+        CRSS_Mead = True
+        ADP_DemandtoInflow = False
+        DCP = False
+    elif name == 'ADP_DemandtoInflow':
+        CRSS_Mead = False
+        ADP_DemandtoInflow = True
+        DCP = False
+    elif name == 'DCP':
+        CRSS_Mead = False
+        ADP_DemandtoInflow = False
+        DCP = True
+    else:
+        CRSS_Mead = True
+        ADP_DemandtoInflow = False
+        DCP = False

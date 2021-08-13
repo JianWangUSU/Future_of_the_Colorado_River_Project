@@ -867,7 +867,7 @@ def ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, D
     ax1.scatter(DepletionTradeOff94.iloc[0:6, 0], DepletionTradeOff94.iloc[0:6, 1], size2, color='#ed7d31', alpha=1,
                 marker = "^", label='ADP')
 
-    x0 = 70
+    x0 = 65
     y0 = 140
     ax1.hlines(DepletionTradeOff94.iat[7, 1], x0, DepletionTradeOff94.iat[7, 0], color='grey', linestyle='dashed', alpha=0.5)
     ax1.vlines(DepletionTradeOff94.iat[7, 0], y0, DepletionTradeOff94.iat[7, 1], color='grey', linestyle='dashed', alpha=0.5)
