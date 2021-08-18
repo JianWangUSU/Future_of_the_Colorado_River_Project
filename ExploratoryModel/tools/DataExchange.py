@@ -814,7 +814,7 @@ def extractSensitivityInforamtion(filePath, filePath_ADP, filePath_DCP, filePath
     f.save(filePath)
 
 # read sensitivity results
-def readSAResultsAndPlot(filePath):
+def readSAResultsAndPlot(filePath, FigureNames):
     # filePath = "../tools/results/SensitivityAnalysisTo12maf_5.35.xls"
     # filePath = "../tools/results/SensitivityAnalysisTo12maf_4.5.xls"
 
@@ -834,7 +834,7 @@ def readSAResultsAndPlot(filePath):
     # print(df1.iat[0, 1])
 
     plots.plotYearsto12maf(DCP, DCPplus12, DCPplus8, DCPplus4, ADP, Paleo,
-                           Depletion, TemperatureMIN, TemperatureMAX, DepletionStorage)
+                           Depletion, TemperatureMIN, TemperatureMAX, DepletionStorage, FigureNames)
 
 # for section 4.3
 def readSimulationResultsAndPlot():

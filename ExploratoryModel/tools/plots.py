@@ -31,11 +31,11 @@ def subplotstest():
 
     plt.show()
 
-def plot_Elevations_Flows_CRSS_Exploratory_Powell(x, y1crss, y2crss, y3crss, y4crss, y1, y2, y3, y4, title):
+def plot_Elevations_Flows_CRSS_Exploratory_Powell(x, y1crss, y2crss, y3crss, y4crss, y1, y2, y3, y4, title, FigureName):
     EleRange = [3370, 3710]
     StrRange = [0, 30000000]
 
-    plot_Elevations_Flows_CRSS_Exploratory(x, y1crss, y2crss, y3crss, y1, y2, y3, title, StrRange)
+    plot_Elevations_Flows_CRSS_Exploratory(x, y1crss, y2crss, y3crss, y1, y2, y3, title, StrRange, FigureName)
     # plot_Elevations_CRSS_Exploratory(x, y4crss, y1crss, y4, y1, title, EleRange, StrRange)
     # plot_Elevations_CRSS_Exploratory_Gap(x, y1crss-y1, title)
     # title = "inflow"
@@ -43,10 +43,10 @@ def plot_Elevations_Flows_CRSS_Exploratory_Powell(x, y1crss, y2crss, y3crss, y4c
     # title = "outflow"
     # plot_Flow_CRSS_Exploratory_Gap(x, y3crss-y3, title)
 
-def plot_Elevations_Flows_CRSS_Exploratory_Mead(x, y1crss, y2crss, y3crss, y4crss, y1, y2, y3, y4, title):
+def plot_Elevations_Flows_CRSS_Exploratory_Mead(x, y1crss, y2crss, y3crss, y4crss, y1, y2, y3, y4, title, FigureName):
     EleRange = [895, 1250]
     StrRange = [0, 30000000]
-    plot_Elevations_Flows_CRSS_Exploratory(x, y1crss, y2crss, y3crss, y1, y2, y3, title, StrRange)
+    plot_Elevations_Flows_CRSS_Exploratory(x, y1crss, y2crss, y3crss, y1, y2, y3, title, StrRange, FigureName)
     # plot_Elevations_CRSS_Exploratory(x, y4crss, y1crss, y4, y1, title, EleRange, StrRange)
     # plot_Elevations_CRSS_Exploratory_Gap(x, y1crss-y1, title)
     # title = "inflow"
@@ -54,7 +54,7 @@ def plot_Elevations_Flows_CRSS_Exploratory_Mead(x, y1crss, y2crss, y3crss, y4crs
     # title = "outflow"
     # plot_Flow_CRSS_Exploratory_Gap(x, y3crss-y3, title)
 
-def plot_Elevations_Flows_CRSS_Exploratory(x, y1crss, y2crss, y3crss, y1, y2, y3, title, EleRange):
+def plot_Elevations_Flows_CRSS_Exploratory(x, y1crss, y2crss, y3crss, y1, y2, y3, title, EleRange, FigureName):
 
     fig, (ax1, ax2, ax3) = plt.subplots(3, 1)
     fig.suptitle(title)
@@ -80,7 +80,10 @@ def plot_Elevations_Flows_CRSS_Exploratory(x, y1crss, y2crss, y3crss, y1, y2, y3
     ax3.yaxis.set_major_formatter(formatter)
 
     plt.legend()
-    plt.show()
+    # plt.show()
+
+    plt.savefig("../results/"+FigureName)
+    plt.close()
 
 # ele means elevation, str means storage
 def plot_Elevations_CRSS_Exploratory(x, yEleCRSS, yStrCRSS, yEelvationEx, yStrEx, title, EleRange, strRange):
@@ -655,7 +658,10 @@ def ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, D
     ax2.set_ylabel('Storage (maf)')
 
     ax1.legend(loc='lower right', prop={'size': 8})
-    plt.show()
+    # plt.show()
+
+    plt.savefig("../results/Figure A.5 (a).png")
+    plt.close()
 
     # Lake Mead
     fig, ax1 = plt.subplots(figsize=(8, 4.8))
@@ -686,7 +692,10 @@ def ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, D
     ax2.set_ylabel('Storage (maf)')
 
     ax1.legend(loc='lower right', prop={'size': 8})
-    plt.show()
+    # plt.show()
+
+    plt.savefig("../results/Figure A.5 (b).png")
+    plt.close()
 
     # Total shortages
     fig, ax1 = plt.subplots(figsize=(8, 4.8))
@@ -706,7 +715,10 @@ def ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, D
     ax1.set_ylabel('Shortages (maf)')
 
     ax1.legend(loc='lower right', prop={'size': 8})
-    plt.show()
+    # plt.show()
+
+    plt.savefig("../results/Figure A.5 (c).png")
+    plt.close()
 
     # Bar graph
     fig, ax1 = plt.subplots(figsize=(8, 4.8))
@@ -718,7 +730,9 @@ def ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, D
     ax1.set_ylim([-1.5, 1.5])
     ax1.set_ylabel('Additional Cutback (maf)')
 
-    plt.show()
+    # plt.show()
+    plt.savefig("../results/Figure A.5 (d).png")
+    plt.close()
 
     # Depletion trade-off
     fig, ax1 = plt.subplots()
@@ -753,7 +767,10 @@ def ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, D
     ax1.set_ylabel('LB and Mexico water depletions for the next 25 years (maf)')
 
     ax1.legend()
-    plt.show()
+    # plt.show()
+
+    plt.savefig("../results/Figure A.6.png")
+    plt.close()
 
     # ==============RUN94, 19 years of drought==================
     # Lake Powell
@@ -782,7 +799,10 @@ def ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, D
     ax2.set_ylabel('Storage (maf)')
 
     ax1.legend(loc='lower right', prop={'size': 8})
-    plt.show()
+    # plt.show()
+
+    plt.savefig("../results/Figure 4.5 (a).png")
+    plt.close()
 
     # Lake Mead
     fig, ax1 = plt.subplots(figsize=(8, 4.8))
@@ -814,7 +834,9 @@ def ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, D
     ax2.set_ylabel('Storage (maf)')
 
     ax1.legend(loc='lower right', prop={'size': 8})
-    plt.show()
+    # plt.show()
+    plt.savefig("../results/Figure 4.5 (b).png")
+    plt.close()
 
     # Total shortages
     fig, ax1 = plt.subplots(figsize=(8, 4.8))
@@ -834,7 +856,9 @@ def ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, D
     ax1.set_ylabel('Shortages (maf)')
 
     ax1.legend(loc='lower right', prop={'size': 8})
-    plt.show()
+    # plt.show()
+    plt.savefig("../results/Figure 4.5 (c).png")
+    plt.close()
 
     # Bar graph
     fig, ax1 = plt.subplots(figsize=(8, 4.8))
@@ -851,7 +875,9 @@ def ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, D
     # xlabels = ['2020', '2025', '2030', '2035', '2040']
     # ax1.set_xticklabels(xlabels)
 
-    plt.show()
+    # plt.show()
+    plt.savefig("../results/Figure 4.5 (d).png")
+    plt.close()
 
     # Depletion trade-off
     fig, ax1 = plt.subplots()
@@ -889,11 +915,16 @@ def ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, D
     ax1.set_ylabel('LB and Mexico water depletions for the next 19 years (maf)')
 
     ax1.legend()
-    plt.show()
+    # plt.show()
+    plt.savefig("../results/Figure 4.6.png")
+    plt.close()
 
 # plot results for sensitivity analysis
 def plotYearsto12maf(DCP, DCPplus12, DCPplus8, DCPplus4, ADP, Paleo,
-                     Depletion, TemperatureMIN, TemperatureMAX, DepletionStorage):
+                     Depletion, TemperatureMIN, TemperatureMAX, DepletionStorage, FigureNames):
+
+    # 6.4 4.8 by default
+    plt.figure(figsize=(6.4, 4.8))
 
     # first plot
     # scatter points
@@ -916,12 +947,14 @@ def plotYearsto12maf(DCP, DCPplus12, DCPplus8, DCPplus4, ADP, Paleo,
     plt.yticks(y, labels)
 
     plt.legend()
-    plt.show()
+    # plt.show()
+    plt.savefig("../tools/results/"+FigureNames[0])
+    plt.close()
+
 
     # second plot
     # plt.cla()
-    # 6.4 4.8 by default
-    plt.figure(figsize=(10, 4.8))
+
 
     # print(TurningPointYear[3])
     # print(np.where(Depletion[0] == TurningPointYear[3], True, False))
@@ -1005,7 +1038,9 @@ def plotYearsto12maf(DCP, DCPplus12, DCPplus8, DCPplus4, ADP, Paleo,
     axs[1].legend(loc='upper right', prop={'size': 8})
     # axs[2].legend(loc='lower right', prop={'size': 8})
 
-    plt.show()
+    # plt.show()
+    plt.savefig("../tools/results/"+FigureNames[2])
+    plt.close()
 
     # inflow = 6 maf/yr
     # BLUE: #005073, #107dac, #189ad3, #1ebbd7, #71c7ec
@@ -1014,7 +1049,11 @@ def plotYearsto12maf(DCP, DCPplus12, DCPplus8, DCPplus4, ADP, Paleo,
 
     # 3 colors, BLUE: 015C92, 6fa4d4, 88CDF6; RED: a70000, ff0000, ff7b7b; Yellow: ffa505, ffc905, ffe505
 
-    plt.figure(figsize=(8, 4.8))
+    plt.figure(figsize=(6.4, 4.8))
+
+    # plt.figure(figsize=(8, 4.8))
+    # plt.figure(figsize=(10, 4.8))
+
 
     size1 = 90
     size2 = 120
@@ -1055,7 +1094,8 @@ def plotYearsto12maf(DCP, DCPplus12, DCPplus8, DCPplus4, ADP, Paleo,
 
     plt.legend(bbox_to_anchor=(1.04, 1), loc="upper left", labelspacing=0.6)
 
-    plt.show()
-
+    # plt.show()
+    plt.savefig("../tools/results/"+FigureNames[1], bbox_inches='tight')
+    plt.close()
 
 

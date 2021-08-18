@@ -212,8 +212,11 @@ if True:
 
     # plots
     # Figure 4.2, 4.3, 4.4, A.2, A.3 and A.4
-    DataExchange.readSAResultsAndPlot(filePath11)
-    DataExchange.readSAResultsAndPlot(filePath12)
+    FigureNames1 = ['Figure 4.2.png', 'Figure 4.3.png', 'Figure 4.4.png']
+    FigureNames2 = ['Figure A.2.png', 'Figure A.3.png', 'Figure A.4.png']
+
+    DataExchange.readSAResultsAndPlot(filePath11, FigureNames1)
+    DataExchange.readSAResultsAndPlot(filePath12, FigureNames2)
 
     endtime = datetime.datetime.now()
     print("Sensitivity Analysis time:" + str(endtime - starttime))
@@ -302,6 +305,10 @@ if True:
             date_series = pd.date_range(start=n.begtime, periods=n.periods, freq="M")
             # plotsIndex = [0,40,80,100]
             plotsIndex = [0, 40, 80]
+
+            FigureNamesLeft = ['Figure A.1 (a) left.png', 'Figure 4.1 left.jpg', 'Figure A.1 (b) left.png']
+            FigureNamesRight = ['Figure A.1 (a) right.png', 'Figure 4.1 right.jpg', 'Figure A.1 (b) right.png']
+
             for j in range(len(plotsIndex)):
                 i = plotsIndex[j]
                 title = "Lake Powell (Run" + str(i) + ")"
@@ -309,12 +316,12 @@ if True:
                                                                     Powell.crssInflow[i],
                                                                     Powell.crssOutflow[i], Powell.crssElevation[i],
                                                                     Powell.storage[i], Powell.totalinflow[i],
-                                                                    Powell.outflow[i], Powell.elevation[i], title)
+                                                                    Powell.outflow[i], Powell.elevation[i], title, FigureNamesLeft[j])
                 title = "Lake Mead (Run" + str(i) + ")"
                 plots.plot_Elevations_Flows_CRSS_Exploratory_Mead(date_series, Mead.crssStorage[i], Mead.crssInflow[i],
                                                                   Mead.crssOutflow[i], Mead.crssElevation[i],
                                                                   Mead.storage[i], Mead.totalinflow[i],
-                                                                  Mead.outflow[i], Mead.elevation[i], title)
+                                                                  Mead.outflow[i], Mead.elevation[i], title, FigureNamesRight[j])
         elif i == 1:
             DataExchange.exportData(Powell, filePath_Powell_s1)
             DataExchange.exportData(Mead, filePath_Mead_s1)
