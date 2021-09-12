@@ -931,9 +931,9 @@ def plotYearsto12maf(DCP, DCPplus12, DCPplus8, DCPplus4, ADP, Paleo,
     plt.plot(ADP[0], ADP[1], 'o', color = '#ffa505', label= 'ADP')
 
     # line, BLUE: 015C92, 6fa4d4, 88CDF6; RED: a70000, ff0000, ff7b7b; Yellow: ffa505, ffc905, ffe505
-    plt.plot(DCPplus12[0], DCPplus12[1], '#015C92', label='DCP+(1.2 maf additional cut)')
-    plt.plot(DCPplus8[0], DCPplus8[1], '#6fa4d4', label='DCP+(0.8 maf additional cut)')
-    plt.plot(DCPplus4[0], DCPplus4[1], '#88CDF6', label='DCP+(0.4 maf additional cut)')
+    plt.plot(DCPplus12[0], DCPplus12[1], '#015C92', label='DCP+(1.2 maf additional cut)', linestyle='--')
+    plt.plot(DCPplus8[0], DCPplus8[1], '#6fa4d4', label='DCP+(0.8 maf additional cut)', linestyle='-.')
+    plt.plot(DCPplus4[0], DCPplus4[1], '#88CDF6', label='DCP+(0.4 maf additional cut)', linestyle=':')
     plt.plot(DCP[0], DCP[1], '#ff0000', label='DCP')
 
     plt.fill_between(Paleo[0], Paleo[1], color="grey", alpha=0.2, label='Paleo + observed drought events')
