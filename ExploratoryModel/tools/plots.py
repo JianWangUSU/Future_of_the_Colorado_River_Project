@@ -9,7 +9,12 @@ def formatnum(x, pos):
     return '$%.0f$x$10^{6}$' % (x/1000000)
 formatter = FuncFormatter(formatnum)
 
-
+# 1 maf = 1.23348 bcm (billion cubic meters)
+mafTobcm = 1.23348
+# 1 maf = 1000000 af
+mafToaf = 1000000
+# 1 feet = 0.3048 meters
+feetTometers = 0.3048
 
 
 def subplotstest():
@@ -43,10 +48,38 @@ def plot_Elevations_Flows_CRSS_Exploratory_Powell(x, y1crss, y2crss, y3crss, y4c
     # title = "outflow"
     # plot_Flow_CRSS_Exploratory_Gap(x, y3crss-y3, title)
 
+# for SI unit
+def plot_Elevations_Flows_CRSS_Exploratory_Powell_SIunit(x, y1crss, y2crss, y3crss, y4crss, y1, y2, y3, y4, title, FigureName):
+    # Powell elevation/storage range in meters/bcm
+    EleRange = [1027, 1130]
+    StrRange = [0, 37]
+
+    # plot_Elevations_Flows_CRSS_Exploratory(x, y1crss, y2crss, y3crss, y1, y2, y3, title, StrRange, FigureName)
+    plot_Elevations_Flows_CRSS_Exploratory_SIunit(x, y1crss, y2crss, y3crss, y1, y2, y3, title, StrRange, FigureName)
+
+
+    # plot_Elevations_CRSS_Exploratory(x, y4crss, y1crss, y4, y1, title, EleRange, StrRange)
+    # plot_Elevations_CRSS_Exploratory_Gap(x, y1crss-y1, title)
+    # title = "inflow"
+    # plot_Flow_CRSS_Exploratory_Gap(x, y2crss-y2, title)
+    # title = "outflow"
+    # plot_Flow_CRSS_Exploratory_Gap(x, y3crss-y3, title)
+
 def plot_Elevations_Flows_CRSS_Exploratory_Mead(x, y1crss, y2crss, y3crss, y4crss, y1, y2, y3, y4, title, FigureName):
     EleRange = [895, 1250]
     StrRange = [0, 30000000]
     plot_Elevations_Flows_CRSS_Exploratory(x, y1crss, y2crss, y3crss, y1, y2, y3, title, StrRange, FigureName)
+    # plot_Elevations_CRSS_Exploratory(x, y4crss, y1crss, y4, y1, title, EleRange, StrRange)
+    # plot_Elevations_CRSS_Exploratory_Gap(x, y1crss-y1, title)
+    # title = "inflow"
+    # plot_Flow_CRSS_Exploratory_Gap(x, y2crss-y2, title)
+    # title = "outflow"
+    # plot_Flow_CRSS_Exploratory_Gap(x, y3crss-y3, title)
+
+def plot_Elevations_Flows_CRSS_Exploratory_Mead_SIunit(x, y1crss, y2crss, y3crss, y4crss, y1, y2, y3, y4, title, FigureName):
+    EleRange = [272, 381]
+    StrRange = [0, 37]
+    plot_Elevations_Flows_CRSS_Exploratory_SIunit(x, y1crss, y2crss, y3crss, y1, y2, y3, title, StrRange, FigureName)
     # plot_Elevations_CRSS_Exploratory(x, y4crss, y1crss, y4, y1, title, EleRange, StrRange)
     # plot_Elevations_CRSS_Exploratory_Gap(x, y1crss-y1, title)
     # title = "inflow"
@@ -78,6 +111,53 @@ def plot_Elevations_Flows_CRSS_Exploratory(x, y1crss, y2crss, y3crss, y1, y2, y3
 
     ax3.set_xlabel('time')
     ax3.yaxis.set_major_formatter(formatter)
+
+    plt.legend()
+    # plt.show()
+
+    plt.savefig("../results/"+FigureName)
+    plt.close()
+
+def plot_Elevations_Flows_CRSS_Exploratory_SIunit(x, y1crss, y2crss, y3crss, y1, y2, y3, title, EleRange, FigureName):
+
+    # convert acre-feet to billion cubic meters
+    y1_SI = np.zeros(len(y1))
+    y1crss_SI = np.zeros(len(y1crss))
+    y2_SI = np.zeros(len(y2))
+    y2crss_SI = np.zeros(len(y2crss))
+    y3_SI = np.zeros(len(y3))
+    y3crss_SI = np.zeros(len(y3crss))
+
+    for i in range(len(y1)):
+        y1_SI[i] = y1[i] / mafToaf * mafTobcm
+        y1crss_SI[i] = y1crss[i] / mafToaf * mafTobcm
+        y2_SI[i] = y2[i] / mafToaf * mafTobcm
+        y2crss_SI[i] = y2crss[i] / mafToaf * mafTobcm
+        y3_SI[i] = y3[i] / mafToaf * mafTobcm
+        y3crss_SI[i] = y3crss[i] / mafToaf * mafTobcm
+
+    fig, (ax1, ax2, ax3) = plt.subplots(3, 1)
+    fig.suptitle(title)
+
+    ax1.plot(x, y1_SI, color='blue', label='Exploratory')
+    ax1.plot(x, y1crss_SI, color='red',label='CRSS',linewidth=1)
+    ax1.set_ylabel('Storage (bcm)')
+    # ax1.yaxis.set_major_formatter(formatter)
+    ax1.set_ylim(EleRange)
+
+    ax2.plot(x, y2_SI, color='blue',label='Exploratory')
+    ax2.plot(x, y2crss_SI, color='red',label='CRSS',linewidth=1)
+    ax2.set_ylabel('Inflow (bcm)')
+    # ax2.yaxis.set_major_formatter(formatter)
+    ax2.set_ylim([0, 10])
+
+    ax3.plot(x, y3_SI, color='blue',label='Exploratory')
+    ax3.plot(x, y3crss_SI, color='red',label='CRSS',linewidth=1)
+    ax3.set_ylabel('Outflow (bcm)')
+    ax3.set_ylim([0, 10])
+
+    ax3.set_xlabel('time')
+    # ax3.yaxis.set_major_formatter(formatter)
 
     plt.legend()
     # plt.show()
@@ -725,6 +805,7 @@ def ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, D
 
     ax1.set_title("(d) Additional Cutback by ADP")
     labels = np.arange(2020, 2046)
+
     ax1.bar(labels, TotalShortages47.iloc[:,2] - TotalShortages47.iloc[:,1], color = '#ed7d31', label= 'ADP', linewidth=2.0)
     ax1.axhline(0, color='grey', linewidth=0.8)
     ax1.set_ylim([-1.5, 1.5])
@@ -919,6 +1000,345 @@ def ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, D
     plt.savefig("../results/Figure 4.6.png")
     plt.close()
 
+def ElvationComparison_SIunit(PowellElevations47, MeadElevations47, TotalShortages47, DepletionTradeOff47,
+                       PowellElevations94, MeadElevations94, TotalShortages94, DepletionTradeOff94):
+    # print(PowellElevations47.iloc[:,0])
+    # print(DepletionTradeOff47.iloc[:, 1])
+
+    # convert from feet to meters
+    PowellElevations47_SI = np.zeros([len(PowellElevations47.iloc[:,1]),2])
+    MeadElevations47_SI = np.zeros([len(MeadElevations47.iloc[:, 1]), 2])
+    TotalShortages47_SI = np.zeros([len(TotalShortages47.iloc[:, 1]), 2])
+    DepletionTradeOff47_SI = np.zeros([len(DepletionTradeOff47.iloc[:, 1]), 2])
+
+    PowellElevations94_SI = np.zeros([len(PowellElevations94.iloc[:,1]),2])
+    MeadElevations94_SI = np.zeros([len(MeadElevations94.iloc[:, 1]), 2])
+    TotalShortages94_SI = np.zeros([len(TotalShortages94.iloc[:, 1]), 2])
+    DepletionTradeOff94_SI = np.zeros([len(DepletionTradeOff94.iloc[:, 1]), 2])
+
+    # convert from maf to bcm (billion cubic meters)
+    for i in range (len(PowellElevations47.iloc[:,1])):
+        PowellElevations47_SI[i,0] = PowellElevations47.iloc[i,1] * feetTometers
+        PowellElevations47_SI[i,1] = PowellElevations47.iloc[i,2] * feetTometers
+        MeadElevations47_SI[i,0] = MeadElevations47.iloc[i,1] * feetTometers
+        MeadElevations47_SI[i,1] = MeadElevations47.iloc[i,2] * feetTometers
+
+    for i in range (len(TotalShortages47.iloc[:,1])):
+        TotalShortages47_SI[i,0] = TotalShortages47.iloc[i,1] * mafTobcm
+        TotalShortages47_SI[i,1] = TotalShortages47.iloc[i,2] * mafTobcm
+
+    for i in range(len(DepletionTradeOff47.iloc[:, 1])):
+        DepletionTradeOff47_SI[i,0] = DepletionTradeOff47.iloc[i,0] * mafTobcm
+        DepletionTradeOff47_SI[i,1] = DepletionTradeOff47.iloc[i,1] * mafTobcm
+
+    for i in range(len(PowellElevations94.iloc[:, 1])):
+        PowellElevations94_SI[i,0] = PowellElevations94.iloc[i,1] * feetTometers
+        PowellElevations94_SI[i,1] = PowellElevations94.iloc[i,2] * feetTometers
+        MeadElevations94_SI[i,0] = MeadElevations94.iloc[i,1] * feetTometers
+        MeadElevations94_SI[i,1] = MeadElevations94.iloc[i,2] * feetTometers
+
+    for i in range (len(TotalShortages94.iloc[:,1])):
+        TotalShortages94_SI[i,0] = TotalShortages94.iloc[i,1] * mafTobcm
+        TotalShortages94_SI[i,1] = TotalShortages94.iloc[i,2] * mafTobcm
+
+    for i in range(len(DepletionTradeOff94.iloc[:, 1])):
+        DepletionTradeOff94_SI[i,0] = DepletionTradeOff94.iloc[i,0] * mafTobcm
+        DepletionTradeOff94_SI[i,1] = DepletionTradeOff94.iloc[i,1] * mafTobcm
+
+
+    # ====================RUN47, 25 years of drought========================
+    # Lake Powell
+    fig, ax1 = plt.subplots(figsize=(8, 4.8))
+
+    ax1.set_title("(a) Lake Powell Elevation")
+
+    ax2 = ax1.twinx()
+    ax1.plot(PowellElevations47_SI[:,1], color = '#ed7d31', label= 'ADP', linewidth=2.0)
+    ax1.plot(PowellElevations47_SI[:,0], linestyle='dashed', color = 'black', linewidth=1.5, label= 'DCP')
+    ax1.axhline(1064, color='grey',  linestyle='dashed', linewidth=0.8, label= '1064 meters (3490 feet)')
+    ax2.plot(PowellElevations47_SI[:,1], color = '#ed7d31')
+
+    ax1.set_ylim([1027,1110])
+    ax2.set_ylim([1027,1110])
+
+    y = [1027, 1050, 1070, 1090, 1110]
+    ax1.set_yticks(y)
+    ax2.set_yticks(y)
+    ylabels = ['0', '2.6', '6.3', '11.9', '20.0']
+    ax2.set_yticklabels(ylabels)
+
+    x = [0, 60, 120, 180, 240, 300]
+    ax1.set_xticks(x)
+    xlabels = ['2020', '2025', '2030', '2035', '2040', '2045']
+    ax1.set_xticklabels(xlabels)
+    ax1.set_ylabel('Elevation (meter)')
+    ax2.set_ylabel('Storage (bcm)')
+
+    ax1.legend(loc='lower right', prop={'size': 8})
+    # plt.show()
+
+    plt.savefig("../results/Figure A4 (a).png")
+    plt.close()
+
+    # Lake Mead
+    fig, ax1 = plt.subplots(figsize=(8, 4.8))
+
+    ax1.set_title("(b) Lake Mead Elevation")
+
+    ax2 = ax1.twinx()
+    ax1.plot(MeadElevations47_SI[:,1], color = '#ed7d31', label= 'ADP', linewidth=2.0)
+    ax1.plot(MeadElevations47_SI[:,0], linestyle='dashed', color = 'black', linewidth=1.5, label= 'DCP')
+    ax1.axhline(312, color='grey',  linestyle='dashed', linewidth=0.8, label= '312 meters (1025 feet)')
+    ax2.plot(MeadElevations47_SI[:,1], color = '#ed7d31')
+
+    ax1.set_ylim([273,350])
+    ax2.set_ylim([273,350])
+
+    y = [273, 290, 310, 330, 350]
+    ax1.set_yticks(y)
+    ax2.set_yticks(y)
+    ylabels = ['0', '2.6', '6.8', '12.6', '20.4']
+    ax2.set_yticklabels(ylabels)
+
+    x = [0, 60, 120, 180, 240, 300]
+    ax1.set_xticks(x)
+    xlabels = ['2020', '2025', '2030', '2035', '2040', '2045']
+    ax1.set_xticklabels(xlabels)
+
+    ax1.set_ylabel('Elevation (meter)')
+    ax2.set_ylabel('Storage (bcm)')
+
+    ax1.legend(loc='lower right', prop={'size': 8})
+    # plt.show()
+
+    plt.savefig("../results/Figure A4 (b).png")
+    plt.close()
+
+    # Total shortages
+    fig, ax1 = plt.subplots(figsize=(8, 4.8))
+
+    ax1.set_title("(c) Total Annual Shortages")
+
+    ax1.plot(TotalShortages47_SI[:,1], color = '#ed7d31', label= 'ADP', linewidth=2.0)
+    ax1.plot(TotalShortages47_SI[:,0], linestyle='dashed', color = 'black', linewidth=1.5, label= 'DCP')
+
+    ax1.set_ylim([0,4])
+
+    x = [0, 5, 10, 15, 20, 25]
+    ax1.set_xticks(x)
+    xlabels = ['2020', '2025', '2030', '2035', '2040', '2045']
+    ax1.set_xticklabels(xlabels)
+
+    ax1.set_ylabel('Shortages (bcm)')
+
+    ax1.legend(loc='lower right', prop={'size': 8})
+    # plt.show()
+
+    plt.savefig("../results/Figure A4 (c).png")
+    plt.close()
+
+    # Bar graph
+    fig, ax1 = plt.subplots(figsize=(8, 4.8))
+
+    ax1.set_title("(d) Additional Cutback by ADP")
+    labels = np.arange(2020, 2046)
+    ax1.bar(labels, TotalShortages47_SI[:,1] - TotalShortages47_SI[:,0], color = '#ed7d31', label= 'ADP', linewidth=2.0)
+    ax1.axhline(0, color='grey', linewidth=0.8)
+    ax1.set_ylim([-2, 2])
+    ax1.set_ylabel('Additional Cutback (bcm)')
+
+    # plt.show()
+    plt.savefig("../results/Figure A4 (d).png")
+    plt.close()
+
+    # Depletion trade-off
+    fig, ax1 = plt.subplots()
+
+    size1 = 80
+    size2 = 90
+    size3 = 90
+
+    ax1.scatter(DepletionTradeOff47_SI[7, 0], DepletionTradeOff47_SI[7, 1], size3, color='gold', alpha=1,
+                marker = "o", label='Ideal point')
+    ax1.scatter(DepletionTradeOff47_SI[6, 0], DepletionTradeOff47_SI[6, 1], size1, color='black', alpha=1,
+                marker = "s", label='DCP')
+    ax1.scatter(DepletionTradeOff47_SI[0:6, 0], DepletionTradeOff47_SI[0:6, 1], size2, color='#ed7d31', alpha=1,
+                marker = "^", label='ADP')
+
+    x0 = 120
+    y0 = 240
+    ax1.hlines(DepletionTradeOff47_SI[7, 1], x0, DepletionTradeOff47_SI[7, 0], color='grey', linestyle='dashed', alpha=0.5)
+    ax1.vlines(DepletionTradeOff47_SI[7, 0], y0, DepletionTradeOff47_SI[7, 1], color='grey', linestyle='dashed', alpha=0.5)
+
+    ADPlabel = [' UB, LB&M propotionally','  All by UB','  All by LB&M','  50% by UB ','  75% by UB','  75% by LB&M']
+    for i in range(len(ADPlabel)):
+        if i == 0:
+            ax1.text(DepletionTradeOff47_SI[i, 0]-11, DepletionTradeOff47_SI[i, 1]-2, ADPlabel[i])
+        else:
+            ax1.text(DepletionTradeOff47_SI[i, 0], DepletionTradeOff47_SI[i, 1], ADPlabel[i])
+
+    ax1.set_ylim(y0, 280)
+    ax1.set_xlim(x0, 170)
+
+    ax1.set_xlabel('UB water depletions for the next 25 years (bcm)')
+    ax1.set_ylabel('LB and Mexico water depletions for the next 25 years (bcm)')
+
+    ax1.legend()
+    # plt.show()
+
+    plt.savefig("../results/Figure A5.png")
+    plt.close()
+
+    # ==============RUN94, 19 years of drought==================
+    # Lake Powell
+    fig, ax1 = plt.subplots(figsize=(8, 4.8))
+
+    ax1.set_title("(a) Lake Powell Elevation")
+
+    ax2 = ax1.twinx()
+    ax1.plot(PowellElevations94_SI[:, 1], color='#ed7d31', label='ADP', linewidth=2.0)
+    ax1.plot(PowellElevations94_SI[:, 0], linestyle='dashed', color='black', linewidth=1.5, label='DCP')
+    ax1.axhline(1064, color='grey',  linestyle='dashed', linewidth=0.8, label= '1064 meter (3490 feet)')
+    ax2.plot(PowellElevations94_SI[:, 1], color='#ed7d31')
+
+    ax1.set_ylim([1027, 1110])
+    ax2.set_ylim([1027, 1110])
+
+    # y = [1027, 1030, 1040, 1050, 1060, 1070, 1080, 1090, 1100, 1110]
+    # ylabels = ['0', '0.2', '1.3', '2.6', '4.2', '6.3', '8.8', '11.9', '15.6', '20.0']
+    y = [1027, 1050, 1070, 1090, 1110]
+    ax1.set_yticks(y)
+    ax2.set_yticks(y)
+    ylabels = ['0', '2.6', '6.3', '11.9', '20.0']
+    ax2.set_yticklabels(ylabels)
+
+    x = [0, 60, 120, 180, 240]
+    ax1.set_xticks(x)
+    xlabels = ['2020', '2025', '2030', '2035', '2040']
+    ax1.set_xticklabels(xlabels)
+    ax1.set_ylabel('Elevation (meter)')
+    ax2.set_ylabel('Storage (bcm)')
+
+    ax1.legend(loc='lower right', prop={'size': 8})
+    # plt.show()
+
+    plt.savefig("../results/Figure 6 (a).png")
+    plt.close()
+
+    # Lake Mead
+    fig, ax1 = plt.subplots(figsize=(8, 4.8))
+
+    ax1.set_title("(b) Lake Mead Elevation")
+
+    ax2 = ax1.twinx()
+    ax1.plot(MeadElevations94_SI[:,1], color = '#ed7d31', label= 'ADP', linewidth=2.0)
+    ax1.plot(MeadElevations94_SI[:,0], linestyle='dashed', color = 'black', linewidth=1.5, label= 'DCP')
+    ax1.axhline(312, color='grey',  linestyle='dashed', linewidth=0.8, label= '312 meter (1025 feet)')
+    # ax1.plot(MeadElevations94.iloc[:,3], linestyle='dashed', color = 'grey', linewidth=1.0, label= '1025 feet')
+    ax2.plot(MeadElevations94_SI[:,1], color = '#ed7d31')
+
+    ax1.set_ylim([273,350])
+    ax2.set_ylim([273,350])
+
+    y = [273, 290, 310, 330, 350]
+    ax1.set_yticks(y)
+    ax2.set_yticks(y)
+    ylabels = ['0', '2.6', '6.8', '12.6', '20.4']
+    ax2.set_yticklabels(ylabels)
+
+    x = [0, 60, 120, 180, 240]
+    ax1.set_xticks(x)
+    xlabels = ['2020', '2025', '2030', '2035', '2040']
+    ax1.set_xticklabels(xlabels)
+    ax1.set_ylabel('Elevation (meter)')
+    ax2.set_ylabel('Storage (bcm')
+
+    ax1.legend(loc='lower right', prop={'size': 8})
+    # plt.show()
+    plt.savefig("../results/Figure 6 (b).png")
+    plt.close()
+
+    # Total shortages
+    fig, ax1 = plt.subplots(figsize=(8, 4.8))
+
+    ax1.set_title("(c) Total Annual Shortages")
+
+    ax1.plot(TotalShortages94_SI[:,1], color = '#ed7d31', label= 'ADP', linewidth=2.0)
+    ax1.plot(TotalShortages94_SI[:,0], linestyle='dashed', color = 'black', linewidth=1.5, label= 'DCP')
+
+    ax1.set_ylim([0,4])
+
+    x = [0, 5, 10, 15, 20]
+    ax1.set_xticks(x)
+    xlabels = ['2020', '2025', '2030', '2035', '2040']
+    ax1.set_xticklabels(xlabels)
+
+    ax1.set_ylabel('Shortages (bcm)')
+
+    ax1.legend(loc='lower right', prop={'size': 8})
+    # plt.show()
+    plt.savefig("../results/Figure 6 (c).png")
+    plt.close()
+
+    # Bar graph
+    fig, ax1 = plt.subplots(figsize=(8, 4.8))
+
+    ax1.set_title("(d) Additional Cutback by ADP")
+    labels = np.arange(2020, 2040)
+    ax1.bar(labels, TotalShortages94_SI[:,1] - TotalShortages94_SI[:,0], color = '#ed7d31', label= 'ADP', linewidth=2.0)
+    ax1.axhline(0, color='grey', linewidth=0.8)
+    ax1.set_ylim([-2, 2])
+    ax1.set_ylabel('Additional Cutback (bcm)')
+
+    x = [2020, 2025, 2030, 2035, 2040]
+    ax1.set_xticks(x)
+    # xlabels = ['2020', '2025', '2030', '2035', '2040']
+    # ax1.set_xticklabels(xlabels)
+
+    # plt.show()
+    plt.savefig("../results/Figure 6 (d).png")
+    plt.close()
+
+    # Depletion trade-off
+    fig, ax1 = plt.subplots()
+
+    size1 = 80
+    size2 = 90
+    size3 = 90
+
+    ax1.scatter(DepletionTradeOff94_SI[7, 0], DepletionTradeOff94_SI[7, 1], size3, color='gold', alpha=1,
+                marker = "o", label='Ideal point')
+    ax1.scatter(DepletionTradeOff94_SI[6, 0], DepletionTradeOff94_SI[6, 1], size1, color='black', alpha=1,
+                marker = "s", label='DCP')
+    ax1.scatter(DepletionTradeOff94_SI[0:6, 0], DepletionTradeOff94_SI[0:6, 1], size2, color='#ed7d31', alpha=1,
+                marker = "^", label='ADP')
+
+    x0 = 80
+    y0 = 170
+    ax1.hlines(DepletionTradeOff94_SI[7, 1], x0, DepletionTradeOff94_SI[7, 0], color='grey', linestyle='dashed', alpha=0.5)
+    ax1.vlines(DepletionTradeOff94_SI[7, 0], y0, DepletionTradeOff94_SI[7, 1], color='grey', linestyle='dashed', alpha=0.5)
+
+    ADPlabel = [' UB, LB&M propotionally','  All by UB','  All by LB&M','  50% by UB ','  75% by UB','  75% by LB&M']
+
+    for i in range(len(ADPlabel)):
+        if i == 0:
+            ax1.text(DepletionTradeOff94_SI[i, 0]-11, DepletionTradeOff94_SI[i, 1]-2, ADPlabel[i])
+        elif i == 5:
+            ax1.text(DepletionTradeOff94_SI[i, 0] , DepletionTradeOff94_SI[i, 1]-2, ADPlabel[i])
+        else:
+            ax1.text(DepletionTradeOff94_SI[i, 0], DepletionTradeOff94_SI[i, 1], ADPlabel[i])
+
+    ax1.set_ylim(y0, 215)
+    ax1.set_xlim(x0, 130)
+
+    ax1.set_xlabel('UB water depletions for the next 19 years (bcm)')
+    ax1.set_ylabel('LB and Mexico water depletions for the next 19 years (bcm)')
+
+    ax1.legend()
+    # plt.show()
+    plt.savefig("../results/Figure 7.png")
+    plt.close()
+
 # plot results for sensitivity analysis
 def plotYearsto12maf(DCP, DCPplus12, DCPplus8, DCPplus4, ADP, Paleo,
                      Depletion, TemperatureMIN, TemperatureMAX, DepletionStorage, FigureNames):
@@ -1098,4 +1518,186 @@ def plotYearsto12maf(DCP, DCPplus12, DCPplus8, DCPplus4, ADP, Paleo,
     plt.savefig("../tools/results/"+FigureNames[1], bbox_inches='tight')
     plt.close()
 
+# for SI unit
+def plotYearsto12mafSIunit(DCP, DCPplus12, DCPplus8, DCPplus4, ADP, Paleo,
+                     Depletion, TemperatureMIN, TemperatureMAX, DepletionStorage, FigureNames):
 
+    # 6.4 4.8 by default
+    plt.figure(figsize=(6.4, 4.8))
+
+    # first plot
+    # scatter points
+    plt.plot(ADP[0]*mafTobcm, ADP[1], 'o', color = '#ffa505', label= 'ADP')
+
+    # line, BLUE: 015C92, 6fa4d4, 88CDF6; RED: a70000, ff0000, ff7b7b; Yellow: ffa505, ffc905, ffe505
+    # plt.plot(DCPplus12[0]*mafTobcm, DCPplus12[1], '#015C92', label='DCP+(1.2 maf additional cut)', linestyle='--')
+    # plt.plot(DCPplus8[0]*mafTobcm, DCPplus8[1], '#6fa4d4', label='DCP+(0.8 maf additional cut)', linestyle='-.')
+    # plt.plot(DCPplus4[0]*mafTobcm, DCPplus4[1], '#88CDF6', label='DCP+(0.4 maf additional cut)', linestyle=':')
+    plt.plot(DCPplus12[0]*mafTobcm, DCPplus12[1], '#015C92', label='DCP+(1.5 bcm additional cut)', linestyle='--')
+    plt.plot(DCPplus8[0]*mafTobcm, DCPplus8[1], '#6fa4d4', label='DCP+(1.0 bcm additional cut)', linestyle='-.')
+    plt.plot(DCPplus4[0]*mafTobcm, DCPplus4[1], '#88CDF6', label='DCP+(0.5 bcm additional cut)', linestyle=':')
+    plt.plot(DCP[0]*mafTobcm, DCP[1], '#ff0000', label='DCP')
+
+    plt.fill_between(Paleo[0]*mafTobcm, Paleo[1], color="grey", alpha=0.2, label='Paleo + observed drought events')
+
+    # plt.title('')
+    plt.xlabel('Natural Inflow at Lees Ferry (bcm/yr)')
+    #     plt.ylabel('Years to for combined Powell and Mead storage to 12 maf')
+    plt.ylabel('Years until combined Powell and Mead storage will go to 14.8 bcm')
+
+    y = [0, 5, 10, 15, 20, 25, 30]
+    labels = ['0', '5', '10', '15', '20', '25', '>40']
+    plt.yticks(y, labels)
+
+    plt.legend()
+    # plt.show()
+    plt.savefig("../tools/results/"+FigureNames[0])
+    plt.close()
+
+
+    # second plot
+    # plt.cla()
+
+
+    # print(TurningPointYear[3])
+    # print(np.where(Depletion[0] == TurningPointYear[3], True, False))
+
+    labels = ['placeholder',
+              '7.4 bcm/yr natural flow at Lees Ferry --- DCP',
+              '11.1 bcm/yr natural flow at Lees Ferry --- DCP',
+              '14.8 bcm/yr natural flow at Lees Ferry --- DCP',
+              '7.4 bcm/yr natural flow at Lees Ferry --- ADP',
+              '11.1 bcm/yr natural flow at Lees Ferry --- ADP',
+              '14.8 bcm/yr natural flow at Lees Ferry --- ADP',
+              '7.4 bcm/yr natural flow at Lees Ferry --- DCP+ 1.5 bcm more contribution',
+              '11.1 bcm/yr natural flow at Lees Ferry --- DCP+ 1.5 bcm more contribution',
+              '14.8 bcm/yr natural flow at Lees Ferry --- DCP+ 1.5 bcm more contribution']
+    newlabels = ['\n'.join(wrap(l, 28)) for l in labels]
+
+    # plt.plot(Depletion[0], Depletion[3], '#ffa505', label=newlabels[3],
+    #          markevery = np.where(Depletion[0] == TurningPointYear[0][3], True, False), marker = 'o')
+    # plt.plot(Depletion[0], Depletion[9], '#ffe505', label=newlabels[9],
+    #          markevery = np.where(Depletion[0] == TurningPointYear[0][9], True, False), marker = 'o')
+    # plt.plot(Depletion[0], Depletion[6], '#ffc905', label=newlabels[6],
+    #          markevery = np.where(Depletion[0] == TurningPointYear[0][6], True, False), marker = 'o')
+    #
+    # plt.plot(Depletion[0], Depletion[8], '#88CDF6', label=newlabels[8],
+    #          markevery = np.where(Depletion[0] == TurningPointYear[0][8], True, False), marker = 'o')
+    # plt.plot(Depletion[0], Depletion[2], '#015C92', label=newlabels[2],
+    #          markevery=np.where(Depletion[0] == TurningPointYear[0][2], True, False), marker='o')
+    # plt.plot(Depletion[0], Depletion[5], '#6fa4d4', label=newlabels[5],
+    #          markevery = np.where(Depletion[0] == TurningPointYear[0][5], True, False), marker = 'o')
+    #
+    # plt.plot(Depletion[0], Depletion[7], '#ff7b7b', label=newlabels[7],
+    #          markevery = np.where(Depletion[0] == TurningPointYear[0][7], True, False), marker = 'o')
+    # plt.plot(Depletion[0], Depletion[1], '#a70000', label=newlabels[1],
+    #          markevery = np.where(Depletion[0] == TurningPointYear[0][1], True, False), marker = 'o')
+    # plt.plot(Depletion[0], Depletion[4], '#ff0000', label=newlabels[4],
+    #          markevery = np.where(Depletion[0] == TurningPointYear[0][4], True, False), marker = 'o')
+    #
+    # plt.ylabel('The entire basin depletion (maf)')
+    # plt.ylim([5,16])
+    # # plt.legend()
+    # plt.legend(bbox_to_anchor=(1.04, 1), loc="upper left", labelspacing=0.6)
+    #
+    # plt.show()
+
+    # third figure
+    # plt.figure(figsize=(6.4, 7.2))
+    # fig, axs = plt.subplots(3, figsize=(6.4, 7.2))
+    fig, axs = plt.subplots(2, figsize=(6.4, 4.8))
+
+    fig.suptitle('')
+    axs[0].fill_between(TemperatureMIN[0], TemperatureMIN[1], TemperatureMAX[1], color="#ff0000",
+                        alpha=0.4, label='DCP (6 maf/yr natural flow at Lees Ferry)')
+    axs[0].fill_between(TemperatureMIN[0], TemperatureMIN[2], TemperatureMAX[2], color="#6fa4d4",
+                        alpha=0.4, label='DCP (9 maf/yr natural flow at Lees Ferry)')
+    axs[0].fill_between(TemperatureMIN[0], TemperatureMIN[3], TemperatureMAX[3], color="#ffc905",
+                        alpha=0.4, label='DCP (12 maf/yr natural flow at Lees Ferry)')
+
+    axs[1].fill_between(TemperatureMIN[0], TemperatureMIN[4], TemperatureMAX[4], color="#ff0000",
+                        alpha=0.4, label='ADP (6 maf/yr natural flow at Lees Ferry)')
+    axs[1].fill_between(TemperatureMIN[0], TemperatureMIN[5], TemperatureMAX[5], color="#6fa4d4",
+                        alpha=0.4, label='ADP (9 maf/yr natural flow at Lees Ferry)')
+    axs[1].fill_between(TemperatureMIN[0], TemperatureMIN[6], TemperatureMAX[6], color="#ffc905",
+                        alpha=0.4, label='ADP (12 maf/yr natural flow at Lees Ferry)')
+
+    # axs[2].fill_between(TemperatureMIN[0], TemperatureMIN[7], TemperatureMAX[7], color="#ff0000",
+    #                     alpha=0.4, label='DCP+ 1.2 maf more contribution (6 maf/yr natural flow at Lees Ferry)')
+    # axs[2].fill_between(TemperatureMIN[0], TemperatureMIN[8], TemperatureMAX[8], color="#6fa4d4",
+    #                     alpha=0.4, label='DCP+ 1.2 maf more contribution (9 maf/yr natural flow at Lees Ferry)')
+    # axs[2].fill_between(TemperatureMIN[0], TemperatureMIN[9], TemperatureMAX[9], color="#ffc905",
+    #                     alpha=0.4, label='DCP+ 1.2 maf more contribution (12 maf/yr natural flow at Lees Ferry)')
+
+    axs[0].set_ylim([0, 30])
+    axs[0].set_ylabel('Temperature(°C)')
+    axs[1].set_ylim([0, 30])
+    axs[1].set_ylabel('Temperature(°C)')
+    # axs[2].set_ylim([0, 30])
+    # axs[2].set_ylabel('Temperature(°C)')
+
+    # axs[0].legend(loc='center right', prop={'size': 8})
+    axs[0].legend(loc='lower right', prop={'size': 8})
+    axs[1].legend(loc='upper right', prop={'size': 8})
+    # axs[2].legend(loc='lower right', prop={'size': 8})
+
+    # plt.show()
+    # plt.savefig("../tools/results/"+FigureNames[2])
+    plt.close()
+
+    # inflow = 6 maf/yr
+    # BLUE: #005073, #107dac, #189ad3, #1ebbd7, #71c7ec
+    # RED: #a70000, #ff0000, #ff5252, #ff7b7b, #ffbaba
+    # Yellow: #ffa505, #ffb805, #ffc905, #ffe505, #fffb05
+
+    # 3 colors, BLUE: 015C92, 6fa4d4, 88CDF6; RED: a70000, ff0000, ff7b7b; Yellow: ffa505, ffc905, ffe505
+
+    plt.figure(figsize=(6.4, 4.8))
+
+    # plt.figure(figsize=(8, 4.8))
+    # plt.figure(figsize=(10, 4.8))
+
+
+    size1 = 90
+    size2 = 120
+    size3 = 150
+
+    plt.scatter(DepletionStorage[5][0]*mafTobcm, DepletionStorage[6][0]*mafTobcm, size1, color='#ffa505', alpha=1,
+                marker = "x", label=newlabels[3])
+    plt.scatter(DepletionStorage[5][2]*mafTobcm, DepletionStorage[6][2]*mafTobcm, size2, color='#ffc905', alpha=1,
+                marker = "+", label=newlabels[9])
+    plt.scatter(DepletionStorage[5][1]*mafTobcm, DepletionStorage[6][1]*mafTobcm, size3, color='#ffe505', alpha=1,
+                marker = "1", label=newlabels[6])
+
+    # overlapping problem
+    # plt.scatter(DepletionStorage[5][3], DepletionStorage[6][3], color='#ffe505', alpha=1, marker = "H")
+    # plt.scatter(DepletionStorage[5][4], DepletionStorage[6][4], color='#fffb05', alpha=1, marker = "D")
+
+    plt.scatter(DepletionStorage[3][0]*mafTobcm, DepletionStorage[4][0]*mafTobcm, size1, color='#015C92', alpha=1,
+                marker = "x", label=newlabels[2])
+    plt.scatter(DepletionStorage[3][2]*mafTobcm, DepletionStorage[4][2]*mafTobcm, size2, color='#6fa4d4', alpha=1,
+                marker="+", label=newlabels[8])
+    plt.scatter(DepletionStorage[3][1]*mafTobcm, DepletionStorage[4][1]*mafTobcm, size3, color='#88CDF6', alpha=1,
+                marker = "1", label=newlabels[5])
+
+    # plt.scatter(DepletionStorage[3][3], DepletionStorage[4][3], color='#1ebbd7', alpha=1, marker = "H")
+    # plt.scatter(DepletionStorage[3][4], DepletionStorage[4][4], color='#71c7ec', alpha=1, marker = "D")
+
+    plt.scatter(DepletionStorage[1][0]*mafTobcm, DepletionStorage[2][0]*mafTobcm, size1, color='#a70000', alpha=1,
+                marker = "x", label=newlabels[1])
+    plt.scatter(DepletionStorage[1][2]*mafTobcm, DepletionStorage[2][2]*mafTobcm, size2, color='#ff0000', alpha=1,
+                marker="+", label=newlabels[7])
+    plt.scatter(DepletionStorage[1][1]*mafTobcm, DepletionStorage[2][1]*mafTobcm, size3, color='#ff7b7b', alpha=1,
+                marker = "1", label=newlabels[4])
+
+    plt.xlabel('End of planning horizon combined Lake Powell and Lake Mead storage (bcm)')
+    plt.ylabel('Steady ending state UB, LB and Mexico depletion (bcm)')
+    # plt.xlim([-2, 18])
+    # plt.ylim([0,16])
+    plt.ylim([0,20])
+
+    plt.legend(bbox_to_anchor=(1.04, 1), loc="upper left", labelspacing=0.6)
+
+    # plt.show()
+    plt.savefig("../tools/results/"+FigureNames[1], bbox_inches='tight')
+    plt.close()

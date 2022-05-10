@@ -3,9 +3,33 @@
   <component name="ChangeListManager">
     <list default="true" id="93afe69e-fa24-4670-a8e1-9789775850de" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Figure 4.1 left.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Figure 4.1 left.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Figure 4.1 right.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Figure 4.1 right.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Figure 4.5 (a).png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Figure 4.5 (b).png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Figure 4.5 (c).png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Figure 4.5 (d).png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Figure 4.6.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Figure A.1 (a) left.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Figure A.1 (a) right.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Figure A.1 (b) left.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Figure A.1 (b) right.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Figure A.5 (a).png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Figure A.5 (b).png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Figure A.5 (c).png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Figure A.5 (d).png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Figure A.6.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/simulation/start.py" beforeDir="false" afterPath="$PROJECT_DIR$/simulation/start.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/DataExchange.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/DataExchange.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tools/plots.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/plots.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools/results/Figure 4.2.png" beforeDir="false" afterPath="$PROJECT_DIR$/tools/results/Figure 4.2.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools/results/Figure A.2.png" beforeDir="false" afterPath="$PROJECT_DIR$/tools/results/Figure A.2.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/Figure 4.2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/Figure 4.3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/Figure 4.4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/Figure A.2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/Figure A.3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/results/Figure A.4.png" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,7 +64,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
   </component>
   <component name="RunManager" selected="Python.start">
     <configuration name="start" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
@@ -140,7 +164,37 @@
       <workItem from="1629254411160" duration="5654000" />
       <workItem from="1629327396522" duration="8000" />
       <workItem from="1630700796334" duration="1086000" />
-      <workItem from="1631454260846" duration="2851000" />
+      <workItem from="1631454260846" duration="2877000" />
+      <workItem from="1633403461683" duration="25000" />
+      <workItem from="1634751392817" duration="689000" />
+      <workItem from="1635202289525" duration="36000" />
+      <workItem from="1638723182866" duration="8137000" />
+      <workItem from="1638816471935" duration="8867000" />
+      <workItem from="1638917972550" duration="5284000" />
+      <workItem from="1639066795149" duration="125000" />
+      <workItem from="1639175914027" duration="1364000" />
+      <workItem from="1642528955817" duration="601000" />
+      <workItem from="1642560931939" duration="68000" />
+      <workItem from="1646847976401" duration="1241000" />
+      <workItem from="1648140630552" duration="252000" />
+      <workItem from="1648221722587" duration="772000" />
+      <workItem from="1648266981279" duration="32131000" />
+      <workItem from="1648526394147" duration="2942000" />
+      <workItem from="1648654210967" duration="617000" />
+      <workItem from="1648694686054" duration="1276000" />
+      <workItem from="1648813578496" duration="745000" />
+      <workItem from="1649125568275" duration="804000" />
+      <workItem from="1649690410972" duration="2712000" />
+      <workItem from="1650210232842" duration="5280000" />
+      <workItem from="1650763237244" duration="3079000" />
+      <workItem from="1650908674520" duration="689000" />
+      <workItem from="1651087783116" duration="626000" />
+      <workItem from="1651157035409" duration="707000" />
+      <workItem from="1651424187149" duration="2500000" />
+      <workItem from="1651635109041" duration="36000" />
+      <workItem from="1651760264510" duration="1120000" />
+      <workItem from="1651872115588" duration="1146000" />
+      <workItem from="1652155184716" duration="600000" />
     </task>
     <servers />
   </component>
@@ -148,43 +202,45 @@
     <option name="version" value="1" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="688" y="216" key="FileChooserDialogImpl" timestamp="1629327402861">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state x="1232" y="291" key="FileChooserDialogImpl" timestamp="1651635143770">
+      <screen x="0" y="0" width="3440" height="1400" />
     </state>
-    <state x="550" y="171" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1629242543480" />
-    <state x="688" y="216" key="FileChooserDialogImpl/0.0.1920.1040/1920.0.1680.1010@0.0.1920.1040" timestamp="1629327402861" />
-    <state width="1493" height="205" key="GridCell.Tab.0.bottom" timestamp="1631473587464">
-      <screen x="0" y="0" width="1536" height="824" />
+    <state x="1232" y="291" key="FileChooserDialogImpl/0.0.3440.1400@0.0.3440.1400" timestamp="1651635143770" />
+    <state width="3397" height="404" key="GridCell.Tab.0.bottom" timestamp="1651878704535">
+      <screen x="0" y="0" width="3440" height="1400" />
     </state>
-    <state width="1493" height="205" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1631473587464" />
-    <state width="1637" height="267" key="GridCell.Tab.0.bottom/0.0.1680.1010/1680.0.1680.1010@1680.0.1680.1010" timestamp="1628696605295" />
-    <state width="1493" height="205" key="GridCell.Tab.0.center" timestamp="1631473587464">
-      <screen x="0" y="0" width="1536" height="824" />
+    <state width="1493" height="210" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1650256242672" />
+    <state width="3397" height="404" key="GridCell.Tab.0.bottom/0.0.3440.1400@0.0.3440.1400" timestamp="1651878704535" />
+    <state width="3397" height="404" key="GridCell.Tab.0.center" timestamp="1651878704535">
+      <screen x="0" y="0" width="3440" height="1400" />
     </state>
-    <state width="1493" height="205" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1631473587464" />
-    <state width="1637" height="267" key="GridCell.Tab.0.center/0.0.1680.1010/1680.0.1680.1010@1680.0.1680.1010" timestamp="1628696605294" />
-    <state width="1493" height="205" key="GridCell.Tab.0.left" timestamp="1631473587464">
-      <screen x="0" y="0" width="1536" height="824" />
+    <state width="1493" height="210" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1650256242672" />
+    <state width="3397" height="404" key="GridCell.Tab.0.center/0.0.3440.1400@0.0.3440.1400" timestamp="1651878704535" />
+    <state width="3397" height="404" key="GridCell.Tab.0.left" timestamp="1651878704535">
+      <screen x="0" y="0" width="3440" height="1400" />
     </state>
-    <state width="1493" height="205" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1631473587464" />
-    <state width="1637" height="267" key="GridCell.Tab.0.left/0.0.1680.1010/1680.0.1680.1010@1680.0.1680.1010" timestamp="1628696605294" />
-    <state width="1493" height="205" key="GridCell.Tab.0.right" timestamp="1631473587464">
-      <screen x="0" y="0" width="1536" height="824" />
+    <state width="1493" height="210" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1650256242672" />
+    <state width="3397" height="404" key="GridCell.Tab.0.left/0.0.3440.1400@0.0.3440.1400" timestamp="1651878704535" />
+    <state width="3397" height="404" key="GridCell.Tab.0.right" timestamp="1651878704535">
+      <screen x="0" y="0" width="3440" height="1400" />
     </state>
-    <state width="1493" height="205" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1631473587464" />
-    <state width="1637" height="267" key="GridCell.Tab.0.right/0.0.1680.1010/1680.0.1680.1010@1680.0.1680.1010" timestamp="1628696605294" />
-    <state x="105" y="72" key="SettingsEditor" timestamp="1629229804160">
-      <screen x="0" y="0" width="1536" height="824" />
+    <state width="1493" height="210" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1650256242672" />
+    <state width="3397" height="404" key="GridCell.Tab.0.right/0.0.3440.1400@0.0.3440.1400" timestamp="1651878704535" />
+    <state x="1223" y="345" key="SettingsEditor" timestamp="1648325691836">
+      <screen x="0" y="0" width="3440" height="1400" />
     </state>
-    <state x="105" y="72" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1629229804160" />
-    <state x="599" y="304" key="com.intellij.ide.util.TipDialog" timestamp="1629327397102">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state x="1223" y="345" key="SettingsEditor/0.0.3440.1400@0.0.3440.1400" timestamp="1648325691836" />
+    <state x="1073" y="409" key="com.intellij.ide.util.TipDialog" timestamp="1652155185066">
+      <screen x="0" y="0" width="3440" height="1400" />
     </state>
-    <state x="479" y="241" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1629254477433" />
-    <state x="599" y="304" key="com.intellij.ide.util.TipDialog/0.0.1920.1040/1920.0.1680.1010@0.0.1920.1040" timestamp="1629327397102" />
+    <state x="1073" y="409" key="com.intellij.ide.util.TipDialog/0.0.3440.1400@0.0.3440.1400" timestamp="1652155185066" />
+    <state x="1427" y="101" width="1095" height="1168" key="find.popup" timestamp="1648327159963">
+      <screen x="0" y="0" width="3440" height="1400" />
+    </state>
+    <state x="1427" y="101" width="1095" height="1168" key="find.popup/0.0.3440.1400@0.0.3440.1400" timestamp="1648327159963" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/ExploratoryModel$start.coverage" NAME="start Coverage Results" MODIFIED="1631473587464" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/simulation" />
+    <SUITE FILE_PATH="coverage/ExploratoryModel$start.coverage" NAME="start Coverage Results" MODIFIED="1651872668063" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/simulation" />
     <SUITE FILE_PATH="coverage/ExploratoryModel$testSimulation.coverage" NAME="testSimulation Coverage Results" MODIFIED="1616721961409" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools" />
   </component>
 </project>

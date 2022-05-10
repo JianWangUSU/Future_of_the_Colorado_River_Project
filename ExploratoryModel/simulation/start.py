@@ -33,7 +33,7 @@ n.add_node(LBM)
 # initialize User variables
 LBM.setupPeriodsandTraces()
 
-# create lower basin (LB) and Mexico user.
+# create Upper basin (UB) and Mexico user.
 UB = User.UB("UB", Powell)
 # add User to network
 n.add_node(UB)
@@ -211,9 +211,9 @@ if True:
     DataExchange.extractSensitivityInforamtion(filePath12, filePath6, filePath7, filePath8, filePath9, filePath10)
 
     # plots
-    # Figure 4.2, 4.3, 4.4, A.2, A.3 and A.4
-    FigureNames1 = ['Figure 4.2.png', 'Figure 4.3.png', 'Figure 4.4.png']
-    FigureNames2 = ['Figure A.2.png', 'Figure A.3.png', 'Figure A.4.png']
+    # Figure 4, 5, deleted, A2, A3 and deleted
+    FigureNames1 = ['Figure 4.png', 'Figure 5.png', 'Figure xx.png']
+    FigureNames2 = ['Figure A2.png', 'Figure A3.png', 'Figure yy.png']
 
     DataExchange.readSAResultsAndPlot(filePath11, FigureNames1)
     DataExchange.readSAResultsAndPlot(filePath12, FigureNames2)
@@ -306,19 +306,19 @@ if True:
             # plotsIndex = [0,40,80,100]
             plotsIndex = [0, 40, 80]
 
-            FigureNamesLeft = ['Figure A.1 (a) left.png', 'Figure 4.1 left.jpg', 'Figure A.1 (b) left.png']
-            FigureNamesRight = ['Figure A.1 (a) right.png', 'Figure 4.1 right.jpg', 'Figure A.1 (b) right.png']
+            FigureNamesLeft = ['Figure A1 (a) left.png', 'Figure 3 left.jpg', 'Figure A1 (b) left.png']
+            FigureNamesRight = ['Figure A1 (a) right.png', 'Figure 3 right.jpg', 'Figure A1 (b) right.png']
 
             for j in range(len(plotsIndex)):
                 i = plotsIndex[j]
                 title = "Lake Powell (Run" + str(i) + ")"
-                plots.plot_Elevations_Flows_CRSS_Exploratory_Powell(date_series, Powell.crssStorage[i],
+                plots.plot_Elevations_Flows_CRSS_Exploratory_Powell_SIunit(date_series, Powell.crssStorage[i],
                                                                     Powell.crssInflow[i],
                                                                     Powell.crssOutflow[i], Powell.crssElevation[i],
                                                                     Powell.storage[i], Powell.totalinflow[i],
                                                                     Powell.outflow[i], Powell.elevation[i], title, FigureNamesLeft[j])
                 title = "Lake Mead (Run" + str(i) + ")"
-                plots.plot_Elevations_Flows_CRSS_Exploratory_Mead(date_series, Mead.crssStorage[i], Mead.crssInflow[i],
+                plots.plot_Elevations_Flows_CRSS_Exploratory_Mead_SIunit(date_series, Mead.crssStorage[i], Mead.crssInflow[i],
                                                                   Mead.crssOutflow[i], Mead.crssElevation[i],
                                                                   Mead.storage[i], Mead.totalinflow[i],
                                                                   Mead.outflow[i], Mead.elevation[i], title, FigureNamesRight[j])
@@ -371,7 +371,7 @@ if True:
                                               filePath_Powell_s5, filePath_Mead_s5, filePath_Powell_s6, filePath_Mead_s6)
 
     # Read and plot results (post-processing)
-    # Figures 4.5, 4.6, A.5, and A.6
+    # Figures 6, 7, A4, and A5
     DataExchange.readSimulationResultsAndPlotNew()
 
     # # run reservoir simulation
@@ -381,7 +381,7 @@ if True:
     # # post processing about Release at Compact point
     # Powell.CalcualteFlowAtCompactPoint()
 
-if False:
+if True:
     # run reservoir simulation
     n.simulation()
     # run reservoir release model

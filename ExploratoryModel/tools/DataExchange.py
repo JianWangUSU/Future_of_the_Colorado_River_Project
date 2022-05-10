@@ -833,8 +833,13 @@ def readSAResultsAndPlot(filePath, FigureNames):
     # print(df2.T)
     # print(df1.iat[0, 1])
 
-    plots.plotYearsto12maf(DCP, DCPplus12, DCPplus8, DCPplus4, ADP, Paleo,
+    # plots.plotYearsto12maf(DCP, DCPplus12, DCPplus8, DCPplus4, ADP, Paleo,
+    #                        Depletion, TemperatureMIN, TemperatureMAX, DepletionStorage, FigureNames)
+
+    # 03262022,change unit to SI unit
+    plots.plotYearsto12mafSIunit(DCP, DCPplus12, DCPplus8, DCPplus4, ADP, Paleo,
                            Depletion, TemperatureMIN, TemperatureMAX, DepletionStorage, FigureNames)
+
 
 # for section 4.3
 def readSimulationResultsAndPlot():
@@ -878,7 +883,10 @@ def readSimulationResultsAndPlotNew():
     # print(df2.T)
     # print(df1.iat[0, 1])
 
-    plots.ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, DepletionTradeOff47,
+    # plots.ElvationComparison(PowellElevations47, MeadElevations47, TotalShortages47, DepletionTradeOff47,
+    #                          PowellElevations94, MeadElevations94, TotalShortages94, DepletionTradeOff94)
+
+    plots.ElvationComparison_SIunit(PowellElevations47, MeadElevations47, TotalShortages47, DepletionTradeOff47,
                              PowellElevations94, MeadElevations94, TotalShortages94, DepletionTradeOff94)
 
 # export data to xls
